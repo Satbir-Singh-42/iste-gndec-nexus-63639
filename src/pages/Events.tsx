@@ -331,22 +331,9 @@ const Events = () => {
                       {highlight.title}
                     </h3>
                     
-                    <div className="flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <Calendar className="w-3 h-3 text-secondary" />
-                        <span>{highlight.date}</span>
-                      </div>
-                      
-                      {highlight.instagram_link && (
-                        <a
-                          href={highlight.instagram_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-secondary hover:text-secondary/80 transition-colors"
-                        >
-                          <Instagram className="w-3 h-3" />
-                        </a>
-                      )}
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Calendar className="w-3 h-3 text-secondary" />
+                      <span>{highlight.date}</span>
                     </div>
                   </div>
                 </div>
