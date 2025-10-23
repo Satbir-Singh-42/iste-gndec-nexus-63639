@@ -1997,6 +1997,20 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
+  const moveImageUp = (index: number) => {
+    if (index === 0) return;
+    const newImages = [...uploadedImages];
+    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    setUploadedImages(newImages);
+  };
+
+  const moveImageDown = (index: number) => {
+    if (index === uploadedImages.length - 1) return;
+    const newImages = [...uploadedImages];
+    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    setUploadedImages(newImages);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
@@ -2073,13 +2087,39 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                     {uploadedImages.map((url, index) => (
                       <div key={index} className="relative group">
                         <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
-                        <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
+                        <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {index > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => moveImageUp(index)}
+                              className="bg-blue-500 text-white rounded-full p-1"
+                              title="Move up"
+                            >
+                              <ChevronUp className="h-3 w-3" />
+                            </button>
+                          )}
+                          {index < uploadedImages.length - 1 && (
+                            <button
+                              type="button"
+                              onClick={() => moveImageDown(index)}
+                              className="bg-blue-500 text-white rounded-full p-1"
+                              title="Move down"
+                            >
+                              <ChevronDown className="h-3 w-3" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="bg-red-500 text-white rounded-full p-1"
+                            title="Remove"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-1.5 py-0.5 rounded">
+                          {index + 1}
+                        </div>
                       </div>
                     ))}
                   </div>
