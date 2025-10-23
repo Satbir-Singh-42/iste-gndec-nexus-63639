@@ -1,17 +1,18 @@
+import { useState } from 'react';
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Mail, Linkedin } from 'lucide-react';
 
 const Members = () => {
-  const faculty = [
-    {
-      id: 1,
-      name: 'Faculty Coordinator',
-      position: 'Faculty Coordinator',
-      image: '/placeholder.svg',
-      email: 'faculty@gne.edu.in',
-    },
-  ];
+  const [activeTab, setActiveTab] = useState('core');
+
+  const faculty = {
+    name: 'Dr. Arvind Dhingra, Ph.D',
+    title: 'Associate Professor, Department of Electrical Engineering',
+    image: '/placeholder.svg',
+    description: 'Dr. Arvind Dhingra is current executive director of STEP. He does research in Curriculum Theory, Educational Leadership and Educational Management.',
+    achievements: 'He has 12 Journal and 68 Conference publications with more than 25 years of experience and honored by IESA award, National Cement Educator Award.',
+  };
 
   const coreTeam = [
     { id: 1, name: 'Satbir Singh', position: 'Convenor', image: '/placeholder.svg', email: 'satbir@gne.edu.in' },
@@ -23,7 +24,7 @@ const Members = () => {
     { id: 7, name: 'Vivek Kumar', position: 'Publicity Officer', image: '/placeholder.svg', email: 'vivek@gne.edu.in' },
   ];
 
-  const heads = [
+  const postHolders = [
     { id: 1, name: 'Malika', position: 'Promotion Head', image: '/placeholder.svg', email: 'malika@gne.edu.in' },
     { id: 2, name: 'Gurkamal', position: 'Content Head', image: '/placeholder.svg', email: 'gurkamal@gne.edu.in' },
     { id: 3, name: 'Shruti Verma', position: 'Promotion Head', image: '/placeholder.svg', email: 'shruti@gne.edu.in' },
@@ -47,201 +48,152 @@ const Members = () => {
     email: `exec${i + 1}@gne.edu.in`,
   }));
 
+  const getCurrentMembers = () => {
+    switch (activeTab) {
+      case 'core':
+        return coreTeam;
+      case 'post':
+        return postHolders;
+      case 'executive':
+        return executiveTeam;
+      default:
+        return coreTeam;
+    }
+  };
+
+  const members = getCurrentMembers();
+
   return (
     <div className="min-h-screen w-full">
       <TechNavbar />
       
       <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="mb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 border border-primary/30 bg-primary/5">
-            <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-            <span className="text-xs font-mono text-primary tracking-wider">TEAM PORTAL</span>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
-            Our Team
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Meet the dedicated team members driving innovation and excellence
-          </p>
+        {/* Faculty Advisor Section */}
+        <section className="mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
+            Our Faculty Advisor
+          </h2>
+          
+          <div className="grid md:grid-cols-[300px,1fr] gap-8 items-start max-w-5xl mx-auto">
+            {/* Circular Image */}
+            <div className="mx-auto">
+              <div className="w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden bg-muted border-4 border-border">
+                <img 
+                  src={faculty.image} 
+                  alt={faculty.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <a 
-              href="#faculty"
-              className="group relative inline-flex items-center gap-2 tech-border px-6 py-3 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
+            {/* Faculty Details Card */}
+            <div className="bg-card border border-border p-8 rounded-sm">
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                {faculty.name}
+              </h3>
+              <p className="text-sm text-muted-foreground mb-6 font-medium">
+                {faculty.title}
+              </p>
+              
+              <p className="text-foreground/90 mb-4 leading-relaxed">
+                {faculty.description}
+              </p>
+              
+              <p className="text-foreground/90 leading-relaxed">
+                {faculty.achievements}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Tabs */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center gap-0 border-b border-border">
+            <button
+              onClick={() => setActiveTab('core')}
+              className={`px-8 py-4 font-semibold transition-all relative ${
+                activeTab === 'core'
+                  ? 'text-foreground bg-background'
+                  : 'text-muted-foreground hover:text-foreground bg-muted/30'
+              }`}
             >
-              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <span className="relative z-10 font-mono text-xs tracking-wider">FACULTY</span>
-            </a>
-            <a 
-              href="#core"
-              className="group relative inline-flex items-center gap-2 tech-border px-6 py-3 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
+              Core Team
+              {activeTab === 'core' && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('post')}
+              className={`px-8 py-4 font-semibold transition-all relative ${
+                activeTab === 'post'
+                  ? 'text-foreground bg-background'
+                  : 'text-muted-foreground hover:text-foreground bg-muted/30'
+              }`}
             >
-              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <span className="relative z-10 font-mono text-xs tracking-wider">CORE</span>
-            </a>
-            <a 
-              href="#heads"
-              className="group relative inline-flex items-center gap-2 tech-border px-6 py-3 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
+              Post Holders
+              {activeTab === 'post' && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('executive')}
+              className={`px-8 py-4 font-semibold transition-all relative ${
+                activeTab === 'executive'
+                  ? 'text-foreground bg-background'
+                  : 'text-muted-foreground hover:text-foreground bg-muted/30'
+              }`}
             >
-              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <span className="relative z-10 font-mono text-xs tracking-wider">HEADS</span>
-            </a>
-            <a 
-              href="#executives"
-              className="group relative inline-flex items-center gap-2 tech-border px-6 py-3 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
-            >
-              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <span className="relative z-10 font-mono text-xs tracking-wider">EXECUTIVES</span>
-            </a>
+              Executive Team
+              {activeTab === 'executive' && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              )}
+            </button>
           </div>
         </div>
 
-        {/* Faculty */}
-        <section id="faculty" className="mb-16 scroll-mt-24">
-          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-            <span className="w-1 h-8 bg-primary" />
-            Faculty Coordinator
-          </h2>
-          
-          <div className="max-w-sm mx-auto">
-            {faculty.map((member) => (
-              <div key={member.id} className="tech-card p-6 hover:border-primary/50 transition-all group">
-                <div className="aspect-square mb-4 overflow-hidden bg-muted relative">
+        {/* Member Cards */}
+        <section>
+          <div className={`grid gap-6 ${
+            activeTab === 'executive' 
+              ? 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5' 
+              : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+          }`}>
+            {members.map((member) => (
+              <div 
+                key={member.id} 
+                className="bg-card border border-border p-6 hover:border-primary/50 transition-all group"
+              >
+                <div className="aspect-square mb-4 overflow-hidden bg-muted">
                   <img 
                     src={member.image} 
                     alt={member.name}
                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
                   />
-                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 
-                <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
-                <p className="text-sm font-mono text-primary mb-4">{member.position}</p>
+                <h3 className="font-bold text-foreground mb-1 text-sm md:text-base">
+                  {member.name}
+                </h3>
+                <p className="text-xs text-muted-foreground mb-4">
+                  {member.position}
+                </p>
                 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <a 
                     href={`mailto:${member.email}`}
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
+                    className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                    title="Email"
                   >
-                    <Mail className="w-4 h-4" />
+                    <Mail className="w-3.5 h-3.5" />
                   </a>
                   <a 
                     href="#"
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
+                    className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                    title="LinkedIn"
                   >
-                    <Linkedin className="w-4 h-4" />
+                    <Linkedin className="w-3.5 h-3.5" />
                   </a>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Core Team */}
-        <section id="core" className="mb-16 scroll-mt-24">
-          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-            <span className="w-1 h-8 bg-primary" />
-            Core Team
-          </h2>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {coreTeam.map((member) => (
-              <div key={member.id} className="tech-card p-6 hover:border-primary/50 transition-all group">
-                <div className="aspect-square mb-4 overflow-hidden bg-muted relative">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                
-                <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
-                <p className="text-sm font-mono text-primary mb-4">{member.position}</p>
-                
-                <div className="flex items-center gap-3">
-                  <a 
-                    href={`mailto:${member.email}`}
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
-                  >
-                    <Mail className="w-4 h-4" />
-                  </a>
-                  <a 
-                    href="#"
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Department Heads */}
-        <section id="heads" className="mb-16 scroll-mt-24">
-          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-            <span className="w-1 h-8 bg-primary" />
-            Department Heads
-          </h2>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {heads.map((member) => (
-              <div key={member.id} className="tech-card p-6 hover:border-primary/50 transition-all group">
-                <div className="aspect-square mb-4 overflow-hidden bg-muted relative">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                
-                <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
-                <p className="text-sm font-mono text-primary mb-4">{member.position}</p>
-                
-                <div className="flex items-center gap-3">
-                  <a 
-                    href={`mailto:${member.email}`}
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
-                  >
-                    <Mail className="w-4 h-4" />
-                  </a>
-                  <a 
-                    href="#"
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Executive Team */}
-        <section id="executives" className="mb-16 scroll-mt-24">
-          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-            <span className="w-1 h-8 bg-primary" />
-            Executive Team
-          </h2>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {executiveTeam.map((member) => (
-              <div key={member.id} className="tech-card p-4 hover:border-primary/50 transition-all group">
-                <div className="aspect-square mb-3 overflow-hidden bg-muted relative">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
-                  />
-                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-                
-                <h3 className="text-sm font-bold text-foreground mb-1">{member.name}</h3>
-                <p className="text-xs font-mono text-primary">{member.position}</p>
               </div>
             ))}
           </div>
