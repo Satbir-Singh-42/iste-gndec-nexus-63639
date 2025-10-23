@@ -5,9 +5,9 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   server: {
-    host: "::",
-    port: 8080,
-    allowedHosts: true, // ✅ Allow all hosts
+    host: "0.0.0.0", // ✅ Bind to all IPv4 interfaces
+    port: 5000,      // ✅ Replit default port
+    allowedHosts: true, // ✅ Avoid "Blocked request" issue
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
