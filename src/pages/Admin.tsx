@@ -1966,6 +1966,7 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState(item);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -1974,18 +1975,26 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
     console.log(`Selected ${files.length} file(s) for edit`);
     
     setUploading(true);
-    const file = files[0];
-    const { url, error } = await uploadImageToSupabase(file, 'gallery');
+    const fileArray = Array.from(files);
+    console.log('Files to upload:', fileArray.map(f => f.name));
+    
+    const { urls, errors } = await uploadMultipleImages(fileArray, 'gallery');
     setUploading(false);
 
-    if (error) {
-      toast.error(error);
-    } else if (url) {
-      setFormData({ ...formData, image: url });
-      toast.success('Image uploaded successfully');
+    if (errors.length > 0) {
+      errors.forEach(error => toast.error(error));
+    }
+    
+    if (urls.length > 0) {
+      setUploadedImages([...uploadedImages, ...urls]);
+      toast.success(`${urls.length} image(s) uploaded successfully`);
     }
     
     e.target.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1993,10 +2002,34 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('gallery').update(formData).eq('id', item.id);
+      // Update the original item with the first uploaded image (if any) or keep current
+      const updatedData = {
+        ...formData,
+        image: uploadedImages.length > 0 ? uploadedImages[0] : formData.image
+      };
+      
+      const { error } = await supabase.from('gallery').update(updatedData).eq('id', item.id);
       if (error) throw error;
-      toast.success('Gallery item updated successfully');
+      
+      // If there are additional images, create new gallery items for them
+      if (uploadedImages.length > 1) {
+        const additionalItems = uploadedImages.slice(1).map(imageUrl => ({
+          title: formData.title,
+          image: imageUrl,
+          category: formData.category,
+          description: formData.description
+        }));
+        
+        const { error: insertError } = await supabase.from('gallery').insert(additionalItems);
+        if (insertError) throw insertError;
+      }
+      
+      toast.success(uploadedImages.length > 1 
+        ? `Gallery item updated and ${uploadedImages.length - 1} new item(s) added`
+        : 'Gallery item updated successfully'
+      );
       setOpen(false);
+      setUploadedImages([]);
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to update gallery item: ${error.message}`);
@@ -2020,19 +2053,39 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
               <Input id="edit-gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
             </div>
             <div>
-              <Label htmlFor="edit-gallery-image">Upload New Image</Label>
+              <Label htmlFor="edit-gallery-image">Upload New Image(s)</Label>
               <p className="text-xs text-muted-foreground mb-2">
-                Upload a new image to replace the current one
+                Upload one or more images. The first will replace the current one, additional images will be added as new items.
               </p>
               <Input 
                 id="edit-gallery-image" 
                 type="file" 
                 accept="image/*" 
+                multiple
                 onChange={handleImageUpload} 
                 disabled={uploading} 
               />
               {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
-              {formData.image && (
+              {uploadedImages.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-xs text-muted-foreground mb-2">New Images ({uploadedImages.length}):</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {uploadedImages.map((url, index) => (
+                      <div key={index} className="relative group">
+                        <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {formData.image && uploadedImages.length === 0 && (
                 <div className="mt-3">
                   <p className="text-xs text-muted-foreground mb-1">Current Image:</p>
                   <img src={formData.image} alt="Preview" className="w-32 h-32 object-cover rounded" />
