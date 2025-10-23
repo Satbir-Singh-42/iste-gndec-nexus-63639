@@ -140,19 +140,6 @@ const TechHero = () => {
 
       {/* Main Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
-        {/* Tech Status Bar */}
-        <div className="mb-8 flex items-center justify-center gap-4 text-sm font-mono text-primary">
-          <span className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-            SYSTEM: ONLINE
-          </span>
-          <span className="text-border">|</span>
-          <span className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-secondary rounded-full animate-pulse" />
-            STATUS: ACTIVE
-          </span>
-        </div>
-
         <h1 
           ref={titleRef}
           data-text="ISTE GNDEC"
