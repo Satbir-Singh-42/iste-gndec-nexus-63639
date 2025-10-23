@@ -36,6 +36,8 @@ interface Event {
   organizer?: string;
   details?: string;
   agenda?: any[];
+  hidden?: boolean;
+  display_order?: number;
 }
 
 interface GalleryItem {
@@ -44,6 +46,8 @@ interface GalleryItem {
   image: string;
   category: string;
   description: string;
+  hidden?: boolean;
+  display_order?: number;
 }
 
 interface Member {
@@ -81,6 +85,8 @@ interface EventHighlight {
   poster: string;
   instagram_link: string;
   highlights: string[];
+  hidden?: boolean;
+  display_order?: number;
 }
 
 const Admin = () => {
@@ -105,6 +111,7 @@ const Admin = () => {
   const [coreTeamSearch, setCoreTeamSearch] = useState("");
   const [postHoldersSearch, setPostHoldersSearch] = useState("");
   const [executiveSearch, setExecutiveSearch] = useState("");
+  const [gallerySearch, setGallerySearch] = useState("");
 
   useEffect(() => {
     checkAuthStatus();
@@ -188,7 +195,7 @@ const Admin = () => {
   const fetchEvents = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('events').select('*').order('id', { ascending: false });
+      const { data, error } = await supabase.from('events').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
       if (error) throw error;
       setEvents(data || []);
     } catch (error: any) {
@@ -199,7 +206,7 @@ const Admin = () => {
   const fetchGallery = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('gallery').select('*').order('id', { ascending: false });
+      const { data, error } = await supabase.from('gallery').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
       if (error) throw error;
       setGallery(data || []);
     } catch (error: any) {
@@ -241,6 +248,50 @@ const Admin = () => {
     } catch (error: any) {
       toast.error(`Failed to delete gallery item: ${error.message}`);
     }
+  };
+
+  const toggleGalleryVisibility = async (id: number, currentHidden: boolean) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from('gallery').update({ hidden: !currentHidden }).eq('id', id);
+      if (error) throw error;
+      toast.success(`Gallery item ${!currentHidden ? 'hidden' : 'visible'} successfully`);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update visibility: ${error.message}`);
+    }
+  };
+
+  const updateGalleryOrder = async (id: number, newOrder: number) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from('gallery').update({ display_order: newOrder }).eq('id', id);
+      if (error) throw error;
+      toast.success('Gallery item order updated');
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update order: ${error.message}`);
+    }
+  };
+
+  const moveGalleryUp = (items: GalleryItem[], index: number) => {
+    if (index === 0) return;
+    const currentItem = items[index];
+    const previousItem = items[index - 1];
+    const currentOrder = currentItem.display_order || index;
+    const previousOrder = previousItem.display_order || index - 1;
+    updateGalleryOrder(currentItem.id, previousOrder);
+    updateGalleryOrder(previousItem.id, currentOrder);
+  };
+
+  const moveGalleryDown = (items: GalleryItem[], index: number) => {
+    if (index === items.length - 1) return;
+    const currentItem = items[index];
+    const nextItem = items[index + 1];
+    const currentOrder = currentItem.display_order || index;
+    const nextOrder = nextItem.display_order || index + 1;
+    updateGalleryOrder(currentItem.id, nextOrder);
+    updateGalleryOrder(nextItem.id, currentOrder);
   };
 
   const fetchFaculty = async () => {
@@ -346,7 +397,7 @@ const Admin = () => {
   const fetchEventHighlights = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('event_highlights').select('*').order('id', { ascending: false });
+      const { data, error } = await supabase.from('event_highlights').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
       if (error) throw error;
       setEventHighlights(data || []);
     } catch (error: any) {
@@ -366,139 +417,92 @@ const Admin = () => {
     }
   };
 
-  const handleDataMigration = async () => {
-    if (!supabase) {
-      toast.error("Supabase is not configured. Please check your environment variables.");
-      return;
-    }
-
+  const toggleEventVisibility = async (id: number, currentHidden: boolean) => {
+    if (!supabase) return;
     try {
-      toast.info("Starting data migration from JSON to Supabase...");
-
-      const eventsResponse = await fetch("/data/events.json");
-      const events = await eventsResponse.json();
-      
-      const membersResponse = await fetch("/data/members.json");
-      const members = await membersResponse.json();
-      
-      const galleryResponse = await fetch("/data/gallery.json");
-      const gallery = await galleryResponse.json();
-      
-      const noticesResponse = await fetch("/data/notices.json");
-      const notices = await noticesResponse.json();
-      
-      const highlightsResponse = await fetch("/data/event-highlights.json");
-      const highlights = await highlightsResponse.json();
-
-      const { count: existingEventsCount } = await supabase
-        .from("events")
-        .select('*', { count: 'exact', head: true });
-
-      if (existingEventsCount === 0) {
-        const { error: eventsError } = await supabase.from("events").insert(events);
-        if (eventsError) throw new Error(`Events: ${eventsError.message}`);
-        toast.success("Events migrated successfully");
-      } else {
-        toast.info("Events already exist, skipping...");
-      }
-
-      const { count: existingFacultyCount } = await supabase
-        .from("members_faculty")
-        .select('*', { count: 'exact', head: true });
-
-      if (existingFacultyCount === 0 && members.faculty) {
-        const { error: facultyError } = await supabase.from("members_faculty").insert([members.faculty]);
-        if (facultyError) throw new Error(`Faculty: ${facultyError.message}`);
-        toast.success("Faculty migrated successfully");
-      } else {
-        toast.info("Faculty already exists, skipping...");
-      }
-
-      const { count: existingCoreCount } = await supabase
-        .from("members_core_team")
-        .select('*', { count: 'exact', head: true });
-
-      if (existingCoreCount === 0 && members.coreTeam?.length > 0) {
-        const { error: coreError } = await supabase.from("members_core_team").insert(members.coreTeam);
-        if (coreError) throw new Error(`Core Team: ${coreError.message}`);
-        toast.success("Core team migrated successfully");
-      } else {
-        toast.info("Core team already exists, skipping...");
-      }
-
-      const { count: existingPostCount } = await supabase
-        .from("members_post_holders")
-        .select('*', { count: 'exact', head: true });
-
-      if (existingPostCount === 0 && members.postHolders?.length > 0) {
-        const { error: postError } = await supabase.from("members_post_holders").insert(members.postHolders);
-        if (postError) throw new Error(`Post Holders: ${postError.message}`);
-        toast.success("Post holders migrated successfully");
-      } else {
-        toast.info("Post holders already exist, skipping...");
-      }
-
-      const { count: existingExecutiveCount } = await supabase
-        .from("members_executive")
-        .select('*', { count: 'exact', head: true });
-
-      if (existingExecutiveCount === 0 && members.executiveTeam?.length > 0) {
-        const { error: executiveError } = await supabase.from("members_executive").insert(members.executiveTeam);
-        if (executiveError) throw new Error(`Executive Team: ${executiveError.message}`);
-        toast.success("Executive team migrated successfully");
-      } else {
-        toast.info("Executive team already exists, skipping...");
-      }
-
-      const { count: existingGalleryCount } = await supabase
-        .from("gallery")
-        .select('*', { count: 'exact', head: true });
-
-      if (existingGalleryCount === 0) {
-        const { error: galleryError } = await supabase.from("gallery").insert(gallery);
-        if (galleryError) throw new Error(`Gallery: ${galleryError.message}`);
-        toast.success("Gallery migrated successfully");
-      } else {
-        toast.info("Gallery already exists, skipping...");
-      }
-
-      const { count: existingNoticesCount } = await supabase
-        .from("notices")
-        .select('*', { count: 'exact', head: true });
-
-      if (existingNoticesCount === 0) {
-        const { error: noticesError } = await supabase.from("notices").insert(notices);
-        if (noticesError) throw new Error(`Notices: ${noticesError.message}`);
-        toast.success("Notices migrated successfully");
-      } else {
-        toast.info("Notices already exist, skipping...");
-      }
-
-      const { count: existingHighlightsCount } = await supabase
-        .from("event_highlights")
-        .select('*', { count: 'exact', head: true });
-
-      if (existingHighlightsCount === 0) {
-        const mappedHighlights = highlights.map((h: any) => {
-          const { instagramLink, ...rest } = h;
-          return {
-            ...rest,
-            instagram_link: instagramLink
-          };
-        });
-        const { error: highlightsError } = await supabase.from("event_highlights").insert(mappedHighlights);
-        if (highlightsError) throw new Error(`Event Highlights: ${highlightsError.message}`);
-        toast.success("Event highlights migrated successfully");
-      } else {
-        toast.info("Event highlights already exist, skipping...");
-      }
-
-      toast.success("Data migration completed successfully!");
+      const { error } = await supabase.from('events').update({ hidden: !currentHidden }).eq('id', id);
+      if (error) throw error;
+      toast.success(`Event ${!currentHidden ? 'hidden' : 'visible'} successfully`);
       setRefreshTrigger(prev => prev + 1);
     } catch (error: any) {
-      toast.error(`Migration failed: ${error.message}`);
-      console.error("Migration error:", error);
+      toast.error(`Failed to update visibility: ${error.message}`);
     }
+  };
+
+  const updateEventOrder = async (id: number, newOrder: number) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from('events').update({ display_order: newOrder }).eq('id', id);
+      if (error) throw error;
+      toast.success('Event order updated');
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update order: ${error.message}`);
+    }
+  };
+
+  const moveEventUp = (items: Event[], index: number) => {
+    if (index === 0) return;
+    const currentItem = items[index];
+    const previousItem = items[index - 1];
+    const currentOrder = currentItem.display_order || index;
+    const previousOrder = previousItem.display_order || index - 1;
+    updateEventOrder(currentItem.id, previousOrder);
+    updateEventOrder(previousItem.id, currentOrder);
+  };
+
+  const moveEventDown = (items: Event[], index: number) => {
+    if (index === items.length - 1) return;
+    const currentItem = items[index];
+    const nextItem = items[index + 1];
+    const currentOrder = currentItem.display_order || index;
+    const nextOrder = nextItem.display_order || index + 1;
+    updateEventOrder(currentItem.id, nextOrder);
+    updateEventOrder(nextItem.id, currentOrder);
+  };
+
+  const toggleHighlightVisibility = async (id: number, currentHidden: boolean) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from('event_highlights').update({ hidden: !currentHidden }).eq('id', id);
+      if (error) throw error;
+      toast.success(`Highlight ${!currentHidden ? 'hidden' : 'visible'} successfully`);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update visibility: ${error.message}`);
+    }
+  };
+
+  const updateHighlightOrder = async (id: number, newOrder: number) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from('event_highlights').update({ display_order: newOrder }).eq('id', id);
+      if (error) throw error;
+      toast.success('Highlight order updated');
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update order: ${error.message}`);
+    }
+  };
+
+  const moveHighlightUp = (items: EventHighlight[], index: number) => {
+    if (index === 0) return;
+    const currentItem = items[index];
+    const previousItem = items[index - 1];
+    const currentOrder = currentItem.display_order || index;
+    const previousOrder = previousItem.display_order || index - 1;
+    updateHighlightOrder(currentItem.id, previousOrder);
+    updateHighlightOrder(previousItem.id, currentOrder);
+  };
+
+  const moveHighlightDown = (items: EventHighlight[], index: number) => {
+    if (index === items.length - 1) return;
+    const currentItem = items[index];
+    const nextItem = items[index + 1];
+    const currentOrder = currentItem.display_order || index;
+    const nextOrder = nextItem.display_order || index + 1;
+    updateHighlightOrder(currentItem.id, nextOrder);
+    updateHighlightOrder(nextItem.id, currentOrder);
   };
 
   if (checkingAuth) {
@@ -602,13 +606,12 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="notices" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="notices">Notices</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="highlights">Highlights</TabsTrigger>
             <TabsTrigger value="members">Members</TabsTrigger>
-            <TabsTrigger value="migration">Migration</TabsTrigger>
           </TabsList>
 
           <TabsContent value="notices">
@@ -672,37 +675,70 @@ const Admin = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {events.map((event) => (
-                      <TableRow key={event.id}>
-                        <TableCell>{event.id}</TableCell>
-                        <TableCell>{event.title}</TableCell>
-                        <TableCell>{event.date}</TableCell>
-                        <TableCell>{event.location}</TableCell>
-                        <TableCell>{event.status}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <EditEventDialog event={event} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                            <Button variant="destructive" size="sm" onClick={() => deleteEvent(event.id)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                <div className="max-h-96 overflow-y-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">Order</TableHead>
+                        <TableHead className="w-12">Visible</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {events.map((event, index) => (
+                        <TableRow key={event.id} className={event.hidden ? 'opacity-50' : ''}>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => moveEventUp(events, index)}
+                                disabled={index === 0}
+                                className="h-6 w-6 p-0"
+                              >
+                                <ChevronUp className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => moveEventDown(events, index)}
+                                disabled={index === events.length - 1}
+                                className="h-6 w-6 p-0"
+                              >
+                                <ChevronDown className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleEventVisibility(event.id, event.hidden || false)}
+                            >
+                              {event.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </TableCell>
+                          <TableCell>{event.title}</TableCell>
+                          <TableCell>{event.date}</TableCell>
+                          <TableCell>{event.location}</TableCell>
+                          <TableCell>{event.status}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditEventDialog event={event} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                              <Button variant="destructive" size="sm" onClick={() => deleteEvent(event.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -717,37 +753,88 @@ const Admin = () => {
                   </div>
                   <AddGalleryDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
+                <div className="mt-4">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by title or category..."
+                      value={gallerySearch}
+                      onChange={(e) => setGallerySearch(e.target.value)}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Image URL</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {gallery.map((item) => (
-                      <TableRow key={item.id}>
-                        <TableCell>{item.id}</TableCell>
-                        <TableCell>{item.title}</TableCell>
-                        <TableCell>{item.category}</TableCell>
-                        <TableCell className="max-w-xs truncate">{item.image}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <EditGalleryDialog item={item} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                            <Button variant="destructive" size="sm" onClick={() => deleteGalleryItem(item.id)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                <div className="max-h-96 overflow-y-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">Order</TableHead>
+                        <TableHead className="w-12">Visible</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Image</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {gallery
+                        .filter(item => 
+                          item.title.toLowerCase().includes(gallerySearch.toLowerCase()) ||
+                          item.category.toLowerCase().includes(gallerySearch.toLowerCase())
+                        )
+                        .map((item, index, filteredArray) => (
+                        <TableRow key={item.id} className={item.hidden ? 'opacity-50' : ''}>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => moveGalleryUp(gallery, gallery.indexOf(item))}
+                                disabled={index === 0}
+                                className="h-6 w-6 p-0"
+                              >
+                                <ChevronUp className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => moveGalleryDown(gallery, gallery.indexOf(item))}
+                                disabled={index === filteredArray.length - 1}
+                                className="h-6 w-6 p-0"
+                              >
+                                <ChevronDown className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleGalleryVisibility(item.id, item.hidden || false)}
+                            >
+                              {item.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </TableCell>
+                          <TableCell>{item.title}</TableCell>
+                          <TableCell>{item.category}</TableCell>
+                          <TableCell>
+                            <img src={item.image} alt={item.title} className="w-16 h-16 object-cover rounded" />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditGalleryDialog item={item} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                              <Button variant="destructive" size="sm" onClick={() => deleteGalleryItem(item.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -1150,52 +1237,68 @@ const Admin = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {eventHighlights.map((highlight) => (
-                      <TableRow key={highlight.id}>
-                        <TableCell>{highlight.id}</TableCell>
-                        <TableCell>{highlight.title}</TableCell>
-                        <TableCell>{highlight.date}</TableCell>
-                        <TableCell>{highlight.location}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <EditEventHighlightDialog highlight={highlight} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                            <Button variant="destructive" size="sm" onClick={() => deleteEventHighlight(highlight.id)}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                <div className="max-h-96 overflow-y-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">Order</TableHead>
+                        <TableHead className="w-12">Visible</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="migration">
-            <Card>
-              <CardHeader>
-                <CardTitle>Migrate Data to Supabase</CardTitle>
-                <CardDescription>
-                  This will migrate all data from JSON files to your Supabase database.
-                  Make sure the database tables are created first. Migration is idempotent - it will skip data that already exists.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={handleDataMigration}>
-                  Start Migration
-                </Button>
+                    </TableHeader>
+                    <TableBody>
+                      {eventHighlights.map((highlight, index) => (
+                        <TableRow key={highlight.id} className={highlight.hidden ? 'opacity-50' : ''}>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => moveHighlightUp(eventHighlights, index)}
+                                disabled={index === 0}
+                                className="h-6 w-6 p-0"
+                              >
+                                <ChevronUp className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => moveHighlightDown(eventHighlights, index)}
+                                disabled={index === eventHighlights.length - 1}
+                                className="h-6 w-6 p-0"
+                              >
+                                <ChevronDown className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleHighlightVisibility(highlight.id, highlight.hidden || false)}
+                            >
+                              {highlight.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </TableCell>
+                          <TableCell>{highlight.title}</TableCell>
+                          <TableCell>{highlight.date}</TableCell>
+                          <TableCell>{highlight.location}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditEventHighlightDialog highlight={highlight} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                              <Button variant="destructive" size="sm" onClick={() => deleteEventHighlight(highlight.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -1892,7 +1995,10 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
     name: "",
     title: "",
     image: "",
-    description: ""
+    description: "",
+    linkedin: "",
+    github: "",
+    instagram: ""
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1916,11 +2022,20 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('members_faculty').insert([formData]);
+      const dataToInsert = {
+        name: formData.name,
+        title: formData.title,
+        image: formData.image,
+        description: formData.description,
+        ...(formData.linkedin && { linkedin: formData.linkedin }),
+        ...(formData.github && { github: formData.github }),
+        ...(formData.instagram && { instagram: formData.instagram })
+      };
+      const { error } = await supabase.from('members_faculty').insert([dataToInsert]);
       if (error) throw error;
       toast.success('Faculty member added successfully');
       setOpen(false);
-      setFormData({ name: "", title: "", image: "", description: "" });
+      setFormData({ name: "", title: "", image: "", description: "", linkedin: "", github: "", instagram: "" });
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add faculty: ${error.message}`);
@@ -1932,7 +2047,7 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Faculty</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Faculty Member</DialogTitle>
           <DialogDescription>Add a new faculty advisor</DialogDescription>
@@ -1955,6 +2070,18 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
           <div>
             <Label htmlFor="faculty-description">Description</Label>
             <Textarea id="faculty-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="faculty-linkedin">LinkedIn URL (optional)</Label>
+            <Input id="faculty-linkedin" type="url" value={formData.linkedin} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="https://linkedin.com/in/username" />
+          </div>
+          <div>
+            <Label htmlFor="faculty-github">GitHub URL (optional)</Label>
+            <Input id="faculty-github" type="url" value={formData.github} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="https://github.com/username" />
+          </div>
+          <div>
+            <Label htmlFor="faculty-instagram">Instagram URL (optional)</Label>
+            <Input id="faculty-instagram" type="url" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="https://instagram.com/username" />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={uploading || !formData.image}>Add Faculty</Button>
@@ -2006,7 +2133,7 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Faculty Member</DialogTitle>
           <DialogDescription>Update faculty information</DialogDescription>
@@ -2029,6 +2156,18 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
           <div>
             <Label htmlFor="edit-faculty-description">Description</Label>
             <Textarea id="edit-faculty-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-faculty-linkedin">LinkedIn URL (optional)</Label>
+            <Input id="edit-faculty-linkedin" type="url" value={formData.linkedin || ""} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="https://linkedin.com/in/username" />
+          </div>
+          <div>
+            <Label htmlFor="edit-faculty-github">GitHub URL (optional)</Label>
+            <Input id="edit-faculty-github" type="url" value={formData.github || ""} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="https://github.com/username" />
+          </div>
+          <div>
+            <Label htmlFor="edit-faculty-instagram">Instagram URL (optional)</Label>
+            <Input id="edit-faculty-instagram" type="url" value={formData.instagram || ""} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="https://instagram.com/username" />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={uploading}>Update Faculty</Button>
@@ -2098,7 +2237,7 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Member</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>Add a new team member</DialogDescription>
@@ -2184,7 +2323,7 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>Update member information</DialogDescription>

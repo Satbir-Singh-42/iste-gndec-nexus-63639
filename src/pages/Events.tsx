@@ -18,6 +18,8 @@ interface Event {
   organizer?: string;
   details?: string;
   agenda?: string[];
+  hidden?: boolean;
+  display_order?: number;
 }
 
 interface EventHighlight {
@@ -29,6 +31,8 @@ interface EventHighlight {
   poster: string;
   instagram_link: string;
   highlights: string[];
+  hidden?: boolean;
+  display_order?: number;
 }
 
 const Events = () => {
@@ -86,6 +90,8 @@ const Events = () => {
       const { data, error } = await supabase
         .from('events')
         .select('*')
+        .or('hidden.is.null,hidden.eq.false')
+        .order('display_order', { ascending: true, nullsFirst: false })
         .order('date', { ascending: true });
 
       if (error) throw error;
@@ -103,6 +109,8 @@ const Events = () => {
       const { data, error } = await supabase
         .from('event_highlights')
         .select('*')
+        .or('hidden.is.null,hidden.eq.false')
+        .order('display_order', { ascending: true, nullsFirst: false })
         .order('date', { ascending: false});
 
       if (error) throw error;

@@ -14,6 +14,8 @@ interface Member {
   linkedin?: string;
   github?: string;
   instagram?: string;
+  hidden?: boolean;
+  display_order?: number;
 }
 
 interface Faculty {
@@ -22,6 +24,11 @@ interface Faculty {
   title: string;
   image: string;
   description: string;
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
+  hidden?: boolean;
+  display_order?: number;
 }
 
 const Members = () => {
@@ -49,10 +56,10 @@ const Members = () => {
 
     try {
       const [facultyRes, coreRes, postRes, execRes] = await Promise.all([
-        supabase.from('members_faculty').select('*').limit(1).single(),
-        supabase.from('members_core_team').select('*').order('id', { ascending: true }),
-        supabase.from('members_post_holders').select('*').order('id', { ascending: true }),
-        supabase.from('members_executive').select('*').order('id', { ascending: true }),
+        supabase.from('members_faculty').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }).limit(1).single(),
+        supabase.from('members_core_team').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }),
+        supabase.from('members_post_holders').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }),
+        supabase.from('members_executive').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }),
       ]);
 
       if (facultyRes.error) console.error('Faculty error:', facultyRes.error);
@@ -133,9 +140,48 @@ const Members = () => {
                   {faculty.title}
                 </p>
                 
-                <p className="text-foreground/90 leading-relaxed">
+                <p className="text-foreground/90 leading-relaxed mb-6">
                   {faculty.description}
                 </p>
+
+                {/* Social Links */}
+                {(faculty.linkedin || faculty.github || faculty.instagram) && (
+                  <div className="flex items-center gap-3 pt-4 border-t border-border">
+                    {faculty.linkedin && (
+                      <a 
+                        href={faculty.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                        title="LinkedIn"
+                      >
+                        <Linkedin className="w-4 h-4" />
+                      </a>
+                    )}
+                    {faculty.github && (
+                      <a 
+                        href={faculty.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                        title="GitHub"
+                      >
+                        <Github className="w-4 h-4" />
+                      </a>
+                    )}
+                    {faculty.instagram && (
+                      <a 
+                        href={faculty.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                        title="Instagram"
+                      >
+                        <Instagram className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </section>
