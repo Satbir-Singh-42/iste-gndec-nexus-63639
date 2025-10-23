@@ -1,17 +1,25 @@
+import { useState } from 'react';
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+  });
+
   const contactInfo = [
     {
       icon: Mail,
       title: 'Email',
-      content: 'iste@gndec.ac.in',
-      link: 'mailto:iste@gndec.ac.in',
+      content: 'istegndec.original@gmail.com',
+      link: 'mailto:istegndec.original@gmail.com',
     },
     {
       icon: MapPin,
@@ -20,6 +28,46 @@ const Contact = () => {
       link: '#',
     },
   ];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate form
+    if (!formData.name || !formData.email || !formData.message) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    // Create mailto link with pre-filled data
+    const subject = encodeURIComponent(`Contact Form: Message from ${formData.name}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\n` +
+      `Email: ${formData.email}\n\n` +
+      `Message:\n${formData.message}`
+    );
+    
+    const mailtoLink = `mailto:istegndec.original@gmail.com?subject=${subject}&body=${body}`;
+    
+    // Open email client
+    window.location.href = mailtoLink;
+    
+    // Show success message
+    toast.success('Opening your email client...');
+    
+    // Reset form
+    setFormData({
+      name: '',
+      email: '',
+      message: '',
+    });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <div className="min-h-screen w-full">
@@ -73,19 +121,43 @@ const Contact = () => {
                 </div>
               ))}
             </div>
+
+            {/* Google Map */}
+            <div className="tech-card p-6">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-primary" />
+                Find Us On Map
+              </h3>
+              <div className="w-full h-[300px] md:h-[400px] overflow-hidden border border-border">
+                <iframe
+                  title="GNDEC Location Map"
+                  src="https://maps.google.com/maps?q=Guru+Nanak+Dev+Engineering+College,+Ludhiana&output=embed&z=15"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={true}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Contact Form */}
           <div className="tech-card p-8">
             <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-sm font-mono text-foreground/80 mb-2">
                   NAME
                 </label>
                 <Input 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   placeholder="Your name"
                   className="bg-background border-border"
+                  required
                 />
               </div>
               
@@ -95,8 +167,12 @@ const Contact = () => {
                 </label>
                 <Input 
                   type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="your@email.com"
                   className="bg-background border-border"
+                  required
                 />
               </div>
               
@@ -105,9 +181,13 @@ const Contact = () => {
                   MESSAGE
                 </label>
                 <Textarea 
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   placeholder="Your message..."
                   rows={5}
                   className="bg-background border-border resize-none"
+                  required
                 />
               </div>
 
