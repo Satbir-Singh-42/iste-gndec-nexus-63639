@@ -1,8 +1,0 @@
-[
-  { "id": 1, "title": "Workshop 2023", "image": "/placeholder.svg", "category": "Events", "description": "Annual technical workshop featuring latest technologies and industry trends." },
-  { "id": 2, "title": "Team Gathering", "image": "/placeholder.svg", "category": "Team", "description": "Team bonding session and planning meet for upcoming semester activities." },
-  { "id": 3, "title": "Competition Day", "image": "/placeholder.svg", "category": "Events", "description": "Inter-college coding competition with participants from various institutions." },
-  { "id": 4, "title": "Guest Lecture", "image": "/placeholder.svg", "category": "Sessions", "description": "Industry expert session on emerging technologies and career opportunities." },
-  { "id": 5, "title": "Project Exhibition", "image": "/placeholder.svg", "category": "Projects", "description": "Showcase of innovative student projects and technical demonstrations." },
-  { "id": 6, "title": "Annual Fest", "image": "/placeholder.svg", "category": "Events", "description": "Annual technical fest celebrating innovation and technical excellence." }
-]
