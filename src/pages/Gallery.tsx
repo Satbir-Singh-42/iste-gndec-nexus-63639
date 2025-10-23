@@ -8,13 +8,14 @@ import { toast } from 'sonner';
 interface GalleryImage {
   id: number;
   title: string;
-  image: string;
+  images: string[];
   category: string;
   description: string;
 }
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -90,24 +91,34 @@ const Gallery = () => {
             {galleryImages.map((item) => (
               <div 
                 key={item.id} 
-                className="group relative overflow-hidden tech-card p-0 cursor-pointer"
-                onClick={() => setSelectedImage(item)}
+                className="group tech-card p-0 cursor-pointer overflow-hidden"
+                onClick={() => {
+                  setSelectedImage(item);
+                  setCurrentImageIndex(0);
+                }}
               >
-                <div className="aspect-video overflow-hidden bg-muted">
+                <div className="relative aspect-video overflow-hidden bg-muted">
                   <img 
-                    src={item.image} 
+                    src={item.images?.[0]} 
                     alt={item.title}
                     className="w-full h-full object-contain group-hover:scale-110 transition-all duration-500"
                   />
+                  
+                  {item.images?.length > 1 && (
+                    <div className="absolute top-4 left-4 px-2 py-1 text-xs font-mono bg-background/80 text-foreground border border-border">
+                      1/{item.images.length}
+                    </div>
+                  )}
                 </div>
                 
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                  <span className="text-xs font-mono text-primary mb-2">{item.category}</span>
-                  <h3 className="text-xl font-bold text-foreground">{item.title}</h3>
-                </div>
-                
-                <div className="absolute top-4 right-4 px-3 py-1 text-xs font-mono bg-primary/20 text-primary border border-primary/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                  VIEW
+                <div className="p-4">
+                  <span className="text-xs font-mono text-primary mb-1 block">{item.category}</span>
+                  <h3 className="text-lg font-bold text-foreground mb-1">{item.title}</h3>
+                  {item.images?.length > 1 && (
+                    <span className="text-xs text-muted-foreground">
+                      {item.images.length} images
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -116,7 +127,7 @@ const Gallery = () => {
 
         {/* Image View Dialog */}
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-          <DialogContent className="max-w-4xl">
+          <DialogContent className="max-w-3xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold flex items-center gap-3">
                 <span className="text-primary font-mono text-sm">{selectedImage?.category}</span>
@@ -125,13 +136,56 @@ const Gallery = () => {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <div className="aspect-video overflow-hidden bg-muted">
-                <img 
-                  src={selectedImage?.image} 
-                  alt={selectedImage?.title}
-                  className="w-full h-full object-contain"
-                />
+              <div className="relative">
+                <div className="aspect-video overflow-hidden bg-muted">
+                  <img 
+                    src={selectedImage?.images?.[currentImageIndex]} 
+                    alt={`${selectedImage?.title} ${currentImageIndex + 1}`}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                
+                {selectedImage?.images && selectedImage.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setCurrentImageIndex((prev) => 
+                        prev === 0 ? selectedImage.images.length - 1 : prev - 1
+                      )}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2 rounded-full border border-border"
+                    >
+                      ←
+                    </button>
+                    <button
+                      onClick={() => setCurrentImageIndex((prev) => 
+                        prev === selectedImage.images.length - 1 ? 0 : prev + 1
+                      )}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2 rounded-full border border-border"
+                    >
+                      →
+                    </button>
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-background/80 text-sm font-mono border border-border rounded">
+                      {currentImageIndex + 1} / {selectedImage.images.length}
+                    </div>
+                  </>
+                )}
               </div>
+              
+              {selectedImage?.images && selectedImage.images.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {selectedImage.images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`flex-shrink-0 w-20 h-20 rounded overflow-hidden border-2 transition-all ${
+                        idx === currentImageIndex ? 'border-primary' : 'border-border opacity-50 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+              
               <p className="text-muted-foreground">{selectedImage?.description}</p>
             </div>
           </DialogContent>
