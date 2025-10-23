@@ -142,7 +142,7 @@ const ParticleBackground = () => {
     // Animation loop
     const animate = () => {
       // Clear canvas with stronger fade for cleaner trail
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillStyle = 'rgba(4, 6, 15, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const fontSize = 11;
@@ -274,7 +274,7 @@ const ParticleBackground = () => {
       ref={containerRef} 
       className="absolute inset-0 -z-10 overflow-hidden"
       style={{ 
-        background: 'radial-gradient(ellipse at center, rgba(0, 10, 25, 0.08) 0%, rgba(0, 0, 0, 0.03) 50%, transparent 100%)'
+        background: 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
       }}
     >
       <canvas 
@@ -282,7 +282,7 @@ const ParticleBackground = () => {
         className="absolute inset-0 w-full h-full"
         style={{ 
           pointerEvents: 'none',
-          background: 'rgba(0, 0, 0, 0.95)'
+          background: 'linear-gradient(to bottom, rgba(4, 6, 15, 1) 0%, rgba(6, 10, 20, 1) 50%, rgba(4, 6, 15, 1) 100%)'
         }}
       />
       
