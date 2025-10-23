@@ -1730,12 +1730,13 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[80vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Event</DialogTitle>
           <DialogDescription>Update event information</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[60vh] pr-4">
+          <form id="edit-event-form" onSubmit={handleSubmit} className="space-y-4 pb-2">
           <div>
             <Label htmlFor="edit-event-title">Title</Label>
             <Input id="edit-event-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
@@ -1821,10 +1822,15 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
               Enter each agenda item on a new line
             </p>
           </div>
-          <DialogFooter>
-            <Button type="submit">Update Event</Button>
-          </DialogFooter>
         </form>
+        </ScrollArea>
+        <DialogFooter className="mt-4">
+          <Button type="submit" onClick={(e) => {
+            e.preventDefault();
+            const form = document.getElementById('edit-event-form') as HTMLFormElement;
+            if (form) form.requestSubmit();
+          }}>Update Event</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

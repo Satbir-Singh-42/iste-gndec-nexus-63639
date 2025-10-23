@@ -38,6 +38,8 @@ interface EventHighlight {
 const Events = () => {
   const navigate = useNavigate();
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
+  const [ongoingEvents, setOngoingEvents] = useState<Event[]>([]);
+  const [completedEvents, setCompletedEvents] = useState<Event[]>([]);
   const [highlights, setHighlights] = useState<EventHighlight[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -95,7 +97,12 @@ const Events = () => {
         .order('date', { ascending: true });
 
       if (error) throw error;
-      setUpcomingEvents(data || []);
+      
+      const allEvents = data || [];
+      
+      setUpcomingEvents(allEvents.filter(event => event.status?.toUpperCase() === 'UPCOMING'));
+      setOngoingEvents(allEvents.filter(event => event.status?.toUpperCase() === 'ONGOING'));
+      setCompletedEvents(allEvents.filter(event => event.status?.toUpperCase() === 'COMPLETED'));
     } catch (error: any) {
       console.error('Error fetching events:', error);
       toast.error('Failed to load events');
@@ -150,6 +157,60 @@ const Events = () => {
             Stay updated with upcoming workshops, competitions, and technical sessions
           </p>
         </div>
+
+        {/* Ongoing Events */}
+        {ongoingEvents.length > 0 && (
+          <section className="mb-16">
+            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+              <span className="w-1 h-8 bg-secondary" />
+              Ongoing Events
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {ongoingEvents.map((event) => (
+                <div 
+                  key={event.id} 
+                  className="tech-card p-6 hover:border-secondary/50 transition-all cursor-pointer group"
+                  onClick={() => navigate(`/events/${event.id}`)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-2xl font-bold text-foreground group-hover:text-secondary transition-colors">{event.title}</h3>
+                    <span className="px-3 py-1 text-xs font-mono bg-secondary/20 text-secondary border border-secondary/30">
+                      {event.status.toUpperCase()}
+                    </span>
+                  </div>
+                  
+                  <p className="text-muted-foreground mb-6">{renderTextWithLinks(event.description)}</p>
+                  
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center gap-3 text-foreground/80">
+                      <Calendar className="w-4 h-4 text-secondary" />
+                      <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground/80">
+                      <Clock className="w-4 h-4 text-secondary" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground/80">
+                      <MapPin className="w-4 h-4 text-secondary" />
+                      <span>{event.location}</span>
+                    </div>
+                    {event.capacity && (
+                      <div className="flex items-center gap-3 text-foreground/80">
+                        <Users className="w-4 h-4 text-secondary" />
+                        <span>{event.capacity}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <span className="text-xs font-mono text-secondary">CLICK FOR DETAILS</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Upcoming Events */}
         <section className="mb-16">
@@ -209,10 +270,58 @@ const Events = () => {
           )}
         </section>
 
+        {/* Completed Events */}
+        {completedEvents.length > 0 && (
+          <section className="mb-16">
+            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+              <span className="w-1 h-8 bg-muted-foreground" />
+              Past Events
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              {completedEvents.map((event) => (
+                <div 
+                  key={event.id} 
+                  className="tech-card p-6 hover:border-muted-foreground/50 transition-all cursor-pointer group opacity-75"
+                  onClick={() => navigate(`/events/${event.id}`)}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className="text-2xl font-bold text-foreground/80 group-hover:text-muted-foreground transition-colors">{event.title}</h3>
+                    <span className="px-3 py-1 text-xs font-mono bg-muted/20 text-muted-foreground border border-muted">
+                      {event.status.toUpperCase()}
+                    </span>
+                  </div>
+                  
+                  <p className="text-muted-foreground mb-6">{renderTextWithLinks(event.description)}</p>
+                  
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center gap-3 text-foreground/60">
+                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                      <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground/60">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground/60">
+                      <MapPin className="w-4 h-4 text-muted-foreground" />
+                      <span>{event.location}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <span className="text-xs font-mono text-muted-foreground">CLICK FOR DETAILS</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Highlights Section */}
         <section>
           <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
-            <span className="w-1 h-8 bg-secondary" />
+            <span className="w-1 h-8 bg-accent" />
             Event Highlights
           </h2>
           
@@ -225,7 +334,7 @@ const Events = () => {
               {highlights.map((highlight) => (
                 <div 
                   key={highlight.id} 
-                  className="tech-card overflow-hidden group hover:border-secondary/50 transition-all"
+                  className="tech-card overflow-hidden group hover:border-accent/50 transition-all"
                 >
                   {/* Event Poster */}
                   <div className="relative aspect-square overflow-hidden bg-muted">
@@ -266,12 +375,12 @@ const Events = () => {
 
                   {/* Event Details */}
                   <div className="p-3">
-                    <h3 className="text-sm font-bold mb-2 group-hover:text-secondary transition-colors line-clamp-2">
+                    <h3 className="text-sm font-bold mb-2 group-hover:text-accent transition-colors line-clamp-2">
                       {highlight.title}
                     </h3>
                     
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Calendar className="w-3 h-3 text-secondary" />
+                      <Calendar className="w-3 h-3 text-accent" />
                       <span>{highlight.date}</span>
                     </div>
                   </div>
