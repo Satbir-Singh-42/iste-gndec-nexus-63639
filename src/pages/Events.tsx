@@ -28,7 +28,6 @@ interface EventHighlight {
   description: string;
   poster: string;
   instagram_link: string;
-  attendees: string;
   highlights: string[];
 }
 

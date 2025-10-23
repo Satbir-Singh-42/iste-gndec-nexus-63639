@@ -70,7 +70,6 @@ interface EventHighlight {
   description: string;
   poster: string;
   instagram_link: string;
-  attendees: string;
   highlights: string[];
 }
 
@@ -903,7 +902,6 @@ const Admin = () => {
                       <TableHead>Title</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Location</TableHead>
-                      <TableHead>Attendees</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -914,7 +912,6 @@ const Admin = () => {
                         <TableCell>{highlight.title}</TableCell>
                         <TableCell>{highlight.date}</TableCell>
                         <TableCell>{highlight.location}</TableCell>
-                        <TableCell>{highlight.attendees}</TableCell>
                         <TableCell>
                           <div className="flex gap-2">
                             <EditEventHighlightDialog highlight={highlight} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
@@ -1951,7 +1948,6 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
     description: "",
     poster: "",
     instagram_link: "",
-    attendees: "",
     highlights: ""
   });
 
@@ -1991,7 +1987,6 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
         description: "",
         poster: "",
         instagram_link: "",
-        attendees: "",
         highlights: ""
       });
       onSuccess();
@@ -2075,7 +2070,6 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
         description: formData.description,
         poster: formData.poster,
         instagram_link: formData.instagram_link,
-        attendees: formData.attendees,
         highlights: highlightsArray
       }).eq('id', highlight.id);
       if (error) throw error;

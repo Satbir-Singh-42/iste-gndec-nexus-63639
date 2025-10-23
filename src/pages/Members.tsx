@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
-import { Mail, Linkedin } from 'lucide-react';
+import { Mail, Linkedin, Github, Instagram } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -11,6 +11,9 @@ interface Member {
   position: string;
   image: string;
   email: string;
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
 }
 
 interface Faculty {
@@ -215,21 +218,49 @@ const Members = () => {
                     {member.position}
                   </p>
                   
-                  <div className="flex items-center gap-2">
-                    <a 
-                      href={`mailto:${member.email}`}
-                      className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                      title="Email"
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                    </a>
-                    <a 
-                      href="#"
-                      className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                      title="LinkedIn"
-                    >
-                      <Linkedin className="w-3.5 h-3.5" />
-                    </a>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {member.email && (
+                      <a 
+                        href={`mailto:${member.email}`}
+                        className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                        title="Email"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {member.linkedin && (
+                      <a 
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                        title="LinkedIn"
+                      >
+                        <Linkedin className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {member.github && (
+                      <a 
+                        href={member.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                        title="GitHub"
+                      >
+                        <Github className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {member.instagram && (
+                      <a 
+                        href={member.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                        title="Instagram"
+                      >
+                        <Instagram className="w-3.5 h-3.5" />
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
