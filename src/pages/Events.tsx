@@ -333,7 +333,7 @@ const Events = () => {
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-1 text-muted-foreground">
                         <Calendar className="w-4 h-4 text-secondary" />
-                        <span>{highlight.date}</span>
+                        <span>{highlight.date.split(' ')[0]}</span>
                       </div>
                       
                       <a
