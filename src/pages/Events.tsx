@@ -38,6 +38,29 @@ const Events = () => {
   const [highlights, setHighlights] = useState<EventHighlight[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const renderTextWithLinks = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    
+    return parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a 
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   useEffect(() => {
     if (!supabase) {
       setLoading(false);
@@ -147,7 +170,7 @@ const Events = () => {
                     </span>
                   </div>
                   
-                  <p className="text-muted-foreground mb-6">{event.description}</p>
+                  <p className="text-muted-foreground mb-6">{renderTextWithLinks(event.description)}</p>
                   
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center gap-3 text-foreground/80">
@@ -237,7 +260,7 @@ const Events = () => {
                       <span className="w-1 h-5 bg-primary" />
                       About
                     </h4>
-                    <p className="text-muted-foreground">{selectedEvent?.details}</p>
+                    <p className="text-muted-foreground">{renderTextWithLinks(selectedEvent?.details)}</p>
                   </div>
                 )}
 
