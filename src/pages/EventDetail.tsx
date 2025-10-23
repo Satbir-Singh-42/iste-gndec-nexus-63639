@@ -215,10 +215,6 @@ const EventDetail = () => {
 
             {/* Description */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <span className="w-1 h-6 bg-primary" />
-                About
-              </h2>
               <div className="prose prose-invert max-w-none">
                 <p className="text-lg leading-relaxed text-foreground/90">
                   {renderTextWithLinks(event.description)}
