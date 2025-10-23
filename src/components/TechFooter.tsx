@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 const TechFooter = () => {
   const currentYear = new Date().getFullYear();
@@ -52,69 +52,78 @@ const TechFooter = () => {
             </div>
             <ul className="space-y-2 md:space-y-3">
               <li>
-                <a 
-                  href="/" 
+                <Link 
+                  to="/" 
                   className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-xs md:text-sm"
                 >
                   <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
                   HOME
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="/events" 
+                <Link 
+                  to="/events" 
                   className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-xs md:text-sm"
                 >
                   <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
                   EVENTS
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="/members" 
+                <Link 
+                  to="/notices" 
+                  className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-xs md:text-sm"
+                >
+                  <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
+                  NOTICES
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/members" 
                   className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-xs md:text-sm"
                 >
                   <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
                   MEMBERS
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="/gallery" 
+                <Link 
+                  to="/gallery" 
                   className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-xs md:text-sm"
                 >
                   <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
                   GALLERY
-                </a>
+                </Link>
               </li>
               <li>
-                <a 
-                  href="/contact" 
+                <Link 
+                  to="/contact" 
                   className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-xs md:text-sm"
                 >
                   <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
                   CONTACT
+                </Link>
+              </li>
+              <li>
+                <a 
+                  href="https://www.isteonline.in/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 text-foreground/70 hover:text-secondary transition-colors font-mono text-xs md:text-sm"
+                >
+                  <span className="w-0 group-hover:w-3 h-0.5 bg-secondary transition-all duration-300" />
+                  ISTE_OFFICIAL
                 </a>
               </li>
               <li>
                 <a 
-                  href="https://www.iste.co.in/" 
+                  href="https://www.gndec.ac.in/" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-xs md:text-sm"
+                  className="group flex items-center gap-2 text-foreground/70 hover:text-secondary transition-colors font-mono text-xs md:text-sm"
                 >
-                  <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
-                  ISTE_NATIONAL
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://gndec.ac.in/" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-xs md:text-sm"
-                >
-                  <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
+                  <span className="w-0 group-hover:w-3 h-0.5 bg-secondary transition-all duration-300" />
                   GNDEC_OFFICIAL
                 </a>
               </li>
