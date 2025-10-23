@@ -1,0 +1,116 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your Replit Secrets.');
+  console.error('Current values:', { supabaseUrl: supabaseUrl || 'undefined', supabaseAnonKey: supabaseAnonKey ? '[REDACTED]' : 'undefined' });
+}
+
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null as any;
+
+export type Database = {
+  public: {
+    Tables: {
+      events: {
+        Row: {
+          id: number;
+          title: string;
+          date: string;
+          time: string;
+          location: string;
+          description: string;
+          status: string;
+          capacity: string;
+          organizer: string;
+          details: string;
+          agenda: string[];
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['events']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['events']['Insert']>;
+      };
+      members_core_team: {
+        Row: {
+          id: number;
+          name: string;
+          position: string;
+          image: string;
+          email: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['members_core_team']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['members_core_team']['Insert']>;
+      };
+      members_post_holders: {
+        Row: {
+          id: number;
+          name: string;
+          position: string;
+          image: string;
+          email: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['members_post_holders']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['members_post_holders']['Insert']>;
+      };
+      members_faculty: {
+        Row: {
+          id: number;
+          name: string;
+          title: string;
+          image: string;
+          description: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['members_faculty']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['members_faculty']['Insert']>;
+      };
+      gallery: {
+        Row: {
+          id: number;
+          title: string;
+          image: string;
+          category: string;
+          description: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['gallery']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['gallery']['Insert']>;
+      };
+      notices: {
+        Row: {
+          id: number;
+          title: string;
+          date: string;
+          time: string;
+          type: string;
+          status: string;
+          description: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['notices']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['notices']['Insert']>;
+      };
+      event_highlights: {
+        Row: {
+          id: number;
+          title: string;
+          date: string;
+          location: string;
+          description: string;
+          poster: string;
+          instagram_link: string;
+          attendees: string;
+          highlights: string[];
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['event_highlights']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['event_highlights']['Insert']>;
+      };
+    };
+  };
+};

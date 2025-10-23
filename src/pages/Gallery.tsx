@@ -1,19 +1,64 @@
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
+
+interface GalleryImage {
+  id: number;
+  title: string;
+  image: string;
+  category: string;
+  description: string;
+}
 
 const Gallery = () => {
-  const [selectedImage, setSelectedImage] = useState<{ id: number; title: string; image: string; category: string; description: string } | null>(null);
+  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const galleryImages = [
-    { id: 1, title: 'Workshop 2023', image: '/placeholder.svg', category: 'Events', description: 'Annual technical workshop featuring latest technologies and industry trends.' },
-    { id: 2, title: 'Team Gathering', image: '/placeholder.svg', category: 'Team', description: 'Team bonding session and planning meet for upcoming semester activities.' },
-    { id: 3, title: 'Competition Day', image: '/placeholder.svg', category: 'Events', description: 'Inter-college coding competition with participants from various institutions.' },
-    { id: 4, title: 'Guest Lecture', image: '/placeholder.svg', category: 'Sessions', description: 'Industry expert session on emerging technologies and career opportunities.' },
-    { id: 5, title: 'Project Exhibition', image: '/placeholder.svg', category: 'Projects', description: 'Showcase of innovative student projects and technical demonstrations.' },
-    { id: 6, title: 'Annual Fest', image: '/placeholder.svg', category: 'Events', description: 'Annual technical fest celebrating innovation and technical excellence.' },
-  ];
+  useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      toast.error('Database connection not configured');
+      return;
+    }
+    fetchGallery();
+  }, []);
+
+  const fetchGallery = async () => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('gallery')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setGalleryImages(data || []);
+    } catch (error: any) {
+      console.error('Error fetching gallery:', error);
+      toast.error('Failed to load gallery images');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-muted-foreground">Loading gallery...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full">
@@ -35,32 +80,38 @@ const Gallery = () => {
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {galleryImages.map((item) => (
-            <div 
-              key={item.id} 
-              className="group relative overflow-hidden tech-card p-0 cursor-pointer"
-              onClick={() => setSelectedImage(item)}
-            >
-              <div className="aspect-video overflow-hidden bg-muted">
-                <img 
-                  src={item.image} 
-                  alt={item.title}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500"
-                />
+        {galleryImages.length === 0 ? (
+          <div className="tech-card p-8 text-center">
+            <p className="text-muted-foreground">No gallery images available yet.</p>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {galleryImages.map((item) => (
+              <div 
+                key={item.id} 
+                className="group relative overflow-hidden tech-card p-0 cursor-pointer"
+                onClick={() => setSelectedImage(item)}
+              >
+                <div className="aspect-video overflow-hidden bg-muted">
+                  <img 
+                    src={item.image} 
+                    alt={item.title}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500"
+                  />
+                </div>
+                
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                  <span className="text-xs font-mono text-primary mb-2">{item.category}</span>
+                  <h3 className="text-xl font-bold text-foreground">{item.title}</h3>
+                </div>
+                
+                <div className="absolute top-4 right-4 px-3 py-1 text-xs font-mono bg-primary/20 text-primary border border-primary/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                  VIEW
+                </div>
               </div>
-              
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                <span className="text-xs font-mono text-primary mb-2">{item.category}</span>
-                <h3 className="text-xl font-bold text-foreground">{item.title}</h3>
-              </div>
-              
-              <div className="absolute top-4 right-4 px-3 py-1 text-xs font-mono bg-primary/20 text-primary border border-primary/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                VIEW
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Image View Dialog */}
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>

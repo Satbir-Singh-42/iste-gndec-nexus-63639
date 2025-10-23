@@ -139,9 +139,33 @@ src/
 - **lovable-tagger** - Component tagging for development mode
 - **autoprefixer** - PostCSS plugin for vendor prefixes
 
-### Potential Future Integrations
-The application is prepared for database integration (React Query setup suggests future API calls) but currently operates as a static/client-only application. Consider adding backend services for:
-- Event management and registration
-- Member database management
-- Contact form submission handling
-- Gallery image management
+### Database Integration - Supabase
+
+**Migration Completed**: The application has been migrated from static JSON files to Supabase for dynamic data management.
+
+**Database Tables**:
+- `events` - Event information with agenda and details
+- `members_faculty` - Faculty advisor profile
+- `members_core_team` - Core team member profiles
+- `members_post_holders` - Post holder profiles  
+- `gallery` - Gallery images with categories
+- `notices` - Notice board announcements
+- `event_highlights` - Past event showcases
+
+**Admin Panel** (`/admin` route):
+- Authentication-protected admin interface
+- Data migration tool to transfer JSON data to Supabase
+- Content management capabilities
+- Login required (Supabase Auth)
+
+**Environment Variables**:
+- `VITE_SUPABASE_URL` - Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
+
+**Data Flow**:
+1. Pages fetch data from Supabase using React Query
+2. Loading states show spinners while fetching
+3. Empty states display when no data available
+4. Real-time updates without redeployment
+
+**Migration Status**: All pages updated to use Supabase (Events, Members, Gallery, Home/NoticeBoard). See `MIGRATION_GUIDE.md` for complete setup instructions.
