@@ -178,7 +178,8 @@ const TechNoticeBoard = () => {
                 <div
                   key={notice.id}
                   ref={(el) => (cardsRef.current[index] = el)}
-                  className="tech-card p-6 hover:border-primary/50 transition-all duration-300 group bg-card/50"
+                  onClick={() => navigate(`/notices/${notice.id}`)}
+                  className="tech-card p-6 hover:border-primary/50 transition-all duration-300 group bg-card/50 hover:bg-card/80 cursor-pointer"
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
