@@ -10,6 +10,7 @@ import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import ParticleBackground from "./components/ParticleBackground";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,10 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      {/* Global background - persists across all pages */}
+      <div className="fixed inset-0 -z-10">
+        <ParticleBackground />
+      </div>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
