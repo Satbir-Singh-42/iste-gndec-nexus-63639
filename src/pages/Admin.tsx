@@ -1362,12 +1362,13 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Notice</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add New Notice</DialogTitle>
           <DialogDescription>Create a new notice for the notice board</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="title">Title</Label>
             <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
@@ -1428,7 +1429,8 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
           <DialogFooter>
             <Button type="submit">Add Notice</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -1469,12 +1471,13 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Notice</DialogTitle>
           <DialogDescription>Update notice information</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="edit-title">Title</Label>
             <Input id="edit-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
@@ -1532,7 +1535,8 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
           <DialogFooter>
             <Button type="submit">Update Notice</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -1585,12 +1589,13 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Event</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[80vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add New Event</DialogTitle>
           <DialogDescription>Create a new event</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="event-title">Title</Label>
             <Input id="event-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
@@ -1682,7 +1687,8 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
           <DialogFooter>
             <Button type="submit">Add Event</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -2258,12 +2264,13 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Faculty</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add Faculty Member</DialogTitle>
           <DialogDescription>Add a new faculty advisor</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="faculty-name">Name</Label>
             <Input id="faculty-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
@@ -2297,7 +2304,8 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
           <DialogFooter>
             <Button type="submit" disabled={uploading || !formData.image}>Add Faculty</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -2344,12 +2352,13 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Faculty Member</DialogTitle>
           <DialogDescription>Update faculty information</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="edit-faculty-name">Name</Label>
             <Input id="edit-faculty-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
@@ -2383,7 +2392,8 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
           <DialogFooter>
             <Button type="submit" disabled={uploading}>Update Faculty</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -2448,12 +2458,13 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Member</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>Add a new team member</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="member-name">Name</Label>
             <Input id="member-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
@@ -2487,7 +2498,8 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
           <DialogFooter>
             <Button type="submit" disabled={uploading || !formData.image}>Add Member</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -2534,12 +2546,13 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>Update member information</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="edit-member-name">Name</Label>
             <Input id="edit-member-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
@@ -2573,7 +2586,8 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
           <DialogFooter>
             <Button type="submit" disabled={uploading}>Update Member</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -2641,12 +2655,13 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Event Highlight</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add Event Highlight</DialogTitle>
           <DialogDescription>Add a new past event highlight</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="highlight-title">Title *</Label>
             <Input id="highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
@@ -2668,7 +2683,8 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
           <DialogFooter>
             <Button type="submit" disabled={uploading || !formData.poster}>Add Event Highlight</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
@@ -2727,12 +2743,13 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Event Highlight</DialogTitle>
           <DialogDescription>Update event highlight information</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="edit-highlight-title">Title *</Label>
             <Input id="edit-highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
@@ -2754,7 +2771,8 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
           <DialogFooter>
             <Button type="submit" disabled={uploading}>Update Event Highlight</Button>
           </DialogFooter>
-        </form>
+          </form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
