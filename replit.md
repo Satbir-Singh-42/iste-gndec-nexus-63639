@@ -154,9 +154,18 @@ src/
 - `event_highlights` - Past event showcases
 
 **Admin Panel** (`/admin` route):
-- Authentication-protected admin interface
-- Data migration tool to transfer JSON data to Supabase
-- Content management capabilities
+- Authentication-protected admin interface with full CRUD operations
+- **Notices Management**: Add, edit, delete notices with status tracking
+- **Events Management**: Comprehensive event management with date, time, location, and status
+- **Gallery Management**: Upload images directly to Supabase Storage with category organization
+- **Members Management**: Complete team member management across 4 categories:
+  - Faculty: Faculty advisor profiles with image upload
+  - Core Team: Core team members with position and contact info
+  - Post Holders: Position holders with detailed profiles
+  - Executive Team: Executive committee members
+- **Event Highlights**: Past event showcases with posters, attendees, and Instagram integration
+- **Image Upload**: Integrated Supabase Storage for all profile pictures, gallery images, and event posters
+- **Data Migration**: Tool to transfer JSON data to Supabase (one-time use)
 - Login required (Supabase Auth)
 
 **Environment Variables**:

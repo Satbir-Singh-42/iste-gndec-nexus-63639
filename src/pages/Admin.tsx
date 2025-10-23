@@ -1277,12 +1277,29 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
 
 function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     image: "",
     category: "Events",
     description: ""
   });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'gallery');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image: url });
+      toast.success('Image uploaded successfully');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1316,8 +1333,10 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
             <Input id="gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
           <div>
-            <Label htmlFor="gallery-image">Image URL</Label>
-            <Input id="gallery-image" value={formData.image} onChange={(e) => setFormData({ ...formData, image: e.target.value })} placeholder="https://..." required />
+            <Label htmlFor="gallery-image">Upload Image</Label>
+            <Input id="gallery-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
           </div>
           <div>
             <Label htmlFor="gallery-category">Category</Label>
@@ -1335,7 +1354,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
             <Textarea id="gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
           <DialogFooter>
-            <Button type="submit">Add Gallery Item</Button>
+            <Button type="submit" disabled={uploading || !formData.image}>Add Gallery Item</Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -1345,7 +1364,24 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
 
 function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState(item);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'gallery');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image: url });
+      toast.success('Image uploaded successfully');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1378,8 +1414,10 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
             <Input id="edit-gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
           <div>
-            <Label htmlFor="edit-gallery-image">Image URL</Label>
-            <Input id="edit-gallery-image" value={formData.image} onChange={(e) => setFormData({ ...formData, image: e.target.value })} required />
+            <Label htmlFor="edit-gallery-image">Upload Image</Label>
+            <Input id="edit-gallery-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
           </div>
           <div>
             <Label htmlFor="edit-gallery-category">Category</Label>
@@ -1397,7 +1435,7 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
             <Textarea id="edit-gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
           <DialogFooter>
-            <Button type="submit">Update Gallery Item</Button>
+            <Button type="submit" disabled={uploading}>Update Gallery Item</Button>
           </DialogFooter>
         </form>
       </DialogContent>
