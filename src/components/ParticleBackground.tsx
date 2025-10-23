@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 
 interface Particle {
@@ -13,45 +13,47 @@ interface Particle {
 
 const ParticleBackground = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const mouseRef = useRef({ x: 50, y: 50 });
   const animationFrameRef = useRef<number | null>(null);
-  const cursorIndicatorRef = useRef<HTMLDivElement>(null);
-  const [isInteracting, setIsInteracting] = useState(false);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !canvasRef.current) return;
 
     const container = containerRef.current;
-    const particleCount = 200;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d')!;
+    
+    // Set canvas size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particleCount = 80; // Fewer particles for cleaner look
     const particles: Particle[] = [];
 
-    console.log('🎨 Particle background initialized with enhanced visibility');
+    console.log('🕸️ Network particle system initialized');
 
-    // Create particles with enhanced visibility
+    // Create particles
     for (let i = 0; i < particleCount; i++) {
       const particle = document.createElement('div');
       particle.className = 'particle';
       
       const x = Math.random() * 100;
       const y = Math.random() * 100;
-      const size = Math.random() * 4 + 3; // BIGGER particles (3-7px)
-      const opacity = Math.random() * 0.7 + 0.5; // BRIGHTER (0.5-1.2)
+      const size = Math.random() * 2 + 2; // Small particles (2-4px)
       
       particle.style.cssText = `
         position: absolute;
         width: ${size}px;
         height: ${size}px;
-        background: radial-gradient(circle, rgba(150, 220, 255, ${opacity}) 0%, rgba(255, 255, 255, ${opacity * 0.9}) 30%, transparent 100%);
+        background: radial-gradient(circle, rgba(100, 200, 255, 0.4) 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%);
         border-radius: 50%;
         left: ${x}%;
         top: ${y}%;
         pointer-events: none;
         will-change: transform;
-        box-shadow: 
-          0 0 ${size * 3}px rgba(100, 200, 255, ${opacity * 0.7}),
-          0 0 ${size * 5}px rgba(100, 200, 255, ${opacity * 0.4});
-        transition: box-shadow 0.3s ease;
+        box-shadow: 0 0 ${size * 2}px rgba(100, 200, 255, 0.3);
       `;
       
       container.appendChild(particle);
@@ -69,45 +71,27 @@ const ParticleBackground = () => {
 
     particlesRef.current = particles;
 
-    let hasMouseMoved = false;
-
     // Mouse tracking
     const handleMouseMove = (event: MouseEvent) => {
-      if (!hasMouseMoved) {
-        console.log('✨ Mouse interaction active!');
-        hasMouseMoved = true;
-        setIsInteracting(true);
-      }
-
       const rect = container.getBoundingClientRect();
       const newX = ((event.clientX - rect.left) / rect.width) * 100;
       const newY = ((event.clientY - rect.top) / rect.height) * 100;
       
       mouseRef.current.x = newX;
       mouseRef.current.y = newY;
-      
-      // Update cursor indicator
-      if (cursorIndicatorRef.current) {
-        cursorIndicatorRef.current.style.left = `${event.clientX}px`;
-        cursorIndicatorRef.current.style.top = `${event.clientY}px`;
-        cursorIndicatorRef.current.style.opacity = '0.6';
-      }
     };
 
-    const handleMouseLeave = () => {
-      if (cursorIndicatorRef.current) {
-        cursorIndicatorRef.current.style.opacity = '0';
-      }
-    };
-
-    // Add listeners
     document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseleave', handleMouseLeave);
 
     // Animation loop
-    let frameCount = 0;
     const animate = () => {
       const mouse = mouseRef.current;
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Convert percentage positions to pixel positions for line drawing
+      const pixelPositions: { x: number; y: number }[] = [];
       
       particles.forEach((particle, index) => {
         // Calculate distance from particle to mouse
@@ -115,51 +99,97 @@ const ParticleBackground = () => {
         const dy = mouse.y - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         
-        // MUCH STRONGER attraction force
-        const maxDistance = 40; // Huge interaction radius
-        const force = Math.max(0, maxDistance - distance) * 0.08; // Very strong force
+        // Attraction force
+        const maxDistance = 35;
+        const force = Math.max(0, maxDistance - distance) * 0.06;
         
-        // Apply force
         particle.vx += dx * force;
         particle.vy += dy * force;
         
-        // Return to base position (spring effect)
-        const returnForce = 0.008;
+        // Return to base position
+        const returnForce = 0.01;
         particle.vx += (particle.baseX - particle.x) * returnForce;
         particle.vy += (particle.baseY - particle.y) * returnForce;
         
         // Apply damping
-        particle.vx *= 0.85; // Less damping = more movement
-        particle.vy *= 0.85;
+        particle.vx *= 0.88;
+        particle.vy *= 0.88;
         
         // Update position
         particle.x += particle.vx;
         particle.y += particle.vy;
         
-        // Update DOM with transform
+        // Update DOM
         const offsetX = particle.x - particle.baseX;
         const offsetY = particle.y - particle.baseY;
-        const offset = Math.sqrt(offsetX * offsetX + offsetY * offsetY);
-        
-        // Enhanced glow when moving
-        if (offset > 5) {
-          const glowIntensity = Math.min(offset / 20, 1);
-          particle.element.style.filter = `brightness(${1 + glowIntensity * 0.5})`;
-        } else {
-          particle.element.style.filter = 'brightness(1)';
-        }
-        
         particle.element.style.transform = `translate(${offsetX}%, ${offsetY}%)`;
+        
+        // Store pixel position for line drawing
+        pixelPositions.push({
+          x: (particle.x / 100) * canvas.width,
+          y: (particle.y / 100) * canvas.height
+        });
       });
       
-      frameCount++;
+      // Draw connection lines
+      const mousePixelX = (mouse.x / 100) * canvas.width;
+      const mousePixelY = (mouse.y / 100) * canvas.height;
+      
+      for (let i = 0; i < pixelPositions.length; i++) {
+        const p1 = pixelPositions[i];
+        
+        // Connect particles to each other if close
+        for (let j = i + 1; j < pixelPositions.length; j++) {
+          const p2 = pixelPositions[j];
+          const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+          
+          // Connection threshold
+          const maxLineDistance = 150;
+          
+          if (dist < maxLineDistance) {
+            const opacity = (1 - dist / maxLineDistance) * 0.3;
+            ctx.strokeStyle = `rgba(100, 200, 255, ${opacity})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+        
+        // Connect particles near mouse
+        const distToMouse = Math.sqrt(
+          Math.pow(mousePixelX - p1.x, 2) + Math.pow(mousePixelY - p1.y, 2)
+        );
+        
+        const maxMouseDistance = 200;
+        
+        if (distToMouse < maxMouseDistance) {
+          const opacity = (1 - distToMouse / maxMouseDistance) * 0.5;
+          ctx.strokeStyle = `rgba(150, 220, 255, ${opacity})`;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(mousePixelX, mousePixelY);
+          ctx.stroke();
+        }
+      }
+      
       animationFrameRef.current = requestAnimationFrame(animate);
     };
+
+    // Handle window resize
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener('resize', handleResize);
 
     // Start animation
     gsap.from(container, {
       opacity: 0,
-      duration: 1.5,
+      duration: 2,
       ease: 'power2.out'
     });
 
@@ -168,7 +198,7 @@ const ParticleBackground = () => {
     // Cleanup
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('resize', handleResize);
       
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -183,31 +213,19 @@ const ParticleBackground = () => {
   }, []);
 
   return (
-    <>
-      <div 
-        ref={containerRef} 
-        className="absolute inset-0 -z-10 overflow-hidden"
-        style={{ 
-          background: 'radial-gradient(ellipse at center, rgba(0, 30, 60, 0.5) 0%, rgba(0, 10, 20, 0.3) 50%, transparent 100%)'
-        }}
+    <div 
+      ref={containerRef} 
+      className="absolute inset-0 -z-10 overflow-hidden"
+      style={{ 
+        background: 'radial-gradient(ellipse at center, rgba(0, 20, 40, 0.3) 0%, rgba(0, 5, 15, 0.1) 50%, transparent 100%)'
+      }}
+    >
+      <canvas 
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full"
+        style={{ pointerEvents: 'none' }}
       />
-      
-      {/* Interactive cursor indicator */}
-      <div
-        ref={cursorIndicatorRef}
-        className="fixed pointer-events-none transition-all duration-200 z-50"
-        style={{
-          width: '120px',
-          height: '120px',
-          border: '3px solid rgba(100, 200, 255, 0.6)',
-          borderRadius: '50%',
-          transform: 'translate(-50%, -50%)',
-          opacity: 0,
-          background: 'radial-gradient(circle, rgba(100, 200, 255, 0.15) 0%, transparent 70%)',
-          boxShadow: '0 0 30px rgba(100, 200, 255, 0.3), inset 0 0 20px rgba(100, 200, 255, 0.2)',
-        }}
-      />
-    </>
+    </div>
   );
 };
 
