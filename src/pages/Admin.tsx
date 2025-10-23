@@ -32,6 +32,10 @@ interface Event {
   location: string;
   description: string;
   status: string;
+  capacity?: string;
+  organizer?: string;
+  details?: string;
+  agenda?: any[];
 }
 
 interface GalleryItem {
@@ -1183,6 +1187,16 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
     details: "",
     agenda: []
   });
+  const [dateInput, setDateInput] = useState("");
+
+  const handleDateChange = (value: string) => {
+    setDateInput(value);
+    if (value) {
+      const dt = new Date(value);
+      const dateStr = dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      setFormData({ ...formData, date: dateStr });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1194,6 +1208,7 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
       toast.success('Event added successfully');
       setOpen(false);
       setFormData({ title: "", date: "", time: "", location: "", description: "", status: "UPCOMING", capacity: "100", organizer: "ISTE GNDEC", details: "", agenda: [] });
+      setDateInput("");
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add event: ${error.message}`);
@@ -1218,7 +1233,18 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="event-date">Date</Label>
-              <Input id="event-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} placeholder="March 15, 2024" required />
+              <Input 
+                id="event-date" 
+                type="date"
+                value={dateInput} 
+                onChange={(e) => handleDateChange(e.target.value)} 
+                required 
+              />
+              {formData.date && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Will display as: {formData.date}
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="event-time">Time</Label>
@@ -1233,16 +1259,60 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
             <Label htmlFor="event-description">Description</Label>
             <Textarea id="event-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="event-status">Status</Label>
+              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
+                  <SelectItem value="ONGOING">ONGOING</SelectItem>
+                  <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="event-capacity">Capacity</Label>
+              <Input 
+                id="event-capacity" 
+                type="number"
+                value={formData.capacity} 
+                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} 
+                placeholder="100"
+              />
+            </div>
+          </div>
           <div>
-            <Label htmlFor="event-status">Status</Label>
-            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="UPCOMING">UPCOMING</SelectItem>
-                <SelectItem value="ONGOING">ONGOING</SelectItem>
-                <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="event-organizer">Organizer</Label>
+            <Input 
+              id="event-organizer" 
+              value={formData.organizer} 
+              onChange={(e) => setFormData({ ...formData, organizer: e.target.value })} 
+              placeholder="ISTE GNDEC"
+            />
+          </div>
+          <div>
+            <Label htmlFor="event-details">Details</Label>
+            <Textarea 
+              id="event-details" 
+              value={formData.details} 
+              onChange={(e) => setFormData({ ...formData, details: e.target.value })} 
+              placeholder="Additional event details"
+              rows={3}
+            />
+          </div>
+          <div>
+            <Label htmlFor="event-agenda">Agenda (one item per line)</Label>
+            <Textarea 
+              id="event-agenda" 
+              value={formData.agenda.join('\n')} 
+              onChange={(e) => setFormData({ ...formData, agenda: e.target.value.split('\n').filter(line => line.trim()) })} 
+              placeholder="Registration&#10;Opening Ceremony&#10;Technical Talks"
+              rows={5}
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Enter each agenda item on a new line
+            </p>
           </div>
           <DialogFooter>
             <Button type="submit">Add Event</Button>
@@ -1256,6 +1326,24 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
 function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(event);
+  const [dateInput, setDateInput] = useState("");
+
+  const handleDateChange = (value: string) => {
+    setDateInput(value);
+    if (value) {
+      const dt = new Date(value);
+      const dateStr = dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      setFormData({ ...formData, date: dateStr });
+    }
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (newOpen) {
+      setFormData(event);
+      setDateInput("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1273,7 +1361,7 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
@@ -1289,8 +1377,16 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="edit-event-date">Date</Label>
-              <Input id="edit-event-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
+              <Label htmlFor="edit-event-date">Date (optional - leave blank to keep current)</Label>
+              <Input 
+                id="edit-event-date" 
+                type="date"
+                value={dateInput} 
+                onChange={(e) => handleDateChange(e.target.value)} 
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Current: {formData.date}
+              </p>
             </div>
             <div>
               <Label htmlFor="edit-event-time">Time</Label>
@@ -1305,16 +1401,60 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
             <Label htmlFor="edit-event-description">Description</Label>
             <Textarea id="edit-event-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-event-status">Status</Label>
+              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
+                  <SelectItem value="ONGOING">ONGOING</SelectItem>
+                  <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-event-capacity">Capacity</Label>
+              <Input 
+                id="edit-event-capacity" 
+                type="number"
+                value={formData.capacity || ""} 
+                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} 
+                placeholder="100"
+              />
+            </div>
+          </div>
           <div>
-            <Label htmlFor="edit-event-status">Status</Label>
-            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="UPCOMING">UPCOMING</SelectItem>
-                <SelectItem value="ONGOING">ONGOING</SelectItem>
-                <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="edit-event-organizer">Organizer</Label>
+            <Input 
+              id="edit-event-organizer" 
+              value={formData.organizer || ""} 
+              onChange={(e) => setFormData({ ...formData, organizer: e.target.value })} 
+              placeholder="ISTE GNDEC"
+            />
+          </div>
+          <div>
+            <Label htmlFor="edit-event-details">Details</Label>
+            <Textarea 
+              id="edit-event-details" 
+              value={formData.details || ""} 
+              onChange={(e) => setFormData({ ...formData, details: e.target.value })} 
+              placeholder="Additional event details"
+              rows={3}
+            />
+          </div>
+          <div>
+            <Label htmlFor="edit-event-agenda">Agenda (one item per line)</Label>
+            <Textarea 
+              id="edit-event-agenda" 
+              value={formData.agenda?.join('\n') || ""} 
+              onChange={(e) => setFormData({ ...formData, agenda: e.target.value.split('\n').filter(line => line.trim()) })} 
+              placeholder="Registration&#10;Opening Ceremony&#10;Technical Talks"
+              rows={5}
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Enter each agenda item on a new line
+            </p>
           </div>
           <DialogFooter>
             <Button type="submit">Update Event</Button>

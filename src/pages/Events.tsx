@@ -14,10 +14,10 @@ interface Event {
   location: string;
   description: string;
   status: string;
-  capacity: string;
-  organizer: string;
-  details: string;
-  agenda: string[];
+  capacity?: string;
+  organizer?: string;
+  details?: string;
+  agenda?: string[];
 }
 
 interface EventHighlight {
@@ -162,10 +162,12 @@ const Events = () => {
                       <MapPin className="w-4 h-4 text-primary" />
                       <span>{event.location}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-foreground/80">
-                      <Users className="w-4 h-4 text-primary" />
-                      <span>{event.capacity}</span>
-                    </div>
+                    {event.capacity && (
+                      <div className="flex items-center gap-3 text-foreground/80">
+                        <Users className="w-4 h-4 text-primary" />
+                        <span>{event.capacity}</span>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="mt-4 pt-4 border-t border-border">
@@ -187,11 +189,13 @@ const Events = () => {
               </DialogHeader>
               
               <div className="space-y-6">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="px-3 py-1 text-xs font-mono bg-primary/20 text-primary border border-primary/30">
                     {selectedEvent?.status.toUpperCase()}
                   </span>
-                  <span className="text-sm text-muted-foreground">Organized by {selectedEvent?.organizer}</span>
+                  {selectedEvent?.organizer && (
+                    <span className="text-sm text-muted-foreground">Organized by {selectedEvent?.organizer}</span>
+                  )}
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -216,37 +220,43 @@ const Events = () => {
                       <div className="font-semibold">{selectedEvent?.location}</div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Users className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-mono text-xs text-muted-foreground">CAPACITY</div>
-                      <div className="font-semibold">{selectedEvent?.capacity}</div>
+                  {selectedEvent?.capacity && (
+                    <div className="flex items-center gap-3 text-sm">
+                      <Users className="w-5 h-5 text-primary" />
+                      <div>
+                        <div className="font-mono text-xs text-muted-foreground">CAPACITY</div>
+                        <div className="font-semibold">{selectedEvent?.capacity}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {selectedEvent?.details && (
+                  <div className="tech-card p-4">
+                    <h4 className="font-bold text-lg mb-2 flex items-center gap-2">
+                      <span className="w-1 h-5 bg-primary" />
+                      About
+                    </h4>
+                    <p className="text-muted-foreground">{selectedEvent?.details}</p>
+                  </div>
+                )}
+
+                {selectedEvent?.agenda && selectedEvent.agenda.length > 0 && (
+                  <div className="tech-card p-4">
+                    <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
+                      <span className="w-1 h-5 bg-primary" />
+                      Agenda
+                    </h4>
+                    <div className="space-y-2">
+                      {selectedEvent?.agenda.map((item, index) => (
+                        <div key={index} className="flex items-start gap-3">
+                          <span className="font-mono text-xs text-primary mt-1">{String(index + 1).padStart(2, '0')}</span>
+                          <span className="text-sm text-foreground">{item}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
-
-                <div className="tech-card p-4">
-                  <h4 className="font-bold text-lg mb-2 flex items-center gap-2">
-                    <span className="w-1 h-5 bg-primary" />
-                    About
-                  </h4>
-                  <p className="text-muted-foreground">{selectedEvent?.details}</p>
-                </div>
-
-                <div className="tech-card p-4">
-                  <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                    <span className="w-1 h-5 bg-primary" />
-                    Agenda
-                  </h4>
-                  <div className="space-y-2">
-                    {selectedEvent?.agenda.map((item, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <span className="font-mono text-xs text-primary mt-1">{String(index + 1).padStart(2, '0')}</span>
-                        <span className="text-sm text-foreground">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                )}
               </div>
             </DialogContent>
           </Dialog>
