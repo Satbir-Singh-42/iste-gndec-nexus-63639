@@ -14,12 +14,6 @@ const Contact = () => {
       link: 'mailto:iste@gndec.ac.in',
     },
     {
-      icon: Phone,
-      title: 'Phone',
-      content: '+91 123 456 7890',
-      link: 'tel:+911234567890',
-    },
-    {
       icon: MapPin,
       title: 'Location',
       content: 'Guru Nanak Dev Engineering College, Ludhiana',

@@ -11,7 +11,6 @@ const Members = () => {
     title: 'Associate Professor, Department of Electrical Engineering',
     image: '/placeholder.svg',
     description: 'Dr. Arvind Dhingra is current executive director of STEP. He does research in Curriculum Theory, Educational Leadership and Educational Management.',
-    achievements: 'He has 12 Journal and 68 Conference publications with more than 25 years of experience and honored by IESA award, National Cement Educator Award.',
   };
 
   const coreTeam = [
@@ -67,9 +66,9 @@ const Members = () => {
     <div className="min-h-screen w-full">
       <TechNavbar />
       
-      <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
+      <main className="pt-24 pb-16 px-4">
         {/* Faculty Advisor Section */}
-        <section className="mb-16">
+        <section className="mb-16 max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
             Our Faculty Advisor
           </h2>
@@ -95,12 +94,8 @@ const Members = () => {
                 {faculty.title}
               </p>
               
-              <p className="text-foreground/90 mb-4 leading-relaxed">
-                {faculty.description}
-              </p>
-              
               <p className="text-foreground/90 leading-relaxed">
-                {faculty.achievements}
+                {faculty.description}
               </p>
             </div>
           </div>
@@ -111,7 +106,7 @@ const Members = () => {
           <div className="flex items-center justify-center gap-0 border-b border-border">
             <button
               onClick={() => setActiveTab('core')}
-              className={`px-8 py-4 font-semibold transition-all relative ${
+              className={`flex-1 px-8 py-4 font-semibold transition-all relative ${
                 activeTab === 'core'
                   ? 'text-foreground bg-background'
                   : 'text-muted-foreground hover:text-foreground bg-muted/30'
@@ -124,7 +119,7 @@ const Members = () => {
             </button>
             <button
               onClick={() => setActiveTab('post')}
-              className={`px-8 py-4 font-semibold transition-all relative ${
+              className={`flex-1 px-8 py-4 font-semibold transition-all relative ${
                 activeTab === 'post'
                   ? 'text-foreground bg-background'
                   : 'text-muted-foreground hover:text-foreground bg-muted/30'
@@ -137,7 +132,7 @@ const Members = () => {
             </button>
             <button
               onClick={() => setActiveTab('executive')}
-              className={`px-8 py-4 font-semibold transition-all relative ${
+              className={`flex-1 px-8 py-4 font-semibold transition-all relative ${
                 activeTab === 'executive'
                   ? 'text-foreground bg-background'
                   : 'text-muted-foreground hover:text-foreground bg-muted/30'
@@ -152,7 +147,7 @@ const Members = () => {
         </div>
 
         {/* Member Cards */}
-        <section>
+        <section className="px-4 md:px-8 lg:px-12">
           <div className={`grid gap-6 ${
             activeTab === 'executive' 
               ? 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5' 
