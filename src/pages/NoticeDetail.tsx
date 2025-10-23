@@ -13,6 +13,7 @@ interface Notice {
   type: string;
   status: string;
   description: string;
+  created_at?: string;
 }
 
 const NoticeDetail = () => {
@@ -197,6 +198,24 @@ const NoticeDetail = () => {
                 <span className="font-mono">{notice.time}</span>
               </div>
             </div>
+
+            {/* Creation Date */}
+            {notice.created_at && (
+              <div className="mb-6">
+                <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="font-mono">Posted on {new Date(notice.created_at).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</span>
+                </div>
+              </div>
+            )}
 
             {/* Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-8" />
