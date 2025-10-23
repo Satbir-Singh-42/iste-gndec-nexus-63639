@@ -22,6 +22,7 @@ interface Notice {
   type: string;
   status: string;
   description: string;
+  link?: string;
 }
 
 interface Event {
@@ -570,6 +571,7 @@ const Admin = () => {
                       <TableHead>Time</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Link</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -582,6 +584,20 @@ const Admin = () => {
                         <TableCell>{notice.time}</TableCell>
                         <TableCell>{notice.type}</TableCell>
                         <TableCell>{notice.status}</TableCell>
+                        <TableCell>
+                          {notice.link ? (
+                            <a 
+                              href={notice.link} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline text-xs"
+                            >
+                              View
+                            </a>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">No link</span>
+                          )}
+                        </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
                             <EditNoticeDialog notice={notice} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
@@ -957,19 +973,36 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
     time: "",
     type: "EVENT",
     status: "UPCOMING",
-    description: ""
+    description: "",
+    link: ""
   });
+  const [datetime, setDatetime] = useState("");
+
+  const handleDateTimeChange = (value: string) => {
+    setDatetime(value);
+    if (value) {
+      const dt = new Date(value);
+      const dateStr = dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      setFormData({ ...formData, date: dateStr, time: timeStr });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('notices').insert([formData]);
+      const dataToSubmit = { ...formData };
+      if (!dataToSubmit.link) {
+        delete dataToSubmit.link;
+      }
+      const { error } = await supabase.from('notices').insert([dataToSubmit]);
       if (error) throw error;
       toast.success('Notice added successfully');
       setOpen(false);
-      setFormData({ title: "", date: "", time: "", type: "EVENT", status: "UPCOMING", description: "" });
+      setFormData({ title: "", date: "", time: "", type: "EVENT", status: "UPCOMING", description: "", link: "" });
+      setDatetime("");
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add notice: ${error.message}`);
@@ -991,15 +1024,20 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             <Label htmlFor="title">Title</Label>
             <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="date">Date</Label>
-              <Input id="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} placeholder="March 15, 2024" required />
-            </div>
-            <div>
-              <Label htmlFor="time">Time</Label>
-              <Input id="time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} placeholder="10:00 AM" required />
-            </div>
+          <div>
+            <Label htmlFor="datetime">Date and Time</Label>
+            <Input 
+              id="datetime" 
+              type="datetime-local" 
+              value={datetime} 
+              onChange={(e) => handleDateTimeChange(e.target.value)} 
+              required 
+            />
+            {formData.date && formData.time && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Will display as: {formData.date} at {formData.time}
+              </p>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -1026,6 +1064,19 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             </div>
           </div>
           <div>
+            <Label htmlFor="link">Link (Optional)</Label>
+            <Input 
+              id="link" 
+              type="url" 
+              value={formData.link} 
+              onChange={(e) => setFormData({ ...formData, link: e.target.value })} 
+              placeholder="https://example.com/more-info" 
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Add a link to make the notice clickable on the home page
+            </p>
+          </div>
+          <div>
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
@@ -1041,13 +1092,28 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
 function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(notice);
+  const [datetime, setDatetime] = useState("");
+
+  const handleDateTimeChange = (value: string) => {
+    setDatetime(value);
+    if (value) {
+      const dt = new Date(value);
+      const dateStr = dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+      setFormData({ ...formData, date: dateStr, time: timeStr });
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('notices').update(formData).eq('id', notice.id);
+      const dataToUpdate = { ...formData };
+      if (!dataToUpdate.link) {
+        delete dataToUpdate.link;
+      }
+      const { error } = await supabase.from('notices').update(dataToUpdate).eq('id', notice.id);
       if (error) throw error;
       toast.success('Notice updated successfully');
       setOpen(false);
@@ -1072,15 +1138,17 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
             <Label htmlFor="edit-title">Title</Label>
             <Input id="edit-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="edit-date">Date</Label>
-              <Input id="edit-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
-            </div>
-            <div>
-              <Label htmlFor="edit-time">Time</Label>
-              <Input id="edit-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} required />
-            </div>
+          <div>
+            <Label htmlFor="edit-datetime">Date and Time</Label>
+            <Input 
+              id="edit-datetime" 
+              type="datetime-local" 
+              value={datetime} 
+              onChange={(e) => handleDateTimeChange(e.target.value)} 
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Current: {formData.date} at {formData.time}
+            </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -1105,6 +1173,19 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div>
+            <Label htmlFor="edit-link">Link (Optional)</Label>
+            <Input 
+              id="edit-link" 
+              type="url" 
+              value={formData.link || ""} 
+              onChange={(e) => setFormData({ ...formData, link: e.target.value })} 
+              placeholder="https://example.com/more-info" 
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Add a link to make the notice clickable on the home page
+            </p>
           </div>
           <div>
             <Label htmlFor="edit-description">Description</Label>
