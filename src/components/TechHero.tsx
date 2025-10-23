@@ -184,14 +184,6 @@ const TechHero = () => {
             >
               <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
               <span className="relative z-10 font-mono text-sm tracking-wider">EXPLORE CHAPTER</span>
-              <svg 
-                className="relative z-10 w-5 h-5 transition-transform group-hover:translate-x-1" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
             </a>
           </div>
         </div>

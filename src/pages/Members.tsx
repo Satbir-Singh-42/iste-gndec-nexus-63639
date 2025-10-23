@@ -1,6 +1,6 @@
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
-import { Mail, Linkedin, Github } from 'lucide-react';
+import { Mail, Linkedin } from 'lucide-react';
 
 const Members = () => {
   const faculty = [
@@ -61,19 +61,51 @@ const Members = () => {
           <h1 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
             Our Team
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Meet the dedicated team members driving innovation and excellence
           </p>
+
+          {/* Navigation Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a 
+              href="#faculty"
+              className="group relative inline-flex items-center gap-2 tech-border px-6 py-3 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
+            >
+              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <span className="relative z-10 font-mono text-xs tracking-wider">FACULTY</span>
+            </a>
+            <a 
+              href="#core"
+              className="group relative inline-flex items-center gap-2 tech-border px-6 py-3 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
+            >
+              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <span className="relative z-10 font-mono text-xs tracking-wider">CORE</span>
+            </a>
+            <a 
+              href="#heads"
+              className="group relative inline-flex items-center gap-2 tech-border px-6 py-3 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
+            >
+              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <span className="relative z-10 font-mono text-xs tracking-wider">HEADS</span>
+            </a>
+            <a 
+              href="#executives"
+              className="group relative inline-flex items-center gap-2 tech-border px-6 py-3 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
+            >
+              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <span className="relative z-10 font-mono text-xs tracking-wider">EXECUTIVES</span>
+            </a>
+          </div>
         </div>
 
         {/* Faculty */}
-        <section className="mb-16">
+        <section id="faculty" className="mb-16 scroll-mt-24">
           <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
             <span className="w-1 h-8 bg-primary" />
             Faculty Coordinator
           </h2>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="max-w-sm mx-auto">
             {faculty.map((member) => (
               <div key={member.id} className="tech-card p-6 hover:border-primary/50 transition-all group">
                 <div className="aspect-square mb-4 overflow-hidden bg-muted relative">
@@ -101,12 +133,6 @@ const Members = () => {
                   >
                     <Linkedin className="w-4 h-4" />
                   </a>
-                  <a 
-                    href="#"
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
-                  >
-                    <Github className="w-4 h-4" />
-                  </a>
                 </div>
               </div>
             ))}
@@ -114,7 +140,7 @@ const Members = () => {
         </section>
 
         {/* Core Team */}
-        <section className="mb-16">
+        <section id="core" className="mb-16 scroll-mt-24">
           <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
             <span className="w-1 h-8 bg-primary" />
             Core Team
@@ -148,12 +174,6 @@ const Members = () => {
                   >
                     <Linkedin className="w-4 h-4" />
                   </a>
-                  <a 
-                    href="#"
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
-                  >
-                    <Github className="w-4 h-4" />
-                  </a>
                 </div>
               </div>
             ))}
@@ -161,7 +181,7 @@ const Members = () => {
         </section>
 
         {/* Department Heads */}
-        <section className="mb-16">
+        <section id="heads" className="mb-16 scroll-mt-24">
           <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
             <span className="w-1 h-8 bg-primary" />
             Department Heads
@@ -195,12 +215,6 @@ const Members = () => {
                   >
                     <Linkedin className="w-4 h-4" />
                   </a>
-                  <a 
-                    href="#"
-                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
-                  >
-                    <Github className="w-4 h-4" />
-                  </a>
                 </div>
               </div>
             ))}
@@ -208,7 +222,7 @@ const Members = () => {
         </section>
 
         {/* Executive Team */}
-        <section className="mb-16">
+        <section id="executives" className="mb-16 scroll-mt-24">
           <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
             <span className="w-1 h-8 bg-primary" />
             Executive Team

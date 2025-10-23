@@ -62,9 +62,6 @@ const NotFound = () => {
           <p className="text-xl md:text-2xl text-foreground/80 mb-4">
             The page you're looking for doesn't exist
           </p>
-          <p className="text-sm font-mono text-muted-foreground">
-            ROUTE: <span className="text-destructive">{location.pathname}</span>
-          </p>
         </div>
 
         {/* CTA Button */}
