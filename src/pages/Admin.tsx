@@ -10,9 +10,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Trash2, Edit, Plus, Eye, EyeOff, ChevronUp, ChevronDown, Search } from "lucide-react";
-import { uploadImageToSupabase } from "@/lib/imageUpload";
+import { Trash2, Edit, Plus, Eye, EyeOff, ChevronUp, ChevronDown, Search, X } from "lucide-react";
+import { uploadImageToSupabase, uploadMultipleImages } from "@/lib/imageUpload";
 
 interface Notice {
   id: number;
@@ -1823,42 +1824,58 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
 function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: "",
-    image: "",
     category: "Events",
     description: ""
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'gallery');
+    const fileArray = Array.from(files);
+    const { urls, errors } = await uploadMultipleImages(fileArray, 'gallery');
     setUploading(false);
 
-    if (error) {
-      toast.error(error);
-    } else if (url) {
-      setFormData({ ...formData, image: url });
-      toast.success('Image uploaded successfully');
+    if (errors.length > 0) {
+      errors.forEach(error => toast.error(error));
     }
+    
+    if (urls.length > 0) {
+      setUploadedImages([...uploadedImages, ...urls]);
+      toast.success(`${urls.length} image(s) uploaded successfully`);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase) return;
+    if (!supabase || uploadedImages.length === 0) return;
 
     try {
-      const { error } = await supabase.from('gallery').insert([formData]);
+      const galleryItems = uploadedImages.map(imageUrl => ({
+        title: formData.title,
+        image: imageUrl,
+        category: formData.category,
+        description: formData.description
+      }));
+
+      const { error } = await supabase.from('gallery').insert(galleryItems);
       if (error) throw error;
-      toast.success('Gallery item added successfully');
+      
+      toast.success(`${uploadedImages.length} gallery item(s) added successfully`);
       setOpen(false);
-      setFormData({ title: "", image: "", category: "Events", description: "" });
+      setFormData({ title: "", category: "Events", description: "" });
+      setUploadedImages([]);
       onSuccess();
     } catch (error: any) {
-      toast.error(`Failed to add gallery item: ${error.message}`);
+      toast.error(`Failed to add gallery items: ${error.message}`);
     }
   };
 
@@ -1867,41 +1884,70 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Gallery Item</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Add Gallery Item</DialogTitle>
-          <DialogDescription>Add a new image to the gallery</DialogDescription>
+          <DialogTitle>Add Gallery Items</DialogTitle>
+          <DialogDescription>Add one or more images to the gallery</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="gallery-title">Title</Label>
-            <Input id="gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="gallery-image">Upload Image</Label>
-            <Input id="gallery-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
-            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
-          </div>
-          <div>
-            <Label htmlFor="gallery-category">Category</Label>
-            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Events">Events</SelectItem>
-                <SelectItem value="Workshops">Workshops</SelectItem>
-                <SelectItem value="Team">Team</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="gallery-description">Description</Label>
-            <Textarea id="gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={uploading || !formData.image}>Add Gallery Item</Button>
-          </DialogFooter>
-        </form>
+        <ScrollArea className="max-h-[60vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="gallery-title">Title</Label>
+              <Input id="gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+            </div>
+            <div>
+              <Label htmlFor="gallery-image">Upload Images (Multiple)</Label>
+              <Input 
+                id="gallery-image" 
+                type="file" 
+                accept="image/*" 
+                multiple 
+                onChange={handleImageUpload} 
+                disabled={uploading} 
+              />
+              {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+              {uploadedImages.length > 0 && (
+                <div className="mt-3 grid grid-cols-3 gap-2">
+                  {uploadedImages.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="text-sm text-muted-foreground mt-1">
+                {uploadedImages.length} image(s) selected
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="gallery-category">Category</Label>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Events">Events</SelectItem>
+                  <SelectItem value="Workshops">Workshops</SelectItem>
+                  <SelectItem value="Team">Team</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="gallery-description">Description</Label>
+              <Textarea id="gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+            </div>
+          </form>
+        </ScrollArea>
+        <DialogFooter>
+          <Button onClick={handleSubmit} disabled={uploading || uploadedImages.length === 0}>
+            Add {uploadedImages.length > 0 ? `${uploadedImages.length} ` : ''}Gallery Item{uploadedImages.length !== 1 ? 's' : ''}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
@@ -1948,41 +1994,43 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Gallery Item</DialogTitle>
           <DialogDescription>Update gallery item information</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="edit-gallery-title">Title</Label>
-            <Input id="edit-gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-gallery-image">Upload Image</Label>
-            <Input id="edit-gallery-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
-            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
-          </div>
-          <div>
-            <Label htmlFor="edit-gallery-category">Category</Label>
-            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Events">Events</SelectItem>
-                <SelectItem value="Workshops">Workshops</SelectItem>
-                <SelectItem value="Team">Team</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="edit-gallery-description">Description</Label>
-            <Textarea id="edit-gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={uploading}>Update Gallery Item</Button>
-          </DialogFooter>
-        </form>
+        <ScrollArea className="max-h-[60vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="edit-gallery-title">Title</Label>
+              <Input id="edit-gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+            </div>
+            <div>
+              <Label htmlFor="edit-gallery-image">Upload Image</Label>
+              <Input id="edit-gallery-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+              {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+              {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
+            </div>
+            <div>
+              <Label htmlFor="edit-gallery-category">Category</Label>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Events">Events</SelectItem>
+                  <SelectItem value="Workshops">Workshops</SelectItem>
+                  <SelectItem value="Team">Team</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-gallery-description">Description</Label>
+              <Textarea id="edit-gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+            </div>
+          </form>
+        </ScrollArea>
+        <DialogFooter>
+          <Button onClick={handleSubmit} disabled={uploading}>Update Gallery Item</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

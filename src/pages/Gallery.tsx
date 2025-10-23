@@ -37,6 +37,7 @@ const Gallery = () => {
       const { data, error } = await supabase
         .from('gallery')
         .select('*')
+        .or('hidden.is.null,hidden.eq.false')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
