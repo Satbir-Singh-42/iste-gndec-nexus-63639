@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import ParticleBackground from './ParticleBackground';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -10,7 +9,6 @@ const TechHero = () => {
   const subtitleRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<(HTMLDivElement | null)[]>([]);
   const heroRef = useRef<HTMLElement>(null);
-  const particleBgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
@@ -40,13 +38,6 @@ const TechHero = () => {
       end: 'bottom top',
       scrub: 1,
       onUpdate: (self) => {
-        if (particleBgRef.current) {
-          gsap.to(particleBgRef.current, {
-            y: self.progress * 150,
-            opacity: 1 - self.progress * 0.6,
-            duration: 0.1,
-          });
-        }
         if (titleRef.current) {
           gsap.to(titleRef.current, {
             y: self.progress * 150,
@@ -64,11 +55,6 @@ const TechHero = () => {
 
   return (
     <section ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      {/* Particle Background */}
-      <div ref={particleBgRef} className="absolute inset-0 -z-10">
-        <ParticleBackground />
-      </div>
-
       {/* Hex Pattern Overlay */}
       <div className="absolute inset-0 hex-pattern opacity-10" />
 
