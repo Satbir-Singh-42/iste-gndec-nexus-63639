@@ -297,14 +297,14 @@ const Events = () => {
               <p className="text-muted-foreground">No event highlights available yet.</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
               {highlights.map((highlight) => (
                 <div 
                   key={highlight.id} 
                   className="tech-card overflow-hidden group hover:border-secondary/50 transition-all"
                 >
                   {/* Event Poster */}
-                  <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                  <div className="relative aspect-square overflow-hidden bg-muted">
                     <img 
                       src={highlight.poster} 
                       alt={highlight.title}
@@ -318,23 +318,23 @@ const Events = () => {
                         href={highlight.instagram_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="absolute top-4 right-4 p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100"
+                        className="absolute top-2 right-2 p-1.5 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <Instagram className="w-5 h-5" />
+                        <Instagram className="w-4 h-4" />
                       </a>
                     )}
                   </div>
 
                   {/* Event Details */}
-                  <div className="p-4">
-                    <h3 className="text-lg font-bold mb-2 group-hover:text-secondary transition-colors">
+                  <div className="p-3">
+                    <h3 className="text-sm font-bold mb-2 group-hover:text-secondary transition-colors line-clamp-2">
                       {highlight.title}
                     </h3>
                     
-                    <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-1 text-muted-foreground">
-                        <Calendar className="w-4 h-4 text-secondary" />
+                        <Calendar className="w-3 h-3 text-secondary" />
                         <span>{highlight.date}</span>
                       </div>
                       
@@ -343,10 +343,9 @@ const Events = () => {
                           href={highlight.instagram_link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-mono text-secondary hover:text-secondary/80 transition-colors"
+                          className="inline-flex items-center gap-1 text-secondary hover:text-secondary/80 transition-colors"
                         >
-                          <Instagram className="w-4 h-4" />
-                          <span>INSTAGRAM</span>
+                          <Instagram className="w-3 h-3" />
                         </a>
                       )}
                     </div>
