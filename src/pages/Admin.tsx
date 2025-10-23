@@ -142,6 +142,18 @@ const Admin = () => {
         toast.info("Post holders already exist, skipping...");
       }
 
+      const { count: existingExecutiveCount } = await supabase
+        .from("members_executive")
+        .select('*', { count: 'exact', head: true });
+
+      if (existingExecutiveCount === 0 && members.executiveTeam?.length > 0) {
+        const { error: executiveError } = await supabase.from("members_executive").insert(members.executiveTeam);
+        if (executiveError) throw new Error(`Executive Team: ${executiveError.message}`);
+        toast.success("Executive team migrated successfully");
+      } else {
+        toast.info("Executive team already exists, skipping...");
+      }
+
       const { count: existingGalleryCount } = await supabase
         .from("gallery")
         .select('*', { count: 'exact', head: true });

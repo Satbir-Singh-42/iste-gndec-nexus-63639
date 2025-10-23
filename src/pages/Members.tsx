@@ -26,6 +26,7 @@ const Members = () => {
   const [faculty, setFaculty] = useState<Faculty | null>(null);
   const [coreTeam, setCoreTeam] = useState<Member[]>([]);
   const [postHolders, setPostHolders] = useState<Member[]>([]);
+  const [executiveTeam, setExecutiveTeam] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,10 +45,11 @@ const Members = () => {
     }
 
     try {
-      const [facultyRes, coreRes, postRes] = await Promise.all([
+      const [facultyRes, coreRes, postRes, execRes] = await Promise.all([
         supabase.from('members_faculty').select('*').limit(1).single(),
         supabase.from('members_core_team').select('*').order('id', { ascending: true }),
         supabase.from('members_post_holders').select('*').order('id', { ascending: true }),
+        supabase.from('members_executive').select('*').order('id', { ascending: true }),
       ]);
 
       if (facultyRes.error) console.error('Faculty error:', facultyRes.error);
@@ -58,6 +60,9 @@ const Members = () => {
 
       if (postRes.error) console.error('Post holders error:', postRes.error);
       else setPostHolders(postRes.data || []);
+
+      if (execRes.error) console.error('Executive team error:', execRes.error);
+      else setExecutiveTeam(execRes.data || []);
     } catch (error: any) {
       console.error('Error fetching members:', error);
       toast.error('Failed to load members');
@@ -65,14 +70,6 @@ const Members = () => {
       setLoading(false);
     }
   };
-
-  const executiveTeam = Array.from({ length: 50 }, (_, i) => ({
-    id: i + 1,
-    name: `Executive Member ${i + 1}`,
-    position: 'Executive Member',
-    image: '/placeholder.svg',
-    email: `exec${i + 1}@gne.edu.in`,
-  }));
 
   const getCurrentMembers = () => {
     switch (activeTab) {

@@ -64,6 +64,18 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['members_post_holders']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['members_post_holders']['Insert']>;
       };
+      members_executive: {
+        Row: {
+          id: number;
+          name: string;
+          position: string;
+          image: string;
+          email: string;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['members_executive']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['members_executive']['Insert']>;
+      };
       members_faculty: {
         Row: {
           id: number;

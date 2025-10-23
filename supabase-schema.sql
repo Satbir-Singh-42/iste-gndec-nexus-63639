@@ -47,6 +47,16 @@ CREATE TABLE IF NOT EXISTS members_post_holders (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Members Executive Team table
+CREATE TABLE IF NOT EXISTS members_executive (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  position TEXT NOT NULL,
+  image TEXT NOT NULL,
+  email TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Gallery table
 CREATE TABLE IF NOT EXISTS gallery (
   id BIGSERIAL PRIMARY KEY,
@@ -88,6 +98,7 @@ ALTER TABLE events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE members_faculty ENABLE ROW LEVEL SECURITY;
 ALTER TABLE members_core_team ENABLE ROW LEVEL SECURITY;
 ALTER TABLE members_post_holders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE members_executive ENABLE ROW LEVEL SECURITY;
 ALTER TABLE gallery ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notices ENABLE ROW LEVEL SECURITY;
 ALTER TABLE event_highlights ENABLE ROW LEVEL SECURITY;
@@ -97,6 +108,7 @@ CREATE POLICY "Public read access for events" ON events FOR SELECT USING (true);
 CREATE POLICY "Public read access for faculty" ON members_faculty FOR SELECT USING (true);
 CREATE POLICY "Public read access for core team" ON members_core_team FOR SELECT USING (true);
 CREATE POLICY "Public read access for post holders" ON members_post_holders FOR SELECT USING (true);
+CREATE POLICY "Public read access for executive" ON members_executive FOR SELECT USING (true);
 CREATE POLICY "Public read access for gallery" ON gallery FOR SELECT USING (true);
 CREATE POLICY "Public read access for notices" ON notices FOR SELECT USING (true);
 CREATE POLICY "Public read access for event highlights" ON event_highlights FOR SELECT USING (true);
@@ -117,6 +129,10 @@ CREATE POLICY "Authenticated users can delete core team" ON members_core_team FO
 CREATE POLICY "Authenticated users can insert post holders" ON members_post_holders FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Authenticated users can update post holders" ON members_post_holders FOR UPDATE TO authenticated USING (true);
 CREATE POLICY "Authenticated users can delete post holders" ON members_post_holders FOR DELETE TO authenticated USING (true);
+
+CREATE POLICY "Authenticated users can insert executive" ON members_executive FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Authenticated users can update executive" ON members_executive FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Authenticated users can delete executive" ON members_executive FOR DELETE TO authenticated USING (true);
 
 CREATE POLICY "Authenticated users can insert gallery" ON gallery FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Authenticated users can update gallery" ON gallery FOR UPDATE TO authenticated USING (true);
