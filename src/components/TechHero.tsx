@@ -1,28 +1,26 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ParticleBackground from './ParticleBackground';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const TechHero = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<(HTMLDivElement | null)[]>([]);
   const heroRef = useRef<HTMLElement>(null);
+  const particleBgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
     
-    tl.from(gridRef.current, {
-      opacity: 0,
-      duration: 1,
-    })
-    .from(titleRef.current, {
+    tl.from(titleRef.current, {
       y: 50,
       opacity: 0,
       duration: 1,
-    }, '-=0.5')
+      delay: 0.5,
+    })
     .from(subtitleRef.current, {
       y: 30,
       opacity: 0,
@@ -35,18 +33,6 @@ const TechHero = () => {
       duration: 0.8,
     }, '-=0.4');
 
-    // Animate grid lines
-    const lines = document.querySelectorAll('.animated-line');
-    lines.forEach((line, i) => {
-      gsap.to(line, {
-        strokeDashoffset: 0,
-        duration: 2,
-        delay: i * 0.1,
-        repeat: -1,
-        repeatDelay: 3,
-      });
-    });
-
     // Parallax effect on scroll
     ScrollTrigger.create({
       trigger: heroRef.current,
@@ -54,10 +40,10 @@ const TechHero = () => {
       end: 'bottom top',
       scrub: 1,
       onUpdate: (self) => {
-        if (gridRef.current) {
-          gsap.to(gridRef.current, {
-            y: self.progress * 200,
-            opacity: 1 - self.progress * 0.5,
+        if (particleBgRef.current) {
+          gsap.to(particleBgRef.current, {
+            y: self.progress * 150,
+            opacity: 1 - self.progress * 0.6,
             duration: 0.1,
           });
         }
@@ -78,65 +64,19 @@ const TechHero = () => {
 
   return (
     <section ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
-      {/* Animated Grid Background */}
-      <div ref={gridRef} className="absolute inset-0 grid-bg opacity-50 -z-10">
-        <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="tech-grid" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-              <path 
-                d="M 100 0 L 0 0 0 100" 
-                fill="none" 
-                stroke="hsl(210 100% 55% / 0.15)" 
-                strokeWidth="1"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#tech-grid)" />
-          
-          {/* Animated lines */}
-          <line 
-            className="animated-line"
-            x1="0" y1="20%" x2="100%" y2="20%" 
-            stroke="hsl(210 100% 55% / 0.4)" 
-            strokeWidth="2"
-            strokeDasharray="10 10"
-            strokeDashoffset="100"
-          />
-          <line 
-            className="animated-line"
-            x1="30%" y1="0" x2="30%" y2="100%" 
-            stroke="hsl(195 85% 50% / 0.4)" 
-            strokeWidth="2"
-            strokeDasharray="10 10"
-            strokeDashoffset="100"
-          />
-          <line 
-            className="animated-line"
-            x1="100%" y1="60%" x2="0" y2="60%" 
-            stroke="hsl(210 100% 55% / 0.4)" 
-            strokeWidth="2"
-            strokeDasharray="10 10"
-            strokeDashoffset="100"
-          />
-          <line 
-            className="animated-line"
-            x1="70%" y1="100%" x2="70%" y2="0" 
-            stroke="hsl(195 85% 50% / 0.4)" 
-            strokeWidth="2"
-            strokeDasharray="10 10"
-            strokeDashoffset="100"
-          />
-        </svg>
+      {/* Particle Background */}
+      <div ref={particleBgRef} className="absolute inset-0 -z-10">
+        <ParticleBackground />
       </div>
 
       {/* Hex Pattern Overlay */}
-      <div className="absolute inset-0 hex-pattern opacity-20" />
+      <div className="absolute inset-0 hex-pattern opacity-10" />
 
       {/* Corner Elements */}
-      <div className="absolute top-20 left-8 w-16 h-16 border-l-2 border-t-2 border-primary" />
-      <div className="absolute top-20 right-8 w-16 h-16 border-r-2 border-t-2 border-secondary" />
-      <div className="absolute bottom-8 left-8 w-16 h-16 border-l-2 border-b-2 border-secondary" />
-      <div className="absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 border-primary" />
+      <div className="absolute top-20 left-8 w-16 h-16 border-l-2 border-t-2 border-primary opacity-50" />
+      <div className="absolute top-20 right-8 w-16 h-16 border-r-2 border-t-2 border-secondary opacity-50" />
+      <div className="absolute bottom-8 left-8 w-16 h-16 border-l-2 border-b-2 border-secondary opacity-50" />
+      <div className="absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 border-primary opacity-50" />
 
       {/* Main Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">

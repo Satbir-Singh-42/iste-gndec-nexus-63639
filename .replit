@@ -19,16 +19,16 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 35665
-externalPort = 3001
-
-[[ports]]
 localPort = 41775
 externalPort = 3003
 
 [[ports]]
 localPort = 42401
 externalPort = 4200
+
+[[ports]]
+localPort = 44587
+externalPort = 3000
 
 [[ports]]
 localPort = 44819
@@ -51,23 +51,11 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Start Game"
+args = "Email Server"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Email Server"
-
-[[workflows.workflow]]
-name = "Start Game"
-author = "agent"
-
-[workflows.workflow.metadata]
-outputType = "webview"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npm run dev"
-waitForPort = 5000
+args = "Dev Server"
 
 [[workflows.workflow]]
 name = "Email Server"
@@ -79,6 +67,18 @@ args = "npm run email-server"
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow]]
+name = "Dev Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [agent]
 expertMode = true
