@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Technical Dark Theme */
+    --background: 210 20% 8%;
+    --foreground: 180 8% 92%;
+
+    --card: 210 18% 11%;
+    --card-foreground: 180 8% 92%;
+
+    --popover: 210 18% 13%;
+    --popover-foreground: 180 8% 92%;
+
+    --primary: 173 80% 45%;
+    --primary-foreground: 180 8% 98%;
+
+    --secondary: 45 95% 58%;
+    --secondary-foreground: 210 20% 8%;
+
+    --muted: 210 15% 16%;
+    --muted-foreground: 180 5% 65%;
+
+    --accent: 173 80% 45%;
+    --accent-foreground: 180 8% 98%;
+
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 180 8% 98%;
+
+    --border: 210 15% 20%;
+    --input: 210 15% 20%;
+    --ring: 173 80% 45%;
+
+    --radius: 0.25rem;
+
+    /* Technical Colors */
+    --tech-teal: 173 80% 45%;
+    --tech-yellow: 45 95% 58%;
+    --tech-orange: 25 95% 58%;
+    --tech-grid: 173 60% 30%;
+    
+    /* Technical Effects */
+    --scanline-opacity: 0.03;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground overflow-x-hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        hsl(var(--background)) 2px,
+        hsl(var(--background)) 4px
+      );
+    opacity: var(--scanline-opacity);
+    pointer-events: none;
+    z-index: 9999;
+    animation: scanline 8s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .tech-card {
+    @apply bg-card border-2 border-border relative;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+
+  .tech-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    border-left: 2px solid hsl(var(--primary));
+    border-bottom: 2px solid hsl(var(--primary));
+  }
+
+  .tech-border {
+    position: relative;
+    border: 2px solid hsl(var(--border));
+  }
+
+  .tech-border::before,
+  .tech-border::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 2px solid hsl(var(--primary));
+  }
+
+  .tech-border::before {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .tech-border::after {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--tech-teal)), hsl(var(--tech-yellow)));
+  }
+
+  .glitch {
+    position: relative;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+  }
+
+  .glitch::before {
+    animation: glitch-1 2s infinite;
+    color: hsl(var(--tech-teal));
+    z-index: -1;
+  }
+
+  .glitch::after {
+    animation: glitch-2 2s infinite;
+    color: hsl(var(--tech-yellow));
+    z-index: -2;
+  }
+
+  @keyframes glitch-1 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+  }
+
+  @keyframes glitch-2 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(2px, -2px); }
+    40% { transform: translate(2px, 2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(-2px, 2px); }
+  }
+
+  .grid-bg {
+    background-image: 
+      linear-gradient(hsl(var(--tech-grid) / 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--tech-grid) / 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  .hex-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='50' height='43.4' viewBox='0 0 50 43.4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M25 0l12.5 7.2v14.4L25 28.8 12.5 21.6V7.2L25 0z' fill='none' stroke='rgb(34 197 177 / 0.1)' stroke-width='1'/%3E%3C/svg%3E");
+    background-size: 50px 43.4px;
+  }
+}
