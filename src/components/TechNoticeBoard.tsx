@@ -14,7 +14,6 @@ interface Notice {
   type: string;
   status: string;
   description: string;
-  link?: string;
 }
 
 const TechNoticeBoard = () => {
@@ -22,6 +21,35 @@ const TechNoticeBoard = () => {
   const [loading, setLoading] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  const extractUrl = (text: string): string | null => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const match = text.match(urlRegex);
+    return match ? match[0] : null;
+  };
+
+  const renderDescriptionWithLinks = (description: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = description.split(urlRegex);
+    
+    return parts.map((part, index) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a 
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
 
   useEffect(() => {
     if (!supabase) {
@@ -126,15 +154,13 @@ const TechNoticeBoard = () => {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {notices.map((notice, index) => {
-              const NoticeCard = notice.link ? 'a' : 'div';
-              const cardProps = notice.link ? { href: notice.link, target: "_blank", rel: "noopener noreferrer" } : {};
+              const url = extractUrl(notice.description);
               
               return (
-                <NoticeCard
+                <div
                   key={notice.id}
                   ref={(el) => (cardsRef.current[index] = el)}
-                  className="tech-card p-6 hover:border-primary/50 transition-all duration-300 group cursor-pointer bg-card/50"
-                  {...cardProps}
+                  className="tech-card p-6 hover:border-primary/50 transition-all duration-300 group bg-card/50"
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -170,26 +196,26 @@ const TechNoticeBoard = () => {
 
                   {/* Description */}
                   <p className="text-sm text-foreground/70 leading-relaxed mb-4">
-                    {notice.description}
+                    {renderDescriptionWithLinks(notice.description)}
                   </p>
 
                   {/* Footer */}
                   <div className="flex items-center justify-end pt-4 border-t border-border/50">
-                    {notice.link && (
+                    {url && (
                       <div className="flex items-center gap-2 text-primary text-sm font-mono">
-                        <span className="opacity-0 group-hover:opacity-100 transition-opacity">Learn More</span>
                         <svg 
-                          className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" 
+                          className="w-4 h-4" 
                           fill="none" 
                           viewBox="0 0 24 24" 
                           stroke="currentColor"
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
+                        <span className="text-xs">Link available</span>
                       </div>
                     )}
                   </div>
-                </NoticeCard>
+                </div>
               );
             })}
           </div>

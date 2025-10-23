@@ -22,7 +22,6 @@ interface Notice {
   type: string;
   status: string;
   description: string;
-  link?: string;
 }
 
 interface Event {
@@ -571,7 +570,6 @@ const Admin = () => {
                       <TableHead>Time</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Link</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -584,20 +582,6 @@ const Admin = () => {
                         <TableCell>{notice.time}</TableCell>
                         <TableCell>{notice.type}</TableCell>
                         <TableCell>{notice.status}</TableCell>
-                        <TableCell>
-                          {notice.link ? (
-                            <a 
-                              href={notice.link} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-primary hover:underline text-xs"
-                            >
-                              View
-                            </a>
-                          ) : (
-                            <span className="text-muted-foreground text-xs">No link</span>
-                          )}
-                        </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
                             <EditNoticeDialog notice={notice} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
@@ -973,8 +957,7 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
     time: "",
     type: "EVENT",
     status: "UPCOMING",
-    description: "",
-    link: ""
+    description: ""
   });
   const [datetime, setDatetime] = useState("");
 
@@ -993,15 +976,11 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!supabase) return;
 
     try {
-      const dataToSubmit = { ...formData };
-      if (!dataToSubmit.link) {
-        delete dataToSubmit.link;
-      }
-      const { error } = await supabase.from('notices').insert([dataToSubmit]);
+      const { error } = await supabase.from('notices').insert([formData]);
       if (error) throw error;
       toast.success('Notice added successfully');
       setOpen(false);
-      setFormData({ title: "", date: "", time: "", type: "EVENT", status: "UPCOMING", description: "", link: "" });
+      setFormData({ title: "", date: "", time: "", type: "EVENT", status: "UPCOMING", description: "" });
       setDatetime("");
       onSuccess();
     } catch (error: any) {
@@ -1064,21 +1043,18 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             </div>
           </div>
           <div>
-            <Label htmlFor="link">Link (Optional)</Label>
-            <Input 
-              id="link" 
-              type="url" 
-              value={formData.link} 
-              onChange={(e) => setFormData({ ...formData, link: e.target.value })} 
-              placeholder="https://example.com/more-info" 
+            <Label htmlFor="description">Description</Label>
+            <Textarea 
+              id="description" 
+              value={formData.description} 
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+              placeholder="Add your notice description. Include links like: Visit - https://example.com" 
+              rows={5}
+              required 
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Add a link to make the notice clickable on the home page
+              Add URLs in the description (e.g., https://example.com) to make the notice clickable
             </p>
-          </div>
-          <div>
-            <Label htmlFor="description">Description</Label>
-            <Textarea id="description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
           <DialogFooter>
             <Button type="submit">Add Notice</Button>
@@ -1109,11 +1085,7 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
     if (!supabase) return;
 
     try {
-      const dataToUpdate = { ...formData };
-      if (!dataToUpdate.link) {
-        delete dataToUpdate.link;
-      }
-      const { error } = await supabase.from('notices').update(dataToUpdate).eq('id', notice.id);
+      const { error } = await supabase.from('notices').update(formData).eq('id', notice.id);
       if (error) throw error;
       toast.success('Notice updated successfully');
       setOpen(false);
@@ -1175,21 +1147,18 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
             </div>
           </div>
           <div>
-            <Label htmlFor="edit-link">Link (Optional)</Label>
-            <Input 
-              id="edit-link" 
-              type="url" 
-              value={formData.link || ""} 
-              onChange={(e) => setFormData({ ...formData, link: e.target.value })} 
-              placeholder="https://example.com/more-info" 
+            <Label htmlFor="edit-description">Description</Label>
+            <Textarea 
+              id="edit-description" 
+              value={formData.description} 
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+              placeholder="Add your notice description. Include links like: Visit - https://example.com" 
+              rows={5}
+              required 
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Add a link to make the notice clickable on the home page
+              Add URLs in the description (e.g., https://example.com) to make the notice clickable
             </p>
-          </div>
-          <div>
-            <Label htmlFor="edit-description">Description</Label>
-            <Textarea id="edit-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
           <DialogFooter>
             <Button type="submit">Update Notice</Button>

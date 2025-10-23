@@ -76,7 +76,6 @@ CREATE TABLE IF NOT EXISTS notices (
   type TEXT NOT NULL,
   status TEXT NOT NULL,
   description TEXT NOT NULL,
-  link TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
