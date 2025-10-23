@@ -10,10 +10,10 @@ CREATE TABLE IF NOT EXISTS events (
   location TEXT NOT NULL,
   description TEXT NOT NULL,
   status TEXT NOT NULL,
-  capacity TEXT NOT NULL,
-  organizer TEXT NOT NULL,
-  details TEXT NOT NULL,
-  agenda TEXT[] NOT NULL,
+  capacity TEXT,
+  organizer TEXT,
+  details TEXT,
+  agenda TEXT[],
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
