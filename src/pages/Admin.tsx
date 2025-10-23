@@ -101,6 +101,10 @@ const Admin = () => {
   const [eventHighlights, setEventHighlights] = useState<EventHighlight[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [facultySearch, setFacultySearch] = useState("");
+  const [coreTeamSearch, setCoreTeamSearch] = useState("");
+  const [postHoldersSearch, setPostHoldersSearch] = useState("");
+  const [executiveSearch, setExecutiveSearch] = useState("");
 
   useEffect(() => {
     checkAuthStatus();
@@ -242,7 +246,7 @@ const Admin = () => {
   const fetchFaculty = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('members_faculty').select('*').order('id', { ascending: false });
+      const { data, error } = await supabase.from('members_faculty').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
       if (error) throw error;
       setFaculty(data || []);
     } catch (error: any) {
@@ -253,7 +257,7 @@ const Admin = () => {
   const fetchCoreTeam = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('members_core_team').select('*').order('id', { ascending: false });
+      const { data, error } = await supabase.from('members_core_team').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
       if (error) throw error;
       setCoreTeam(data || []);
     } catch (error: any) {
@@ -264,7 +268,7 @@ const Admin = () => {
   const fetchPostHolders = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('members_post_holders').select('*').order('id', { ascending: false });
+      const { data, error } = await supabase.from('members_post_holders').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
       if (error) throw error;
       setPostHolders(data || []);
     } catch (error: any) {
@@ -275,7 +279,7 @@ const Admin = () => {
   const fetchExecutive = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('members_executive').select('*').order('id', { ascending: false });
+      const { data, error } = await supabase.from('members_executive').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
       if (error) throw error;
       setExecutive(data || []);
     } catch (error: any) {
@@ -293,6 +297,50 @@ const Admin = () => {
     } catch (error: any) {
       toast.error(`Failed to delete ${type}: ${error.message}`);
     }
+  };
+
+  const toggleMemberVisibility = async (id: number, table: string, currentHidden: boolean, type: string) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from(table).update({ hidden: !currentHidden }).eq('id', id);
+      if (error) throw error;
+      toast.success(`${type} ${!currentHidden ? 'hidden' : 'visible'} successfully`);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update visibility: ${error.message}`);
+    }
+  };
+
+  const updateMemberOrder = async (id: number, table: string, newOrder: number, type: string) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from(table).update({ display_order: newOrder }).eq('id', id);
+      if (error) throw error;
+      toast.success(`${type} order updated`);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update order: ${error.message}`);
+    }
+  };
+
+  const moveMemberUp = (members: (Member | Faculty)[], index: number, table: string, type: string) => {
+    if (index === 0) return;
+    const currentMember = members[index];
+    const previousMember = members[index - 1];
+    const currentOrder = currentMember.display_order || index;
+    const previousOrder = previousMember.display_order || index - 1;
+    updateMemberOrder(currentMember.id, table, previousOrder, type);
+    updateMemberOrder(previousMember.id, table, currentOrder, type);
+  };
+
+  const moveMemberDown = (members: (Member | Faculty)[], index: number, table: string, type: string) => {
+    if (index === members.length - 1) return;
+    const currentMember = members[index];
+    const nextMember = members[index + 1];
+    const currentOrder = currentMember.display_order || index;
+    const nextOrder = nextMember.display_order || index + 1;
+    updateMemberOrder(currentMember.id, table, nextOrder, type);
+    updateMemberOrder(nextMember.id, table, currentOrder, type);
   };
 
   const fetchEventHighlights = async () => {
@@ -715,13 +763,25 @@ const Admin = () => {
                     </div>
                     <AddFacultyDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                   </div>
+                  <div className="mt-4">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by name or title..."
+                        value={facultySearch}
+                        onChange={(e) => setFacultySearch(e.target.value)}
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="max-h-96 overflow-y-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>ID</TableHead>
+                          <TableHead className="w-12">Order</TableHead>
+                          <TableHead className="w-12">Visible</TableHead>
                           <TableHead>Name</TableHead>
                           <TableHead>Title</TableHead>
                           <TableHead>Image</TableHead>
@@ -729,9 +789,44 @@ const Admin = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {faculty.map((member) => (
-                          <TableRow key={member.id}>
-                            <TableCell>{member.id}</TableCell>
+                        {faculty
+                          .filter(member => 
+                            member.name.toLowerCase().includes(facultySearch.toLowerCase()) ||
+                            member.title.toLowerCase().includes(facultySearch.toLowerCase())
+                          )
+                          .map((member, index, filteredArray) => (
+                          <TableRow key={member.id} className={member.hidden ? 'opacity-50' : ''}>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => moveMemberUp(faculty, faculty.indexOf(member), 'members_faculty', 'faculty')}
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronUp className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => moveMemberDown(faculty, faculty.indexOf(member), 'members_faculty', 'faculty')}
+                                  disabled={index === filteredArray.length - 1}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleMemberVisibility(member.id, 'members_faculty', member.hidden || false, 'faculty')}
+                              >
+                                {member.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </Button>
+                            </TableCell>
                             <TableCell>{member.name}</TableCell>
                             <TableCell>{member.title}</TableCell>
                             <TableCell>
@@ -762,13 +857,25 @@ const Admin = () => {
                     </div>
                     <AddMemberDialog table="members_core_team" title="Add Core Team Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                   </div>
+                  <div className="mt-4">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by name or position..."
+                        value={coreTeamSearch}
+                        onChange={(e) => setCoreTeamSearch(e.target.value)}
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="max-h-96 overflow-y-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>ID</TableHead>
+                          <TableHead className="w-12">Order</TableHead>
+                          <TableHead className="w-12">Visible</TableHead>
                           <TableHead>Name</TableHead>
                           <TableHead>Position</TableHead>
                           <TableHead>Email</TableHead>
@@ -777,9 +884,44 @@ const Admin = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {coreTeam.map((member) => (
-                          <TableRow key={member.id}>
-                            <TableCell>{member.id}</TableCell>
+                        {coreTeam
+                          .filter(member => 
+                            member.name.toLowerCase().includes(coreTeamSearch.toLowerCase()) ||
+                            member.position.toLowerCase().includes(coreTeamSearch.toLowerCase())
+                          )
+                          .map((member, index, filteredArray) => (
+                          <TableRow key={member.id} className={member.hidden ? 'opacity-50' : ''}>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => moveMemberUp(coreTeam, coreTeam.indexOf(member), 'members_core_team', 'core team member')}
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronUp className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => moveMemberDown(coreTeam, coreTeam.indexOf(member), 'members_core_team', 'core team member')}
+                                  disabled={index === filteredArray.length - 1}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleMemberVisibility(member.id, 'members_core_team', member.hidden || false, 'core team member')}
+                              >
+                                {member.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </Button>
+                            </TableCell>
                             <TableCell>{member.name}</TableCell>
                             <TableCell>{member.position}</TableCell>
                             <TableCell>{member.email}</TableCell>
@@ -811,13 +953,25 @@ const Admin = () => {
                     </div>
                     <AddMemberDialog table="members_post_holders" title="Add Post Holder" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                   </div>
+                  <div className="mt-4">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by name or position..."
+                        value={postHoldersSearch}
+                        onChange={(e) => setPostHoldersSearch(e.target.value)}
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="max-h-96 overflow-y-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>ID</TableHead>
+                          <TableHead className="w-12">Order</TableHead>
+                          <TableHead className="w-12">Visible</TableHead>
                           <TableHead>Name</TableHead>
                           <TableHead>Position</TableHead>
                           <TableHead>Email</TableHead>
@@ -826,9 +980,44 @@ const Admin = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {postHolders.map((member) => (
-                          <TableRow key={member.id}>
-                            <TableCell>{member.id}</TableCell>
+                        {postHolders
+                          .filter(member => 
+                            member.name.toLowerCase().includes(postHoldersSearch.toLowerCase()) ||
+                            member.position.toLowerCase().includes(postHoldersSearch.toLowerCase())
+                          )
+                          .map((member, index, filteredArray) => (
+                          <TableRow key={member.id} className={member.hidden ? 'opacity-50' : ''}>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => moveMemberUp(postHolders, postHolders.indexOf(member), 'members_post_holders', 'post holder')}
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronUp className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => moveMemberDown(postHolders, postHolders.indexOf(member), 'members_post_holders', 'post holder')}
+                                  disabled={index === filteredArray.length - 1}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleMemberVisibility(member.id, 'members_post_holders', member.hidden || false, 'post holder')}
+                              >
+                                {member.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </Button>
+                            </TableCell>
                             <TableCell>{member.name}</TableCell>
                             <TableCell>{member.position}</TableCell>
                             <TableCell>{member.email}</TableCell>
@@ -860,13 +1049,25 @@ const Admin = () => {
                     </div>
                     <AddMemberDialog table="members_executive" title="Add Executive Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                   </div>
+                  <div className="mt-4">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by name or position..."
+                        value={executiveSearch}
+                        onChange={(e) => setExecutiveSearch(e.target.value)}
+                        className="pl-8"
+                      />
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="max-h-96 overflow-y-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>ID</TableHead>
+                          <TableHead className="w-12">Order</TableHead>
+                          <TableHead className="w-12">Visible</TableHead>
                           <TableHead>Name</TableHead>
                           <TableHead>Position</TableHead>
                           <TableHead>Email</TableHead>
@@ -875,9 +1076,44 @@ const Admin = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {executive.map((member) => (
-                          <TableRow key={member.id}>
-                            <TableCell>{member.id}</TableCell>
+                        {executive
+                          .filter(member => 
+                            member.name.toLowerCase().includes(executiveSearch.toLowerCase()) ||
+                            member.position.toLowerCase().includes(executiveSearch.toLowerCase())
+                          )
+                          .map((member, index, filteredArray) => (
+                          <TableRow key={member.id} className={member.hidden ? 'opacity-50' : ''}>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => moveMemberUp(executive, executive.indexOf(member), 'members_executive', 'executive member')}
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronUp className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => moveMemberDown(executive, executive.indexOf(member), 'members_executive', 'executive member')}
+                                  disabled={index === filteredArray.length - 1}
+                                  className="h-6 w-6 p-0"
+                                >
+                                  <ChevronDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleMemberVisibility(member.id, 'members_executive', member.hidden || false, 'executive member')}
+                              >
+                                {member.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              </Button>
+                            </TableCell>
                             <TableCell>{member.name}</TableCell>
                             <TableCell>{member.position}</TableCell>
                             <TableCell>{member.email}</TableCell>
