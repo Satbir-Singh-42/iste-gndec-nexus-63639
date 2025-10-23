@@ -313,15 +313,17 @@ const Events = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     
                     {/* Instagram Link Overlay */}
-                    <a
-                      href={highlight.instagram_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="absolute top-4 right-4 p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Instagram className="w-5 h-5" />
-                    </a>
+                    {highlight.instagram_link && (
+                      <a
+                        href={highlight.instagram_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute top-4 right-4 p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Instagram className="w-5 h-5" />
+                      </a>
+                    )}
                   </div>
 
                   {/* Event Details */}
@@ -333,18 +335,20 @@ const Events = () => {
                     <div className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-1 text-muted-foreground">
                         <Calendar className="w-4 h-4 text-secondary" />
-                        <span>{highlight.date.split(' ')[0]}</span>
+                        <span>{highlight.date}</span>
                       </div>
                       
-                      <a
-                        href={highlight.instagram_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs font-mono text-secondary hover:text-secondary/80 transition-colors"
-                      >
-                        <Instagram className="w-4 h-4" />
-                        <span>INSTAGRAM</span>
-                      </a>
+                      {highlight.instagram_link && (
+                        <a
+                          href={highlight.instagram_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs font-mono text-secondary hover:text-secondary/80 transition-colors"
+                        >
+                          <Instagram className="w-4 h-4" />
+                          <span>INSTAGRAM</span>
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
