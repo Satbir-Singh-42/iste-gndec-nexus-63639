@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
@@ -6,6 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import gsap from 'gsap';
+import ScrollTrigger from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +17,11 @@ const Contact = () => {
     email: '',
     message: '',
   });
+
+  const heroRef = useRef<HTMLDivElement>(null);
+  const leftSectionRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+  const contactCardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const contactInfo = [
     {
@@ -84,13 +93,94 @@ const Contact = () => {
     });
   };
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Hero section animation
+      if (heroRef.current) {
+        gsap.from(heroRef.current.children, {
+          y: -30,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+        });
+      }
+
+      // Left section animation
+      if (leftSectionRef.current) {
+        gsap.from(leftSectionRef.current, {
+          scrollTrigger: {
+            trigger: leftSectionRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+          x: -50,
+          opacity: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+        });
+      }
+
+      // Contact cards stagger animation
+      contactCardsRef.current.forEach((card, index) => {
+        if (card) {
+          gsap.from(card, {
+            scrollTrigger: {
+              trigger: card,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+            },
+            x: -30,
+            opacity: 0,
+            duration: 0.6,
+            delay: index * 0.1,
+            ease: 'power2.out',
+          });
+        }
+      });
+
+      // Form animation
+      if (formRef.current) {
+        gsap.from(formRef.current, {
+          scrollTrigger: {
+            trigger: formRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+          x: 50,
+          opacity: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+        });
+
+        // Animate form fields
+        const formFields = formRef.current.querySelectorAll('.form-field');
+        gsap.from(formFields, {
+          scrollTrigger: {
+            trigger: formRef.current,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse',
+          },
+          y: 20,
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.1,
+          delay: 0.3,
+          ease: 'power2.out',
+        });
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <div className="min-h-screen w-full">
       <TechNavbar />
       
       <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
         {/* Hero Section */}
-        <div className="mb-16 text-center">
+        <div ref={heroRef} className="mb-16 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 border border-primary/30 bg-primary/5">
             <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
             <span className="text-xs font-mono text-primary tracking-wider">CONTACT PORTAL</span>
@@ -105,7 +195,7 @@ const Contact = () => {
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Information */}
-          <div className="space-y-8">
+          <div ref={leftSectionRef} className="space-y-8">
             <div>
               <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
                 <span className="w-1 h-8 bg-primary" />
@@ -118,7 +208,11 @@ const Contact = () => {
 
             <div className="space-y-6">
               {contactInfo.map((item, index) => (
-                <div key={index} className="tech-card p-6 hover:border-primary/50 transition-all">
+                <div 
+                  key={index} 
+                  ref={(el) => (contactCardsRef.current[index] = el)}
+                  className="tech-card p-6 hover:border-primary/50 transition-all"
+                >
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 border-2 border-primary flex items-center justify-center shrink-0">
                       <item.icon className="w-5 h-5 text-primary" />
@@ -138,7 +232,10 @@ const Contact = () => {
             </div>
 
             {/* Google Map */}
-            <div className="tech-card p-6">
+            <div 
+              ref={(el) => (contactCardsRef.current[contactInfo.length] = el)}
+              className="tech-card p-6"
+            >
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-primary" />
                 Find Us On Map
@@ -159,10 +256,10 @@ const Contact = () => {
           </div>
 
           {/* Contact Form */}
-          <div className="tech-card p-8">
+          <div ref={formRef} className="tech-card p-8">
             <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
+              <div className="form-field">
                 <label className="block text-sm font-mono text-foreground/80 mb-2">
                   NAME
                 </label>
@@ -176,7 +273,7 @@ const Contact = () => {
                 />
               </div>
               
-              <div>
+              <div className="form-field">
                 <label className="block text-sm font-mono text-foreground/80 mb-2">
                   EMAIL
                 </label>
@@ -191,7 +288,7 @@ const Contact = () => {
                 />
               </div>
               
-              <div>
+              <div className="form-field">
                 <label className="block text-sm font-mono text-foreground/80 mb-2">
                   MESSAGE
                 </label>
@@ -206,13 +303,15 @@ const Contact = () => {
                 />
               </div>
 
-              <Button 
-                type="submit"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono tracking-wider"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                SEND MESSAGE
-              </Button>
+              <div className="form-field">
+                <Button 
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono tracking-wider"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  SEND MESSAGE
+                </Button>
+              </div>
             </form>
           </div>
         </div>
