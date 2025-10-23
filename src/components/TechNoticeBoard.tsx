@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { supabase } from '@/lib/supabase';
@@ -16,6 +17,7 @@ interface Notice {
 }
 
 const TechNoticeBoard = () => {
+  const navigate = useNavigate();
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
@@ -70,7 +72,7 @@ const TechNoticeBoard = () => {
         .from('notices')
         .select('*')
         .order('date', { ascending: true })
-        .limit(6);
+        .limit(4);
 
       if (error) throw error;
       setNotices(data || []);
@@ -128,17 +130,34 @@ const TechNoticeBoard = () => {
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="mb-20">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="h-0.5 w-12 bg-secondary" />
-            <span className="font-mono text-xs text-secondary tracking-[0.3em]">UPDATES</span>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-0.5 w-12 bg-secondary" />
+                <span className="font-mono text-xs text-secondary tracking-[0.3em]">UPDATES</span>
+              </div>
+              <h2 className="text-5xl md:text-7xl font-black mb-4">
+                NOTICE BOARD
+              </h2>
+              <div className="h-1 w-32 bg-gradient-to-r from-secondary to-primary" />
+              <p className="mt-4 text-muted-foreground font-mono text-sm">
+                STAY_UPDATED // LATEST_EVENTS // ANNOUNCEMENTS
+              </p>
+            </div>
+            
+            <button
+              onClick={() => navigate('/notices')}
+              className="tech-border px-6 py-3 font-mono text-sm hover:text-primary transition-colors group relative overflow-hidden"
+            >
+              <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <span className="relative z-10 flex items-center gap-2">
+                SEE ALL NOTICES
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+            </button>
           </div>
-          <h2 className="text-5xl md:text-7xl font-black mb-4">
-            NOTICE BOARD
-          </h2>
-          <div className="h-1 w-32 bg-gradient-to-r from-secondary to-primary" />
-          <p className="mt-4 text-muted-foreground font-mono text-sm">
-            STAY_UPDATED // LATEST_EVENTS // ANNOUNCEMENTS
-          </p>
         </div>
 
         {loading ? (

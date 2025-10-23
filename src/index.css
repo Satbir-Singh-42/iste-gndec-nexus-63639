@@ -90,6 +90,22 @@ All colors MUST be HSL.
     scroll-behavior: smooth;
   }
 
+  /* Page transition animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  main, .page-content {
+    animation: fadeInUp 0.5s ease-out;
+  }
+
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 12px;
