@@ -2017,6 +2017,13 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
   const [formData, setFormData] = useState(item);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
+  // Initialize uploadedImages with existing images when dialog opens
+  useEffect(() => {
+    if (open) {
+      setUploadedImages(item.images || []);
+    }
+  }, [open, item.images]);
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -2065,16 +2072,16 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
     if (!supabase) return;
 
     try {
-      // Update the gallery item with all images (either new uploads or keep existing)
+      // Update the gallery item with all images
       const updatedData = {
         ...formData,
-        images: uploadedImages.length > 0 ? uploadedImages : formData.images
+        images: uploadedImages
       };
       
       const { error } = await supabase.from('gallery').update(updatedData).eq('id', item.id);
       if (error) throw error;
       
-      toast.success(`Gallery item updated with ${uploadedImages.length > 0 ? uploadedImages.length : formData.images.length} image(s)`);
+      toast.success(`Gallery item updated with ${uploadedImages.length} image(s)`);
       setOpen(false);
       setUploadedImages([]);
       onSuccess();
@@ -2113,46 +2120,44 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                 disabled={uploading} 
               />
               {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
-              {(uploadedImages.length > 0 || formData.images?.length > 0) && (
+              {uploadedImages.length > 0 && (
                 <div className="mt-3">
                   <p className="text-xs text-muted-foreground mb-2">
-                    {uploadedImages.length > 0 ? `New Images (${uploadedImages.length})` : `Current Images (${formData.images.length})`}:
+                    Images ({uploadedImages.length}):
                   </p>
                   <div className="grid grid-cols-3 gap-2">
-                    {(uploadedImages.length > 0 ? uploadedImages : formData.images).map((url, index) => (
+                    {uploadedImages.map((url, index) => (
                       <div key={index} className="relative group">
                         <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
                         <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           {index > 0 && (
                             <button
                               type="button"
-                              onClick={() => uploadedImages.length > 0 ? moveImageUp(index) : {}}
+                              onClick={() => moveImageUp(index)}
                               className="bg-blue-500 text-white rounded-full p-1"
                               title="Move left"
                             >
                               <ChevronUp className="h-3 w-3" />
                             </button>
                           )}
-                          {index < (uploadedImages.length > 0 ? uploadedImages.length : formData.images.length) - 1 && (
+                          {index < uploadedImages.length - 1 && (
                             <button
                               type="button"
-                              onClick={() => uploadedImages.length > 0 ? moveImageDown(index) : {}}
+                              onClick={() => moveImageDown(index)}
                               className="bg-blue-500 text-white rounded-full p-1"
                               title="Move right"
                             >
                               <ChevronDown className="h-3 w-3" />
                             </button>
                           )}
-                          {uploadedImages.length > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => removeImage(index)}
-                              className="bg-red-500 text-white rounded-full p-1"
-                              title="Remove"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="bg-red-500 text-white rounded-full p-1"
+                            title="Remove"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
                         </div>
                         <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-1.5 py-0.5 rounded">
                           {index + 1}
