@@ -1,8 +1,8 @@
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
-import { Calendar, MapPin, Clock, Users, Instagram, ExternalLink } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Calendar, MapPin, Clock, Users, Instagram } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -36,7 +36,7 @@ interface EventHighlight {
 }
 
 const Events = () => {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const navigate = useNavigate();
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [highlights, setHighlights] = useState<EventHighlight[]>([]);
   const [loading, setLoading] = useState(true);
@@ -168,7 +168,7 @@ const Events = () => {
                 <div 
                   key={event.id} 
                   className="tech-card p-6 hover:border-primary/50 transition-all cursor-pointer group"
-                  onClick={() => setSelectedEvent(event)}
+                  onClick={() => navigate(`/events/${event.id}`)}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">{event.title}</h3>
@@ -207,89 +207,6 @@ const Events = () => {
               ))}
             </div>
           )}
-
-          {/* Event Details Dialog */}
-          <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-            <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-2xl md:max-w-3xl max-h-[85vh] sm:max-h-[90vh]">
-              <DialogHeader>
-                <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 sm:gap-3">
-                  <span className="w-1 h-8 bg-primary" />
-                  {selectedEvent?.title}
-                </DialogTitle>
-              </DialogHeader>
-              
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-3 py-1 text-xs font-mono bg-primary/20 text-primary border border-primary/30">
-                    {selectedEvent?.status.toUpperCase()}
-                  </span>
-                  {selectedEvent?.organizer && (
-                    <span className="text-sm text-muted-foreground">Organized by {selectedEvent?.organizer}</span>
-                  )}
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 text-sm">
-                    <Calendar className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-mono text-xs text-muted-foreground">DATE</div>
-                      <div className="font-semibold">{selectedEvent?.date}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Clock className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-mono text-xs text-muted-foreground">TIME</div>
-                      <div className="font-semibold">{selectedEvent?.time}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <MapPin className="w-5 h-5 text-primary" />
-                    <div>
-                      <div className="font-mono text-xs text-muted-foreground">LOCATION</div>
-                      <div className="font-semibold">{selectedEvent?.location}</div>
-                    </div>
-                  </div>
-                  {selectedEvent?.capacity && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <Users className="w-5 h-5 text-primary" />
-                      <div>
-                        <div className="font-mono text-xs text-muted-foreground">CAPACITY</div>
-                        <div className="font-semibold">{selectedEvent?.capacity}</div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {selectedEvent?.details && (
-                  <div className="tech-card p-4">
-                    <h4 className="font-bold text-lg mb-2 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-primary" />
-                      About
-                    </h4>
-                    <p className="text-muted-foreground">{renderTextWithLinks(selectedEvent?.details)}</p>
-                  </div>
-                )}
-
-                {selectedEvent?.agenda && selectedEvent.agenda.length > 0 && (
-                  <div className="tech-card p-4">
-                    <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                      <span className="w-1 h-5 bg-primary" />
-                      Agenda
-                    </h4>
-                    <div className="space-y-2">
-                      {selectedEvent?.agenda.map((item, index) => (
-                        <div key={index} className="flex items-start gap-3">
-                          <span className="font-mono text-xs text-primary mt-1">{String(index + 1).padStart(2, '0')}</span>
-                          <span className="text-sm text-foreground">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
         </section>
 
         {/* Highlights Section */}
