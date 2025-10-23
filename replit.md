@@ -147,7 +147,8 @@ src/
 - `events` - Event information with agenda and details
 - `members_faculty` - Faculty advisor profile
 - `members_core_team` - Core team member profiles
-- `members_post_holders` - Post holder profiles  
+- `members_post_holders` - Post holder profiles
+- `members_executive` - Executive team member profiles
 - `gallery` - Gallery images with categories
 - `notices` - Notice board announcements
 - `event_highlights` - Past event showcases
