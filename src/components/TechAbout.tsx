@@ -104,15 +104,10 @@ const TechAbout = () => {
 
         {/* Vision */}
         <div ref={(el) => cardsRef.current[2] = el} className="tech-card p-8 bg-primary/5 hover:border-primary/50 transition-all duration-300">
-          <div className="mb-6 flex items-center gap-3">
-            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            <div>
-              <span className="font-mono text-xs text-primary/70 block">VISION</span>
-              <h4 className="text-xl font-bold">OUR FORESIGHT</h4>
-            </div>
+          <div className="mb-6">
+            <span className="font-mono text-xs text-primary/70 block mb-2">VISION</span>
+            <h4 className="text-2xl font-bold">OUR FORESIGHT</h4>
+            <div className="h-1 w-20 bg-primary mt-3" />
           </div>
           <p className="text-foreground/80 leading-relaxed border-l-2 border-primary pl-4">
             Empowering educators to leverage technology for innovation in teaching and learning, 
@@ -122,14 +117,10 @@ const TechAbout = () => {
 
         {/* Mission */}
         <div ref={(el) => cardsRef.current[3] = el} className="tech-card p-8 bg-secondary/5 hover:border-secondary/50 transition-all duration-300">
-          <div className="mb-6 flex items-center gap-3">
-            <svg className="w-8 h-8 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <div>
-              <span className="font-mono text-xs text-secondary/70 block">MISSION</span>
-              <h4 className="text-xl font-bold">OUR PURPOSE</h4>
-            </div>
+          <div className="mb-6">
+            <span className="font-mono text-xs text-secondary/70 block mb-2">MISSION</span>
+            <h4 className="text-2xl font-bold">OUR PURPOSE</h4>
+            <div className="h-1 w-20 bg-secondary mt-3" />
           </div>
           <p className="text-foreground/80 leading-relaxed border-l-2 border-secondary pl-4">
             To inspire educators worldwide to innovate through technology, foster best practices, 

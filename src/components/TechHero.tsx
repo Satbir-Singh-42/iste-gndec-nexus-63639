@@ -77,9 +77,9 @@ const TechHero = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
+    <section ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center -z-10">
       {/* Animated Grid Background */}
-      <div ref={gridRef} className="absolute inset-0 grid-bg opacity-50">
+      <div ref={gridRef} className="absolute inset-0 grid-bg opacity-50 -z-10">
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="tech-grid" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
@@ -133,13 +133,13 @@ const TechHero = () => {
       <div className="absolute inset-0 hex-pattern opacity-20" />
 
       {/* Corner Elements */}
-      <div className="absolute top-8 left-8 w-16 h-16 border-l-2 border-t-2 border-primary" />
-      <div className="absolute top-8 right-8 w-16 h-16 border-r-2 border-t-2 border-secondary" />
+      <div className="absolute top-20 left-8 w-16 h-16 border-l-2 border-t-2 border-primary" />
+      <div className="absolute top-20 right-8 w-16 h-16 border-r-2 border-t-2 border-secondary" />
       <div className="absolute bottom-8 left-8 w-16 h-16 border-l-2 border-b-2 border-secondary" />
       <div className="absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 border-primary" />
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
+      <div className="relative z-0 max-w-6xl mx-auto px-4 text-center">
         {/* Tech Status Bar */}
         <div className="mb-8 flex items-center justify-center gap-4 text-sm font-mono text-primary">
           <span className="flex items-center gap-2">
