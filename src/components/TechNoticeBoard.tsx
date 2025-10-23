@@ -14,6 +14,7 @@ interface Notice {
   type: string;
   status: string;
   description: string;
+  link?: string;
 }
 
 const TechNoticeBoard = () => {
@@ -124,63 +125,73 @@ const TechNoticeBoard = () => {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {notices.map((notice, index) => (
-              <div
-                key={notice.id}
-                ref={(el) => (cardsRef.current[index] = el)}
-                className="tech-card p-6 hover:border-primary/50 transition-all duration-300 group cursor-pointer bg-card/50"
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-primary animate-pulse" />
-                    <span className={`font-mono text-xs ${getStatusColor(notice.status)} border px-2 py-0.5`}>
-                      {notice.status}
-                    </span>
+            {notices.map((notice, index) => {
+              const NoticeCard = notice.link ? 'a' : 'div';
+              const cardProps = notice.link ? { href: notice.link, target: "_blank", rel: "noopener noreferrer" } : {};
+              
+              return (
+                <NoticeCard
+                  key={notice.id}
+                  ref={(el) => (cardsRef.current[index] = el)}
+                  className="tech-card p-6 hover:border-primary/50 transition-all duration-300 group cursor-pointer bg-card/50"
+                  {...cardProps}
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-primary animate-pulse" />
+                      <span className={`font-mono text-xs ${getStatusColor(notice.status)} border px-2 py-0.5`}>
+                        {notice.status}
+                      </span>
+                    </div>
+                    <span className="font-mono text-xs text-muted-foreground">{notice.type}</span>
                   </div>
-                  <span className="font-mono text-xs text-muted-foreground">{notice.type}</span>
-                </div>
 
-                {/* Title */}
-                <h3 className="text-lg font-bold mb-3 group-hover:text-primary transition-colors">
-                  {notice.title}
-                </h3>
+                  {/* Title */}
+                  <h3 className="text-lg font-bold mb-3 group-hover:text-primary transition-colors">
+                    {notice.title}
+                  </h3>
 
-                {/* Date & Time */}
-                <div className="flex items-center gap-4 mb-4 font-mono text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {notice.date}
+                  {/* Date & Time */}
+                  <div className="flex items-center gap-4 mb-4 font-mono text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {notice.date}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {notice.time}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {notice.time}
+
+                  {/* Description */}
+                  <p className="text-sm text-foreground/70 leading-relaxed mb-4">
+                    {notice.description}
+                  </p>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-end pt-4 border-t border-border/50">
+                    {notice.link && (
+                      <div className="flex items-center gap-2 text-primary text-sm font-mono">
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity">Learn More</span>
+                        <svg 
+                          className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
-                </div>
-
-                {/* Description */}
-                <p className="text-sm text-foreground/70 leading-relaxed mb-4">
-                  {notice.description}
-                </p>
-
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                  <span className="font-mono text-xs text-muted-foreground">ID: {notice.id.toString().padStart(3, '0')}</span>
-                  <svg 
-                    className="w-5 h-5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </div>
-              </div>
-            ))}
+                </NoticeCard>
+              );
+            })}
           </div>
         )}
       </div>
