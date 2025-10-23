@@ -1,5 +1,9 @@
+import { useLocation } from 'react-router-dom';
+
 const TechFooter = () => {
   const currentYear = new Date().getFullYear();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   return (
     <footer className="relative border-t-2 border-border bg-card/30">
@@ -7,7 +11,7 @@ const TechFooter = () => {
         <div className="grid md:grid-cols-3 gap-12 mb-12">
           {/* Brand Column */}
           <div>
-          <div className="mb-6">
+            <div className="mb-6">
               <h3 className="text-3xl font-black mb-2">ISTE GNDEC</h3>
               <div className="h-1 w-20 bg-gradient-to-r from-primary to-secondary mb-4" />
               <p className="font-mono text-xs text-muted-foreground tracking-wider">
@@ -18,6 +22,26 @@ const TechFooter = () => {
               Guru Nanak Dev Engineering College Student Chapter - Empowering students through 
               technical education and innovation.
             </p>
+            
+            {/* Logos - Only on home page */}
+            {isHomePage && (
+              <div className="mt-8 flex items-center gap-6">
+                <div className="p-3 bg-background/50 border border-border/50 rounded">
+                  <img 
+                    src="/Iste.webp" 
+                    alt="ISTE Logo" 
+                    className="h-16 w-auto object-contain"
+                  />
+                </div>
+                <div className="p-3 bg-background/50 border border-border/50 rounded">
+                  <img 
+                    src="/gne new logo.png" 
+                    alt="GNDEC Logo" 
+                    className="h-16 w-auto object-contain"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Quick Links Column */}

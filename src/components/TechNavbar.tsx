@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -13,18 +13,52 @@ const navItems = [
 
 const TechNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 80) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+    <nav className={cn(
+      'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
+      isScrolled 
+        ? 'bg-background/80 backdrop-blur-lg border-border' 
+        : 'bg-transparent border-transparent'
+    )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 border-2 border-primary flex items-center justify-center">
-              <span className="text-primary font-black text-xl">I</span>
-              <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-secondary" />
-            </div>
-            <span className="font-black text-xl tracking-tight text-foreground group-hover:text-primary transition-colors">
+            {isHomePage ? (
+              <div className="relative">
+                <img 
+                  src="/Iste.webp" 
+                  alt="ISTE Logo" 
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
+            ) : (
+              <div className="relative w-10 h-10 border-2 border-primary flex items-center justify-center">
+                <span className="text-primary font-black text-xl">I</span>
+                <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-secondary" />
+              </div>
+            )}
+            <span className={cn(
+              "font-black text-xl tracking-tight group-hover:text-primary transition-colors",
+              isScrolled ? "text-foreground" : "text-white drop-shadow-lg"
+            )}>
               ISTE GNDEC
             </span>
           </NavLink>
@@ -41,7 +75,9 @@ const TechNavbar = () => {
                     'relative px-4 py-2 font-mono text-sm tracking-wider transition-all',
                     isActive
                       ? 'text-primary'
-                      : 'text-muted-foreground hover:text-foreground'
+                      : isScrolled 
+                        ? 'text-muted-foreground hover:text-foreground'
+                        : 'text-white/90 hover:text-white drop-shadow-lg'
                   )
                 }
               >
@@ -60,7 +96,10 @@ const TechNavbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-foreground hover:text-primary transition-colors"
+            className={cn(
+              "md:hidden p-2 hover:text-primary transition-colors",
+              isScrolled ? "text-foreground" : "text-white drop-shadow-lg"
+            )}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>

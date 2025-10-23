@@ -1,11 +1,15 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const TechHero = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const linesRef = useRef<(HTMLDivElement | null)[]>([]);
+  const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
@@ -42,10 +46,38 @@ const TechHero = () => {
         repeatDelay: 3,
       });
     });
+
+    // Parallax effect on scroll
+    ScrollTrigger.create({
+      trigger: heroRef.current,
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 1,
+      onUpdate: (self) => {
+        if (gridRef.current) {
+          gsap.to(gridRef.current, {
+            y: self.progress * 200,
+            opacity: 1 - self.progress * 0.5,
+            duration: 0.1,
+          });
+        }
+        if (titleRef.current) {
+          gsap.to(titleRef.current, {
+            y: self.progress * 150,
+            opacity: 1 - self.progress * 0.8,
+            duration: 0.1,
+          });
+        }
+      },
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
   }, []);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden flex items-center justify-center">
+    <section ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       {/* Animated Grid Background */}
       <div ref={gridRef} className="absolute inset-0 grid-bg opacity-50">
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
