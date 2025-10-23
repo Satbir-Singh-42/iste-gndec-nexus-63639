@@ -2028,7 +2028,6 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                 id="edit-gallery-image" 
                 type="file" 
                 accept="image/*" 
-                multiple
                 onChange={handleImageUpload} 
                 disabled={uploading} 
               />
