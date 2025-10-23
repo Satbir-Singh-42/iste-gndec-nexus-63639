@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS members_core_team (
   position TEXT NOT NULL,
   image TEXT NOT NULL,
   email TEXT NOT NULL,
+  linkedin TEXT,
+  github TEXT,
+  instagram TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -44,6 +47,9 @@ CREATE TABLE IF NOT EXISTS members_post_holders (
   position TEXT NOT NULL,
   image TEXT NOT NULL,
   email TEXT NOT NULL,
+  linkedin TEXT,
+  github TEXT,
+  instagram TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -54,6 +60,9 @@ CREATE TABLE IF NOT EXISTS members_executive (
   position TEXT NOT NULL,
   image TEXT NOT NULL,
   email TEXT NOT NULL,
+  linkedin TEXT,
+  github TEXT,
+  instagram TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
