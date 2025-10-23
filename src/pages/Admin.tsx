@@ -3,9 +3,43 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Trash2, Edit, Plus } from "lucide-react";
+
+interface Notice {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  type: string;
+  status: string;
+  description: string;
+}
+
+interface Event {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  status: string;
+}
+
+interface GalleryItem {
+  id: number;
+  title: string;
+  image: string;
+  category: string;
+  description: string;
+}
 
 const Admin = () => {
   const [email, setEmail] = useState("");
@@ -15,9 +49,22 @@ const Admin = () => {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const navigate = useNavigate();
 
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   useEffect(() => {
     checkAuthStatus();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && supabase) {
+      fetchNotices();
+      fetchEvents();
+      fetchGallery();
+    }
+  }, [isAuthenticated, refreshTrigger]);
 
   const checkAuthStatus = async () => {
     if (!supabase) {
@@ -68,6 +115,75 @@ const Admin = () => {
     await supabase.auth.signOut();
     setIsAuthenticated(false);
     toast.success("Logged out successfully!");
+  };
+
+  const fetchNotices = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('notices').select('*').order('id', { ascending: false });
+      if (error) throw error;
+      setNotices(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch notices: ${error.message}`);
+    }
+  };
+
+  const fetchEvents = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('events').select('*').order('id', { ascending: false });
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch events: ${error.message}`);
+    }
+  };
+
+  const fetchGallery = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('gallery').select('*').order('id', { ascending: false });
+      if (error) throw error;
+      setGallery(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch gallery: ${error.message}`);
+    }
+  };
+
+  const deleteNotice = async (id: number) => {
+    if (!supabase || !confirm('Are you sure you want to delete this notice?')) return;
+    try {
+      const { error } = await supabase.from('notices').delete().eq('id', id);
+      if (error) throw error;
+      toast.success('Notice deleted successfully');
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete notice: ${error.message}`);
+    }
+  };
+
+  const deleteEvent = async (id: number) => {
+    if (!supabase || !confirm('Are you sure you want to delete this event?')) return;
+    try {
+      const { error } = await supabase.from('events').delete().eq('id', id);
+      if (error) throw error;
+      toast.success('Event deleted successfully');
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete event: ${error.message}`);
+    }
+  };
+
+  const deleteGalleryItem = async (id: number) => {
+    if (!supabase || !confirm('Are you sure you want to delete this gallery item?')) return;
+    try {
+      const { error } = await supabase.from('gallery').delete().eq('id', id);
+      if (error) throw error;
+      toast.success('Gallery item deleted successfully');
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete gallery item: ${error.message}`);
+    }
   };
 
   const handleDataMigration = async () => {
@@ -198,6 +314,7 @@ const Admin = () => {
       }
 
       toast.success("Data migration completed successfully!");
+      setRefreshTrigger(prev => prev + 1);
     } catch (error: any) {
       toast.error(`Migration failed: ${error.message}`);
       console.error("Migration error:", error);
@@ -291,7 +408,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">Admin Panel</h1>
           <div className="space-x-4">
@@ -304,11 +421,154 @@ const Admin = () => {
           </div>
         </div>
 
-        <Tabs defaultValue="migration" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="migration">Data Migration</TabsTrigger>
-            <TabsTrigger value="management">Content Management</TabsTrigger>
+        <Tabs defaultValue="notices" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="notices">Notices</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
+            <TabsTrigger value="gallery">Gallery</TabsTrigger>
+            <TabsTrigger value="migration">Migration</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="notices">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Manage Notices</CardTitle>
+                    <CardDescription>Add, edit, or delete notices</CardDescription>
+                  </div>
+                  <AddNoticeDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Time</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {notices.map((notice) => (
+                      <TableRow key={notice.id}>
+                        <TableCell>{notice.id}</TableCell>
+                        <TableCell>{notice.title}</TableCell>
+                        <TableCell>{notice.date}</TableCell>
+                        <TableCell>{notice.time}</TableCell>
+                        <TableCell>{notice.type}</TableCell>
+                        <TableCell>{notice.status}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <EditNoticeDialog notice={notice} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                            <Button variant="destructive" size="sm" onClick={() => deleteNotice(notice.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="events">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Manage Events</CardTitle>
+                    <CardDescription>Add, edit, or delete events</CardDescription>
+                  </div>
+                  <AddEventDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {events.map((event) => (
+                      <TableRow key={event.id}>
+                        <TableCell>{event.id}</TableCell>
+                        <TableCell>{event.title}</TableCell>
+                        <TableCell>{event.date}</TableCell>
+                        <TableCell>{event.location}</TableCell>
+                        <TableCell>{event.status}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <EditEventDialog event={event} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                            <Button variant="destructive" size="sm" onClick={() => deleteEvent(event.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="gallery">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Manage Gallery</CardTitle>
+                    <CardDescription>Add, edit, or delete gallery items</CardDescription>
+                  </div>
+                  <AddGalleryDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Image URL</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {gallery.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>{item.id}</TableCell>
+                        <TableCell>{item.title}</TableCell>
+                        <TableCell>{item.category}</TableCell>
+                        <TableCell className="max-w-xs truncate">{item.image}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <EditGalleryDialog item={item} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                            <Button variant="destructive" size="sm" onClick={() => deleteGalleryItem(item.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="migration">
             <Card>
@@ -326,26 +586,466 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
-
-          <TabsContent value="management">
-            <Card>
-              <CardHeader>
-                <CardTitle>Content Management</CardTitle>
-                <CardDescription>
-                  Manage events, members, gallery, and notices
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-500">
-                  Content management interface will be available here once migration is complete.
-                </p>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
     </div>
   );
 };
+
+function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    date: "",
+    time: "",
+    type: "EVENT",
+    status: "UPCOMING",
+    description: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('notices').insert([formData]);
+      if (error) throw error;
+      toast.success('Notice added successfully');
+      setOpen(false);
+      setFormData({ title: "", date: "", time: "", type: "EVENT", status: "UPCOMING", description: "" });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add notice: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Notice</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Add New Notice</DialogTitle>
+          <DialogDescription>Create a new notice for the notice board</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="title">Title</Label>
+            <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="date">Date</Label>
+              <Input id="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} placeholder="March 15, 2024" required />
+            </div>
+            <div>
+              <Label htmlFor="time">Time</Label>
+              <Input id="time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} placeholder="10:00 AM" required />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="type">Type</Label>
+              <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="EVENT">EVENT</SelectItem>
+                  <SelectItem value="ANNOUNCEMENT">ANNOUNCEMENT</SelectItem>
+                  <SelectItem value="WORKSHOP">WORKSHOP</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
+                  <SelectItem value="REGISTRATION">REGISTRATION</SelectItem>
+                  <SelectItem value="SCHEDULED">SCHEDULED</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Textarea id="description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <DialogFooter>
+            <Button type="submit">Add Notice</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState(notice);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('notices').update(formData).eq('id', notice.id);
+      if (error) throw error;
+      toast.success('Notice updated successfully');
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update notice: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Edit Notice</DialogTitle>
+          <DialogDescription>Update notice information</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="edit-title">Title</Label>
+            <Input id="edit-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-date">Date</Label>
+              <Input id="edit-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
+            </div>
+            <div>
+              <Label htmlFor="edit-time">Time</Label>
+              <Input id="edit-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} required />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-type">Type</Label>
+              <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="EVENT">EVENT</SelectItem>
+                  <SelectItem value="ANNOUNCEMENT">ANNOUNCEMENT</SelectItem>
+                  <SelectItem value="WORKSHOP">WORKSHOP</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-status">Status</Label>
+              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
+                  <SelectItem value="REGISTRATION">REGISTRATION</SelectItem>
+                  <SelectItem value="SCHEDULED">SCHEDULED</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="edit-description">Description</Label>
+            <Textarea id="edit-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <DialogFooter>
+            <Button type="submit">Update Notice</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    date: "",
+    time: "",
+    location: "",
+    description: "",
+    status: "UPCOMING",
+    capacity: "100",
+    organizer: "ISTE GNDEC",
+    details: "",
+    agenda: []
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('events').insert([formData]);
+      if (error) throw error;
+      toast.success('Event added successfully');
+      setOpen(false);
+      setFormData({ title: "", date: "", time: "", location: "", description: "", status: "UPCOMING", capacity: "100", organizer: "ISTE GNDEC", details: "", agenda: [] });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add event: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Event</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add New Event</DialogTitle>
+          <DialogDescription>Create a new event</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="event-title">Title</Label>
+            <Input id="event-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="event-date">Date</Label>
+              <Input id="event-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} placeholder="March 15, 2024" required />
+            </div>
+            <div>
+              <Label htmlFor="event-time">Time</Label>
+              <Input id="event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} placeholder="10:00 AM" required />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="event-location">Location</Label>
+            <Input id="event-location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="event-description">Description</Label>
+            <Textarea id="event-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="event-status">Status</Label>
+            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="UPCOMING">UPCOMING</SelectItem>
+                <SelectItem value="ONGOING">ONGOING</SelectItem>
+                <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Add Event</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState(event);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('events').update(formData).eq('id', event.id);
+      if (error) throw error;
+      toast.success('Event updated successfully');
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update event: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Event</DialogTitle>
+          <DialogDescription>Update event information</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="edit-event-title">Title</Label>
+            <Input id="edit-event-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-event-date">Date</Label>
+              <Input id="edit-event-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
+            </div>
+            <div>
+              <Label htmlFor="edit-event-time">Time</Label>
+              <Input id="edit-event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} required />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="edit-event-location">Location</Label>
+            <Input id="edit-event-location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-event-description">Description</Label>
+            <Textarea id="edit-event-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-event-status">Status</Label>
+            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="UPCOMING">UPCOMING</SelectItem>
+                <SelectItem value="ONGOING">ONGOING</SelectItem>
+                <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Update Event</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    image: "",
+    category: "Events",
+    description: ""
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('gallery').insert([formData]);
+      if (error) throw error;
+      toast.success('Gallery item added successfully');
+      setOpen(false);
+      setFormData({ title: "", image: "", category: "Events", description: "" });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add gallery item: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Gallery Item</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Add Gallery Item</DialogTitle>
+          <DialogDescription>Add a new image to the gallery</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="gallery-title">Title</Label>
+            <Input id="gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="gallery-image">Image URL</Label>
+            <Input id="gallery-image" value={formData.image} onChange={(e) => setFormData({ ...formData, image: e.target.value })} placeholder="https://..." required />
+          </div>
+          <div>
+            <Label htmlFor="gallery-category">Category</Label>
+            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Events">Events</SelectItem>
+                <SelectItem value="Workshops">Workshops</SelectItem>
+                <SelectItem value="Team">Team</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="gallery-description">Description</Label>
+            <Textarea id="gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <DialogFooter>
+            <Button type="submit">Add Gallery Item</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState(item);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('gallery').update(formData).eq('id', item.id);
+      if (error) throw error;
+      toast.success('Gallery item updated successfully');
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update gallery item: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Edit Gallery Item</DialogTitle>
+          <DialogDescription>Update gallery item information</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="edit-gallery-title">Title</Label>
+            <Input id="edit-gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-gallery-image">Image URL</Label>
+            <Input id="edit-gallery-image" value={formData.image} onChange={(e) => setFormData({ ...formData, image: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-gallery-category">Category</Label>
+            <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Events">Events</SelectItem>
+                <SelectItem value="Workshops">Workshops</SelectItem>
+                <SelectItem value="Team">Team</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="edit-gallery-description">Description</Label>
+            <Textarea id="edit-gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <DialogFooter>
+            <Button type="submit">Update Gallery Item</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default Admin;
