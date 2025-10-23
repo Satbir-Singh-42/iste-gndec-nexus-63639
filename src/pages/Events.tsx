@@ -325,47 +325,27 @@ const Events = () => {
                   </div>
 
                   {/* Event Details */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-secondary transition-colors">
+                  <div className="p-4">
+                    <h3 className="text-lg font-bold mb-2 group-hover:text-secondary transition-colors">
                       {highlight.title}
                     </h3>
                     
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
-                      <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-1 text-muted-foreground">
                         <Calendar className="w-4 h-4 text-secondary" />
                         <span>{highlight.date}</span>
                       </div>
-                      <span>•</span>
-                      <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4 text-secondary" />
-                        <span>{highlight.attendees}</span>
-                      </div>
+                      
+                      <a
+                        href={highlight.instagram_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-mono text-secondary hover:text-secondary/80 transition-colors"
+                      >
+                        <Instagram className="w-4 h-4" />
+                        <span>INSTAGRAM</span>
+                      </a>
                     </div>
-
-                    <p className="text-sm text-foreground/70 mb-4 line-clamp-2">
-                      {highlight.description}
-                    </p>
-
-                    {/* Key Highlights */}
-                    <div className="space-y-2 mb-4">
-                      {highlight.highlights.slice(0, 3).map((item, index) => (
-                        <div key={index} className="flex items-center gap-2 text-xs">
-                          <span className="w-1 h-1 bg-secondary rounded-full" />
-                          <span className="text-foreground/60">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* View on Instagram Link */}
-                    <a
-                      href={highlight.instagram_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-xs font-mono text-secondary hover:text-secondary/80 transition-colors group/link"
-                    >
-                      <span>VIEW ON INSTAGRAM</span>
-                      <ExternalLink className="w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
-                    </a>
                   </div>
                 </div>
               ))}
