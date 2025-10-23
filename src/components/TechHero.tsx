@@ -77,7 +77,7 @@ const TechHero = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center -z-10">
+    <section ref={heroRef} className="relative h-screen w-full overflow-hidden flex items-center justify-center">
       {/* Animated Grid Background */}
       <div ref={gridRef} className="absolute inset-0 grid-bg opacity-50 -z-10">
         <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -139,7 +139,7 @@ const TechHero = () => {
       <div className="absolute bottom-8 right-8 w-16 h-16 border-r-2 border-b-2 border-primary" />
 
       {/* Main Content */}
-      <div className="relative z-0 max-w-6xl mx-auto px-4 text-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
         {/* Tech Status Bar */}
         <div className="mb-8 flex items-center justify-center gap-4 text-sm font-mono text-primary">
           <span className="flex items-center gap-2">
@@ -178,13 +178,18 @@ const TechHero = () => {
 
           {/* CTA */}
           <div className="mt-12">
-            <a 
-              href="#about"
-              className="group relative inline-flex items-center gap-3 tech-border px-8 py-4 font-semibold text-foreground hover:text-primary transition-all overflow-hidden"
+            <button 
+              onClick={() => {
+                const aboutSection = document.getElementById('about');
+                if (aboutSection) {
+                  aboutSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="group relative inline-flex items-center gap-3 tech-border px-8 py-4 font-semibold text-foreground hover:text-primary transition-all overflow-hidden cursor-pointer"
             >
               <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
               <span className="relative z-10 font-mono text-sm tracking-wider">EXPLORE CHAPTER</span>
-            </a>
+            </button>
           </div>
         </div>
       </div>

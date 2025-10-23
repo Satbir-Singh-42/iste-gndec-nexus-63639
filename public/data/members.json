@@ -1,0 +1,33 @@
+{
+  "faculty": {
+    "name": "Dr. Arvind Dhingra, Ph.D",
+    "title": "Associate Professor, Department of Electrical Engineering",
+    "image": "/placeholder.svg",
+    "description": "Dr. Arvind Dhingra is current executive director of STEP. He does research in Curriculum Theory, Educational Leadership and Educational Management."
+  },
+  "coreTeam": [
+    { "id": 1, "name": "Satbir Singh", "position": "Convenor", "image": "/placeholder.svg", "email": "satbir@gne.edu.in" },
+    { "id": 2, "name": "Harmandeep Singh", "position": "Co Convenor", "image": "/placeholder.svg", "email": "harman@gne.edu.in" },
+    { "id": 3, "name": "Palak Batra", "position": "Secretary", "image": "/placeholder.svg", "email": "palak@gne.edu.in" },
+    { "id": 4, "name": "Kanwarpartap Singh", "position": "Secretary", "image": "/placeholder.svg", "email": "kanwar@gne.edu.in" },
+    { "id": 5, "name": "Tanveer Kaur", "position": "PR Advisor", "image": "/placeholder.svg", "email": "tanveer@gne.edu.in" },
+    { "id": 6, "name": "Sakshi", "position": "Co Convenor", "image": "/placeholder.svg", "email": "sakshi@gne.edu.in" },
+    { "id": 7, "name": "Vivek Kumar", "position": "Publicity Officer", "image": "/placeholder.svg", "email": "vivek@gne.edu.in" }
+  ],
+  "postHolders": [
+    { "id": 1, "name": "Malika", "position": "Promotion Head", "image": "/placeholder.svg", "email": "malika@gne.edu.in" },
+    { "id": 2, "name": "Gurkamal", "position": "Content Head", "image": "/placeholder.svg", "email": "gurkamal@gne.edu.in" },
+    { "id": 3, "name": "Shruti Verma", "position": "Promotion Head", "image": "/placeholder.svg", "email": "shruti@gne.edu.in" },
+    { "id": 4, "name": "Manjot Kaur", "position": "Content Head", "image": "/placeholder.svg", "email": "manjot@gne.edu.in" },
+    { "id": 5, "name": "Jaskaran Singh Sokhal", "position": "Event Management Head", "image": "/placeholder.svg", "email": "jaskaran@gne.edu.in" },
+    { "id": 6, "name": "Raman Tiwari", "position": "Discipline Head", "image": "/placeholder.svg", "email": "raman@gne.edu.in" },
+    { "id": 7, "name": "Aryan Pandey", "position": "Database Head", "image": "/placeholder.svg", "email": "aryan@gne.edu.in" },
+    { "id": 8, "name": "Arshdeep Singh", "position": "Event Management Head", "image": "/placeholder.svg", "email": "arshdeep@gne.edu.in" },
+    { "id": 9, "name": "Navneet Saini", "position": "Creative Head", "image": "/placeholder.svg", "email": "navneet@gne.edu.in" },
+    { "id": 10, "name": "Anjali Kumari", "position": "Database Head", "image": "/placeholder.svg", "email": "anjali@gne.edu.in" },
+    { "id": 11, "name": "Kanika Mittal", "position": "Creative Head", "image": "/placeholder.svg", "email": "kanika@gne.edu.in" },
+    { "id": 12, "name": "Gurpreet Kaur", "position": "Event Management Head", "image": "/placeholder.svg", "email": "gurpreet@gne.edu.in" },
+    { "id": 13, "name": "Jeeya Thapar", "position": "Creative Head", "image": "/placeholder.svg", "email": "jeeya@gne.edu.in" }
+  ],
+  "executiveTeam": []
+}

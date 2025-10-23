@@ -1,6 +1,6 @@
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
-import { Calendar, MapPin, Clock, Users } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users, Instagram, ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useState } from 'react';
 
@@ -33,6 +33,42 @@ const Events = () => {
       organizer: 'Technical Society',
       details: 'An intense coding competition featuring algorithmic challenges and problem-solving tasks. Compete with peers and win exciting prizes!',
       agenda: ['Registration', 'Round 1: Warm-up Problems', 'Round 2: Advanced Challenges', 'Final Round', 'Prize Distribution'],
+    },
+  ];
+
+  const highlights = [
+    {
+      id: 1,
+      title: 'Annual Tech Fest 2023',
+      date: 'December 20, 2023',
+      location: 'Main Auditorium',
+      description: 'A three-day extravaganza featuring workshops, competitions, and tech talks by industry experts.',
+      poster: '/placeholder.svg',
+      instagramLink: 'https://instagram.com/p/example1',
+      attendees: '500+ participants',
+      highlights: ['10+ Workshops', '5 Tech Competitions', 'Industry Expert Sessions', 'Networking Opportunities'],
+    },
+    {
+      id: 2,
+      title: 'Web Development Bootcamp',
+      date: 'November 10, 2023',
+      location: 'Computer Lab',
+      description: 'Intensive bootcamp covering modern web development frameworks and best practices.',
+      poster: '/placeholder.svg',
+      instagramLink: 'https://instagram.com/p/example2',
+      attendees: '80 participants',
+      highlights: ['React & Next.js', 'Backend Development', 'Deployment & DevOps', 'Project Building'],
+    },
+    {
+      id: 3,
+      title: 'AI/ML Workshop Series',
+      date: 'October 5, 2023',
+      location: 'Seminar Hall',
+      description: 'Comprehensive workshop series on artificial intelligence and machine learning fundamentals.',
+      poster: '/placeholder.svg',
+      instagramLink: 'https://instagram.com/p/example3',
+      attendees: '120 participants',
+      highlights: ['Python for AI', 'Neural Networks', 'Real-world Projects', 'Certification'],
     },
   ];
 
@@ -178,6 +214,88 @@ const Events = () => {
               </div>
             </DialogContent>
           </Dialog>
+        </section>
+
+        {/* Highlights Section */}
+        <section>
+          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+            <span className="w-1 h-8 bg-secondary" />
+            Event Highlights
+          </h2>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {highlights.map((highlight) => (
+              <div 
+                key={highlight.id} 
+                className="tech-card overflow-hidden group hover:border-secondary/50 transition-all"
+              >
+                {/* Event Poster */}
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                  <img 
+                    src={highlight.poster} 
+                    alt={highlight.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  
+                  {/* Instagram Link Overlay */}
+                  <a
+                    href={highlight.instagramLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute top-4 right-4 p-2 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Instagram className="w-5 h-5" />
+                  </a>
+                </div>
+
+                {/* Event Details */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-secondary transition-colors">
+                    {highlight.title}
+                  </h3>
+                  
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4 text-secondary" />
+                      <span>{highlight.date}</span>
+                    </div>
+                    <span>•</span>
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4 text-secondary" />
+                      <span>{highlight.attendees}</span>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-foreground/70 mb-4 line-clamp-2">
+                    {highlight.description}
+                  </p>
+
+                  {/* Key Highlights */}
+                  <div className="space-y-2 mb-4">
+                    {highlight.highlights.slice(0, 3).map((item, index) => (
+                      <div key={index} className="flex items-center gap-2 text-xs">
+                        <span className="w-1 h-1 bg-secondary rounded-full" />
+                        <span className="text-foreground/60">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* View on Instagram Link */}
+                  <a
+                    href={highlight.instagramLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-xs font-mono text-secondary hover:text-secondary/80 transition-colors group/link"
+                  >
+                    <span>VIEW ON INSTAGRAM</span>
+                    <ExternalLink className="w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
       </main>
 

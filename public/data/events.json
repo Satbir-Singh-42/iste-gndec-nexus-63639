@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "title": "Tech Workshop 2024",
+    "date": "March 15, 2024",
+    "time": "10:00 AM - 4:00 PM",
+    "location": "Seminar Hall",
+    "description": "Hands-on workshop on emerging technologies and innovations.",
+    "status": "upcoming",
+    "capacity": "100 participants",
+    "organizer": "Technical Society",
+    "details": "Join us for an intensive hands-on workshop covering the latest trends in AI, Machine Learning, and Web Development. Industry experts will guide you through practical sessions with real-world applications.",
+    "agenda": ["Registration & Welcome", "Session 1: AI Fundamentals", "Lunch Break", "Session 2: ML Practical", "Session 3: Web Dev Workshop", "Q&A & Networking"]
+  },
+  {
+    "id": 2,
+    "title": "Coding Competition",
+    "date": "March 22, 2024",
+    "time": "2:00 PM - 5:00 PM",
+    "location": "Computer Lab",
+    "description": "Test your coding skills in this exciting competition.",
+    "status": "upcoming",
+    "capacity": "50 participants",
+    "organizer": "Technical Society",
+    "details": "An intense coding competition featuring algorithmic challenges and problem-solving tasks. Compete with peers and win exciting prizes!",
+    "agenda": ["Registration", "Round 1: Warm-up Problems", "Round 2: Advanced Challenges", "Final Round", "Prize Distribution"]
+  }
+]

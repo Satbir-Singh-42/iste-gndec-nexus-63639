@@ -53,20 +53,47 @@ const TechFooter = () => {
             <ul className="space-y-3">
               <li>
                 <a 
-                  href="#about" 
+                  href="/" 
                   className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-sm"
                 >
                   <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
-                  ABOUT_US
+                  HOME
                 </a>
               </li>
               <li>
                 <a 
-                  href="#notices" 
+                  href="/events" 
                   className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-sm"
                 >
                   <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
-                  NOTICE_BOARD
+                  EVENTS
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="/members" 
+                  className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-sm"
+                >
+                  <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
+                  MEMBERS
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="/gallery" 
+                  className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-sm"
+                >
+                  <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
+                  GALLERY
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="/contact" 
+                  className="group flex items-center gap-2 text-foreground/70 hover:text-primary transition-colors font-mono text-sm"
+                >
+                  <span className="w-0 group-hover:w-3 h-0.5 bg-primary transition-all duration-300" />
+                  CONTACT
                 </a>
               </li>
               <li>

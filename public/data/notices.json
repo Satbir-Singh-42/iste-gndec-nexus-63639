@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "title": "Tech Workshop: AI & Machine Learning",
+    "date": "2025.12.15",
+    "time": "14:00",
+    "type": "WORKSHOP",
+    "status": "UPCOMING",
+    "description": "Intensive workshop on AI fundamentals and practical ML applications."
+  },
+  {
+    "id": 2,
+    "title": "Annual Coding Competition",
+    "date": "2026.01.10",
+    "time": "09:00",
+    "type": "COMPETITION",
+    "status": "REGISTRATION",
+    "description": "Test your coding skills with exciting prizes and recognition."
+  },
+  {
+    "id": 3,
+    "title": "Guest Lecture: Industry 4.0",
+    "date": "2025.12.20",
+    "time": "15:30",
+    "type": "SEMINAR",
+    "status": "UPCOMING",
+    "description": "Expert talk on the fourth industrial revolution and future technologies."
+  },
+  {
+    "id": 4,
+    "title": "Hackathon 2026",
+    "date": "2026.02.05",
+    "time": "08:00",
+    "type": "COMPETITION",
+    "status": "REGISTRATION",
+    "description": "24-hour hackathon building innovative solutions for real-world problems."
+  },
+  {
+    "id": 5,
+    "title": "Web Development Bootcamp",
+    "date": "2026.01.25",
+    "time": "10:00",
+    "type": "WORKSHOP",
+    "status": "UPCOMING",
+    "description": "Learn modern web development with React, Node.js, and cloud technologies."
+  },
+  {
+    "id": 6,
+    "title": "Annual General Meeting",
+    "date": "2026.03.01",
+    "time": "16:00",
+    "type": "EVENT",
+    "status": "SCHEDULED",
+    "description": "Annual meeting to discuss achievements, plans, and elect new office bearers."
+  }
+]
