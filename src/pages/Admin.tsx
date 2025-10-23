@@ -422,10 +422,11 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="notices" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="notices">Notices</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
+            <TabsTrigger value="members">Members</TabsTrigger>
             <TabsTrigger value="migration">Migration</TabsTrigger>
           </TabsList>
 
@@ -566,6 +567,50 @@ const Admin = () => {
                     ))}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="members">
+            <Card>
+              <CardHeader>
+                <CardTitle>Manage Members</CardTitle>
+                <CardDescription>Manage faculty, core team, post holders, and executive members</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-300 bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                  <strong>Members Management:</strong> View and manage different member categories including Faculty, Core Team, Post Holders, and Executive Team members. Full CRUD functionality can be accessed by viewing the data in each respective table in your Supabase dashboard, or you can extend this interface with specific member management dialogs similar to the Notices and Events tabs.
+                </p>
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
+                  <div className="p-4 border rounded-lg">
+                    <h3 className="font-semibold mb-2">Faculty</h3>
+                    <p className="text-sm text-gray-400">Table: members_faculty</p>
+                    <Button className="mt-2" variant="outline" onClick={() => window.open('https://vtdsswjfgpgnfjgpjwhw.supabase.co/project/_/editor', '_blank')}>
+                      Edit in Supabase
+                    </Button>
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <h3 className="font-semibold mb-2">Core Team</h3>
+                    <p className="text-sm text-gray-400">Table: members_core_team</p>
+                    <Button className="mt-2" variant="outline" onClick={() => window.open('https://vtdsswjfgpgnfjgpjwhw.supabase.co/project/_/editor', '_blank')}>
+                      Edit in Supabase
+                    </Button>
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <h3 className="font-semibold mb-2">Post Holders</h3>
+                    <p className="text-sm text-gray-400">Table: members_post_holders</p>
+                    <Button className="mt-2" variant="outline" onClick={() => window.open('https://vtdsswjfgpgnfjgpjwhw.supabase.co/project/_/editor', '_blank')}>
+                      Edit in Supabase
+                    </Button>
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <h3 className="font-semibold mb-2">Executive Team</h3>
+                    <p className="text-sm text-gray-400">Table: members_executive</p>
+                    <Button className="mt-2" variant="outline" onClick={() => window.open('https://vtdsswjfgpgnfjgpjwhw.supabase.co/project/_/editor', '_blank')}>
+                      Edit in Supabase
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
