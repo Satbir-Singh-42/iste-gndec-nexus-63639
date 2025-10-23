@@ -2012,48 +2012,22 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="highlight-title">Title</Label>
+            <Label htmlFor="highlight-title">Title *</Label>
             <Input id="highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="highlight-date">Date</Label>
-              <Input id="highlight-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} placeholder="March 15, 2024" required />
-            </div>
-            <div>
-              <Label htmlFor="highlight-location">Location</Label>
-              <Input id="highlight-location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
-            </div>
+          <div>
+            <Label htmlFor="highlight-date">Date *</Label>
+            <Input id="highlight-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} placeholder="March 15, 2024" required />
           </div>
           <div>
-            <Label htmlFor="highlight-attendees">Attendees</Label>
-            <Input id="highlight-attendees" value={formData.attendees} onChange={(e) => setFormData({ ...formData, attendees: e.target.value })} placeholder="200+" required />
-          </div>
-          <div>
-            <Label htmlFor="highlight-poster">Event Poster</Label>
+            <Label htmlFor="highlight-poster">Event Poster *</Label>
             <Input id="highlight-poster" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
             {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
             {formData.poster && <img src={formData.poster} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
           </div>
           <div>
-            <Label htmlFor="highlight-description">Description</Label>
-            <Textarea id="highlight-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="highlight-instagram">Instagram Link</Label>
-            <Input id="highlight-instagram" type="url" value={formData.instagram_link} onChange={(e) => setFormData({ ...formData, instagram_link: e.target.value })} placeholder="https://instagram.com/..." required />
-          </div>
-          <div>
-            <Label htmlFor="highlight-highlights">Event Highlights (one per line)</Label>
-            <Textarea 
-              id="highlight-highlights" 
-              value={formData.highlights} 
-              onChange={(e) => setFormData({ ...formData, highlights: e.target.value })} 
-              placeholder="Engaging workshops on emerging technologies&#10;Networking opportunities with industry leaders&#10;Interactive coding challenges"
-              rows={5}
-              required 
-            />
-            <p className="text-xs text-gray-400 mt-1">Enter each highlight on a new line</p>
+            <Label htmlFor="highlight-instagram">Instagram Link (optional)</Label>
+            <Input id="highlight-instagram" type="url" value={formData.instagram_link} onChange={(e) => setFormData({ ...formData, instagram_link: e.target.value })} placeholder="https://instagram.com/..." />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={uploading || !formData.poster}>Add Event Highlight</Button>
@@ -2125,47 +2099,22 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="edit-highlight-title">Title</Label>
+            <Label htmlFor="edit-highlight-title">Title *</Label>
             <Input id="edit-highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="edit-highlight-date">Date</Label>
-              <Input id="edit-highlight-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
-            </div>
-            <div>
-              <Label htmlFor="edit-highlight-location">Location</Label>
-              <Input id="edit-highlight-location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
-            </div>
+          <div>
+            <Label htmlFor="edit-highlight-date">Date *</Label>
+            <Input id="edit-highlight-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
           </div>
           <div>
-            <Label htmlFor="edit-highlight-attendees">Attendees</Label>
-            <Input id="edit-highlight-attendees" value={formData.attendees} onChange={(e) => setFormData({ ...formData, attendees: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-highlight-poster">Event Poster</Label>
+            <Label htmlFor="edit-highlight-poster">Event Poster *</Label>
             <Input id="edit-highlight-poster" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
             {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
             {formData.poster && <img src={formData.poster} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
           </div>
           <div>
-            <Label htmlFor="edit-highlight-description">Description</Label>
-            <Textarea id="edit-highlight-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-highlight-instagram">Instagram Link</Label>
-            <Input id="edit-highlight-instagram" type="url" value={formData.instagram_link} onChange={(e) => setFormData({ ...formData, instagram_link: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-highlight-highlights">Event Highlights (one per line)</Label>
-            <Textarea 
-              id="edit-highlight-highlights" 
-              value={formData.highlights} 
-              onChange={(e) => setFormData({ ...formData, highlights: e.target.value })} 
-              rows={5}
-              required 
-            />
-            <p className="text-xs text-gray-400 mt-1">Enter each highlight on a new line</p>
+            <Label htmlFor="edit-highlight-instagram">Instagram Link (optional)</Label>
+            <Input id="edit-highlight-instagram" type="url" value={formData.instagram_link} onChange={(e) => setFormData({ ...formData, instagram_link: e.target.value })} />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={uploading}>Update Event Highlight</Button>

@@ -305,11 +305,26 @@ const Events = () => {
                 >
                   {/* Event Poster */}
                   <div className="relative aspect-square overflow-hidden bg-muted">
-                    <img 
-                      src={highlight.poster} 
-                      alt={highlight.title}
-                      className="w-full h-full object-cover"
-                    />
+                    {highlight.instagram_link ? (
+                      <a
+                        href={highlight.instagram_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute inset-0"
+                      >
+                        <img 
+                          src={highlight.poster} 
+                          alt={highlight.title}
+                          className="w-full h-full object-cover cursor-pointer"
+                        />
+                      </a>
+                    ) : (
+                      <img 
+                        src={highlight.poster} 
+                        alt={highlight.title}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                     
                     {/* Instagram Link Overlay */}
                     {highlight.instagram_link && (
@@ -317,7 +332,7 @@ const Events = () => {
                         href={highlight.instagram_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="absolute top-2 right-2 p-1.5 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100"
+                        className="absolute top-2 right-2 p-1.5 bg-background/80 backdrop-blur-sm border border-border rounded-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100 z-10"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Instagram className="w-4 h-4" />
