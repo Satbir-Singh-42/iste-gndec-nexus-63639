@@ -42,7 +42,12 @@ const Contact = () => {
     const loadingToast = toast.loading('Sending your message...');
 
     try {
-      const response = await fetch('http://localhost:3001/api/contact', {
+      // Use the correct domain for API calls in Replit environment
+      const apiUrl = window.location.hostname.includes('replit.dev') 
+        ? `https://${window.location.hostname.replace('-5000.', '-3001.')}/api/contact`
+        : 'http://localhost:3001/api/contact';
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
