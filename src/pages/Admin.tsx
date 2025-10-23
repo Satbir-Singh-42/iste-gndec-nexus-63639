@@ -527,14 +527,14 @@ const Admin = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm">
-              The application cannot connect to Supabase. Please ensure the following environment variables are set in Replit Secrets:
+              The application cannot connect to Supabase. Please ensure the following environment variables are set:
             </p>
             <ul className="list-disc list-inside space-y-2 text-sm">
               <li><code className="bg-gray-800 px-2 py-1 rounded">VITE_SUPABASE_URL</code> - Your Supabase project URL</li>
               <li><code className="bg-gray-800 px-2 py-1 rounded">VITE_SUPABASE_ANON_KEY</code> - Your Supabase anonymous key</li>
             </ul>
             <p className="text-sm text-muted-foreground">
-              After adding the secrets, restart the application for changes to take effect.
+              After adding the environment variables, restart the application for changes to take effect.
             </p>
             <Button onClick={() => navigate("/")} className="w-full">
               Back to Home

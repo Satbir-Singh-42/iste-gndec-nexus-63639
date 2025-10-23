@@ -11,10 +11,10 @@ if (supabaseUrl && supabaseAnonKey) {
     console.log('✅ Supabase client initialized successfully');
   } catch (error) {
     console.error('❌ Failed to create Supabase client:', error);
-    console.error('Please check your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Replit Secrets');
+    console.error('Please check your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables');
   }
 } else {
-  console.warn('⚠️  Supabase not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to Replit Secrets.');
+  console.warn('⚠️  Supabase not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to environment variables.');
 }
 
 export const supabase = supabaseClient as any;
