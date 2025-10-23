@@ -97,11 +97,11 @@ const Gallery = () => {
                   setCurrentImageIndex(0);
                 }}
               >
-                <div className="relative aspect-video overflow-hidden bg-muted">
+                <div className="relative aspect-[3/4] overflow-hidden bg-muted">
                   <img 
                     src={item.images?.[0]} 
                     alt={item.title}
-                    className="w-full h-full object-contain group-hover:scale-110 transition-all duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500"
                   />
                   
                   {item.images?.length > 1 && (
