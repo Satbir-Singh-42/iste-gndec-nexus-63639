@@ -1,14 +1,29 @@
+# robots.txt for ISTE GNDEC Student Chapter Website
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# Crawl-delay for politeness
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://yourwebsite.com/sitemap.xml
+
+# Specific bot agents (optional, already covered by *)
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
+User-agent: Slurp
+Allow: /
+
+# Social media bots
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
 Allow: /
