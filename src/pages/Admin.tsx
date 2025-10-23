@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Trash2, Edit, Plus } from "lucide-react";
+import { uploadImageToSupabase } from "@/lib/imageUpload";
 
 interface Notice {
   id: number;
@@ -41,6 +42,34 @@ interface GalleryItem {
   description: string;
 }
 
+interface Member {
+  id: number;
+  name: string;
+  position: string;
+  image: string;
+  email: string;
+}
+
+interface Faculty {
+  id: number;
+  name: string;
+  title: string;
+  image: string;
+  description: string;
+}
+
+interface EventHighlight {
+  id: number;
+  title: string;
+  date: string;
+  location: string;
+  description: string;
+  poster: string;
+  instagram_link: string;
+  attendees: string;
+  highlights: string[];
+}
+
 const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,6 +81,11 @@ const Admin = () => {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [faculty, setFaculty] = useState<Faculty[]>([]);
+  const [coreTeam, setCoreTeam] = useState<Member[]>([]);
+  const [postHolders, setPostHolders] = useState<Member[]>([]);
+  const [executive, setExecutive] = useState<Member[]>([]);
+  const [eventHighlights, setEventHighlights] = useState<EventHighlight[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
@@ -63,6 +97,11 @@ const Admin = () => {
       fetchNotices();
       fetchEvents();
       fetchGallery();
+      fetchFaculty();
+      fetchCoreTeam();
+      fetchPostHolders();
+      fetchExecutive();
+      fetchEventHighlights();
     }
   }, [isAuthenticated, refreshTrigger]);
 
@@ -183,6 +222,85 @@ const Admin = () => {
       setRefreshTrigger(prev => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to delete gallery item: ${error.message}`);
+    }
+  };
+
+  const fetchFaculty = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('members_faculty').select('*').order('id', { ascending: false });
+      if (error) throw error;
+      setFaculty(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch faculty: ${error.message}`);
+    }
+  };
+
+  const fetchCoreTeam = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('members_core_team').select('*').order('id', { ascending: false });
+      if (error) throw error;
+      setCoreTeam(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch core team: ${error.message}`);
+    }
+  };
+
+  const fetchPostHolders = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('members_post_holders').select('*').order('id', { ascending: false });
+      if (error) throw error;
+      setPostHolders(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch post holders: ${error.message}`);
+    }
+  };
+
+  const fetchExecutive = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('members_executive').select('*').order('id', { ascending: false });
+      if (error) throw error;
+      setExecutive(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch executive team: ${error.message}`);
+    }
+  };
+
+  const deleteMember = async (id: number, table: string, type: string) => {
+    if (!supabase || !confirm(`Are you sure you want to delete this ${type}?`)) return;
+    try {
+      const { error } = await supabase.from(table).delete().eq('id', id);
+      if (error) throw error;
+      toast.success(`${type} deleted successfully`);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete ${type}: ${error.message}`);
+    }
+  };
+
+  const fetchEventHighlights = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('event_highlights').select('*').order('id', { ascending: false });
+      if (error) throw error;
+      setEventHighlights(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch event highlights: ${error.message}`);
+    }
+  };
+
+  const deleteEventHighlight = async (id: number) => {
+    if (!supabase || !confirm('Are you sure you want to delete this event highlight?')) return;
+    try {
+      const { error } = await supabase.from('event_highlights').delete().eq('id', id);
+      if (error) throw error;
+      toast.success('Event highlight deleted successfully');
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete event highlight: ${error.message}`);
     }
   };
 
@@ -422,10 +540,11 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="notices" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="notices">Notices</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
+            <TabsTrigger value="highlights">Highlights</TabsTrigger>
             <TabsTrigger value="members">Members</TabsTrigger>
             <TabsTrigger value="migration">Migration</TabsTrigger>
           </TabsList>
@@ -572,45 +691,238 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="members">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Faculty</CardTitle>
+                      <CardDescription>Manage faculty advisors</CardDescription>
+                    </div>
+                    <AddFacultyDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Image</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {faculty.map((member) => (
+                        <TableRow key={member.id}>
+                          <TableCell>{member.id}</TableCell>
+                          <TableCell>{member.name}</TableCell>
+                          <TableCell>{member.title}</TableCell>
+                          <TableCell>
+                            <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditFacultyDialog member={member} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                              <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_faculty', 'faculty member')}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Core Team</CardTitle>
+                      <CardDescription>Manage core team members</CardDescription>
+                    </div>
+                    <AddMemberDialog table="members_core_team" title="Add Core Team Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Position</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Image</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {coreTeam.map((member) => (
+                        <TableRow key={member.id}>
+                          <TableCell>{member.id}</TableCell>
+                          <TableCell>{member.name}</TableCell>
+                          <TableCell>{member.position}</TableCell>
+                          <TableCell>{member.email}</TableCell>
+                          <TableCell>
+                            <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditMemberDialog member={member} table="members_core_team" title="Edit Core Team Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                              <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_core_team', 'core team member')}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Post Holders</CardTitle>
+                      <CardDescription>Manage post holders</CardDescription>
+                    </div>
+                    <AddMemberDialog table="members_post_holders" title="Add Post Holder" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Position</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Image</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {postHolders.map((member) => (
+                        <TableRow key={member.id}>
+                          <TableCell>{member.id}</TableCell>
+                          <TableCell>{member.name}</TableCell>
+                          <TableCell>{member.position}</TableCell>
+                          <TableCell>{member.email}</TableCell>
+                          <TableCell>
+                            <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditMemberDialog member={member} table="members_post_holders" title="Edit Post Holder" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                              <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_post_holders', 'post holder')}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Executive Team</CardTitle>
+                      <CardDescription>Manage executive team members</CardDescription>
+                    </div>
+                    <AddMemberDialog table="members_executive" title="Add Executive Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Position</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Image</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {executive.map((member) => (
+                        <TableRow key={member.id}>
+                          <TableCell>{member.id}</TableCell>
+                          <TableCell>{member.name}</TableCell>
+                          <TableCell>{member.position}</TableCell>
+                          <TableCell>{member.email}</TableCell>
+                          <TableCell>
+                            <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditMemberDialog member={member} table="members_executive" title="Edit Executive Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                              <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_executive', 'executive member')}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="highlights">
             <Card>
               <CardHeader>
-                <CardTitle>Manage Members</CardTitle>
-                <CardDescription>Manage faculty, core team, post holders, and executive members</CardDescription>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Manage Event Highlights</CardTitle>
+                    <CardDescription>Add, edit, or delete past event highlights</CardDescription>
+                  </div>
+                  <AddEventHighlightDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-300 bg-gray-800/50 p-4 rounded-lg border border-gray-700">
-                  <strong>Members Management:</strong> View and manage different member categories including Faculty, Core Team, Post Holders, and Executive Team members. Full CRUD functionality can be accessed by viewing the data in each respective table in your Supabase dashboard, or you can extend this interface with specific member management dialogs similar to the Notices and Events tabs.
-                </p>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  <div className="p-4 border rounded-lg">
-                    <h3 className="font-semibold mb-2">Faculty</h3>
-                    <p className="text-sm text-gray-400">Table: members_faculty</p>
-                    <Button className="mt-2" variant="outline" onClick={() => window.open('https://vtdsswjfgpgnfjgpjwhw.supabase.co/project/_/editor', '_blank')}>
-                      Edit in Supabase
-                    </Button>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <h3 className="font-semibold mb-2">Core Team</h3>
-                    <p className="text-sm text-gray-400">Table: members_core_team</p>
-                    <Button className="mt-2" variant="outline" onClick={() => window.open('https://vtdsswjfgpgnfjgpjwhw.supabase.co/project/_/editor', '_blank')}>
-                      Edit in Supabase
-                    </Button>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <h3 className="font-semibold mb-2">Post Holders</h3>
-                    <p className="text-sm text-gray-400">Table: members_post_holders</p>
-                    <Button className="mt-2" variant="outline" onClick={() => window.open('https://vtdsswjfgpgnfjgpjwhw.supabase.co/project/_/editor', '_blank')}>
-                      Edit in Supabase
-                    </Button>
-                  </div>
-                  <div className="p-4 border rounded-lg">
-                    <h3 className="font-semibold mb-2">Executive Team</h3>
-                    <p className="text-sm text-gray-400">Table: members_executive</p>
-                    <Button className="mt-2" variant="outline" onClick={() => window.open('https://vtdsswjfgpgnfjgpjwhw.supabase.co/project/_/editor', '_blank')}>
-                      Edit in Supabase
-                    </Button>
-                  </div>
-                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Title</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Location</TableHead>
+                      <TableHead>Attendees</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {eventHighlights.map((highlight) => (
+                      <TableRow key={highlight.id}>
+                        <TableCell>{highlight.id}</TableCell>
+                        <TableCell>{highlight.title}</TableCell>
+                        <TableCell>{highlight.date}</TableCell>
+                        <TableCell>{highlight.location}</TableCell>
+                        <TableCell>{highlight.attendees}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <EditEventHighlightDialog highlight={highlight} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                            <Button variant="destructive" size="sm" onClick={() => deleteEventHighlight(highlight.id)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
           </TabsContent>
@@ -1086,6 +1398,549 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
           </div>
           <DialogFooter>
             <Button type="submit">Update Gallery Item</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    title: "",
+    image: "",
+    description: ""
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'faculty');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image: url });
+      toast.success('Image uploaded successfully');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('members_faculty').insert([formData]);
+      if (error) throw error;
+      toast.success('Faculty member added successfully');
+      setOpen(false);
+      setFormData({ name: "", title: "", image: "", description: "" });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add faculty: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Faculty</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Add Faculty Member</DialogTitle>
+          <DialogDescription>Add a new faculty advisor</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="faculty-name">Name</Label>
+            <Input id="faculty-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="faculty-title">Title</Label>
+            <Input id="faculty-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="faculty-image">Profile Image</Label>
+            <Input id="faculty-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
+          </div>
+          <div>
+            <Label htmlFor="faculty-description">Description</Label>
+            <Textarea id="faculty-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={uploading || !formData.image}>Add Faculty</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState(member);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'faculty');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image: url });
+      toast.success('Image uploaded successfully');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from('members_faculty').update(formData).eq('id', member.id);
+      if (error) throw error;
+      toast.success('Faculty member updated successfully');
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update faculty: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Edit Faculty Member</DialogTitle>
+          <DialogDescription>Update faculty information</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="edit-faculty-name">Name</Label>
+            <Input id="edit-faculty-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-faculty-title">Title</Label>
+            <Input id="edit-faculty-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-faculty-image">Profile Image</Label>
+            <Input id="edit-faculty-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
+          </div>
+          <div>
+            <Label htmlFor="edit-faculty-description">Description</Label>
+            <Textarea id="edit-faculty-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={uploading}>Update Faculty</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddMemberDialog({ table, title, onSuccess }: { table: string; title: string; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    position: "",
+    image: "",
+    email: ""
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'members');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image: url });
+      toast.success('Image uploaded successfully');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from(table).insert([formData]);
+      if (error) throw error;
+      toast.success('Member added successfully');
+      setOpen(false);
+      setFormData({ name: "", position: "", image: "", email: "" });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add member: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Member</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>Add a new team member</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="member-name">Name</Label>
+            <Input id="member-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="member-position">Position</Label>
+            <Input id="member-position" value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="member-email">Email</Label>
+            <Input id="member-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="member-image">Profile Image</Label>
+            <Input id="member-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={uploading || !formData.image}>Add Member</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditMemberDialog({ member, table, title, onSuccess }: { member: Member; table: string; title: string; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState(member);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'members');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image: url });
+      toast.success('Image uploaded successfully');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from(table).update(formData).eq('id', member.id);
+      if (error) throw error;
+      toast.success('Member updated successfully');
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update member: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>Update member information</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="edit-member-name">Name</Label>
+            <Input id="edit-member-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-member-position">Position</Label>
+            <Input id="edit-member-position" value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-member-email">Email</Label>
+            <Input id="edit-member-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-member-image">Profile Image</Label>
+            <Input id="edit-member-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={uploading}>Update Member</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    date: "",
+    location: "",
+    description: "",
+    poster: "",
+    instagram_link: "",
+    attendees: "",
+    highlights: ""
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'event-highlights');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, poster: url });
+      toast.success('Poster uploaded successfully');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const highlightsArray = formData.highlights.split('\n').filter(h => h.trim());
+      const { error } = await supabase.from('event_highlights').insert([{
+        ...formData,
+        highlights: highlightsArray
+      }]);
+      if (error) throw error;
+      toast.success('Event highlight added successfully');
+      setOpen(false);
+      setFormData({
+        title: "",
+        date: "",
+        location: "",
+        description: "",
+        poster: "",
+        instagram_link: "",
+        attendees: "",
+        highlights: ""
+      });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add event highlight: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Event Highlight</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add Event Highlight</DialogTitle>
+          <DialogDescription>Add a new past event highlight</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="highlight-title">Title</Label>
+            <Input id="highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="highlight-date">Date</Label>
+              <Input id="highlight-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} placeholder="March 15, 2024" required />
+            </div>
+            <div>
+              <Label htmlFor="highlight-location">Location</Label>
+              <Input id="highlight-location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="highlight-attendees">Attendees</Label>
+            <Input id="highlight-attendees" value={formData.attendees} onChange={(e) => setFormData({ ...formData, attendees: e.target.value })} placeholder="200+" required />
+          </div>
+          <div>
+            <Label htmlFor="highlight-poster">Event Poster</Label>
+            <Input id="highlight-poster" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {formData.poster && <img src={formData.poster} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
+          </div>
+          <div>
+            <Label htmlFor="highlight-description">Description</Label>
+            <Textarea id="highlight-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="highlight-instagram">Instagram Link</Label>
+            <Input id="highlight-instagram" type="url" value={formData.instagram_link} onChange={(e) => setFormData({ ...formData, instagram_link: e.target.value })} placeholder="https://instagram.com/..." required />
+          </div>
+          <div>
+            <Label htmlFor="highlight-highlights">Event Highlights (one per line)</Label>
+            <Textarea 
+              id="highlight-highlights" 
+              value={formData.highlights} 
+              onChange={(e) => setFormData({ ...formData, highlights: e.target.value })} 
+              placeholder="Engaging workshops on emerging technologies&#10;Networking opportunities with industry leaders&#10;Interactive coding challenges"
+              rows={5}
+              required 
+            />
+            <p className="text-xs text-gray-400 mt-1">Enter each highlight on a new line</p>
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={uploading || !formData.poster}>Add Event Highlight</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHighlight; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    ...highlight,
+    highlights: highlight.highlights.join('\n')
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'event-highlights');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, poster: url });
+      toast.success('Poster uploaded successfully');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const highlightsArray = formData.highlights.split('\n').filter((h: string) => h.trim());
+      const { error } = await supabase.from('event_highlights').update({
+        title: formData.title,
+        date: formData.date,
+        location: formData.location,
+        description: formData.description,
+        poster: formData.poster,
+        instagram_link: formData.instagram_link,
+        attendees: formData.attendees,
+        highlights: highlightsArray
+      }).eq('id', highlight.id);
+      if (error) throw error;
+      toast.success('Event highlight updated successfully');
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update event highlight: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Event Highlight</DialogTitle>
+          <DialogDescription>Update event highlight information</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="edit-highlight-title">Title</Label>
+            <Input id="edit-highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-highlight-date">Date</Label>
+              <Input id="edit-highlight-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
+            </div>
+            <div>
+              <Label htmlFor="edit-highlight-location">Location</Label>
+              <Input id="edit-highlight-location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="edit-highlight-attendees">Attendees</Label>
+            <Input id="edit-highlight-attendees" value={formData.attendees} onChange={(e) => setFormData({ ...formData, attendees: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-highlight-poster">Event Poster</Label>
+            <Input id="edit-highlight-poster" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {formData.poster && <img src={formData.poster} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
+          </div>
+          <div>
+            <Label htmlFor="edit-highlight-description">Description</Label>
+            <Textarea id="edit-highlight-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-highlight-instagram">Instagram Link</Label>
+            <Input id="edit-highlight-instagram" type="url" value={formData.instagram_link} onChange={(e) => setFormData({ ...formData, instagram_link: e.target.value })} required />
+          </div>
+          <div>
+            <Label htmlFor="edit-highlight-highlights">Event Highlights (one per line)</Label>
+            <Textarea 
+              id="edit-highlight-highlights" 
+              value={formData.highlights} 
+              onChange={(e) => setFormData({ ...formData, highlights: e.target.value })} 
+              rows={5}
+              required 
+            />
+            <p className="text-xs text-gray-400 mt-1">Enter each highlight on a new line</p>
+          </div>
+          <DialogFooter>
+            <Button type="submit" disabled={uploading}>Update Event Highlight</Button>
           </DialogFooter>
         </form>
       </DialogContent>
