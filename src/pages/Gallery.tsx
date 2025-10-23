@@ -97,7 +97,7 @@ const Gallery = () => {
                   <img 
                     src={item.image} 
                     alt={item.title}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500"
+                    className="w-full h-full object-contain group-hover:scale-110 transition-all duration-500"
                   />
                 </div>
                 
@@ -129,7 +129,7 @@ const Gallery = () => {
                 <img 
                   src={selectedImage?.image} 
                   alt={selectedImage?.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <p className="text-muted-foreground">{selectedImage?.description}</p>

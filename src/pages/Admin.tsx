@@ -1835,8 +1835,12 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    console.log(`Selected ${files.length} file(s)`);
+    
     setUploading(true);
     const fileArray = Array.from(files);
+    console.log('Files to upload:', fileArray.map(f => f.name));
+    
     const { urls, errors } = await uploadMultipleImages(fileArray, 'gallery');
     setUploading(false);
 
@@ -1848,6 +1852,8 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
       setUploadedImages([...uploadedImages, ...urls]);
       toast.success(`${urls.length} image(s) uploaded successfully`);
     }
+    
+    e.target.value = '';
   };
 
   const removeImage = (index: number) => {
@@ -1897,6 +1903,9 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
             </div>
             <div>
               <Label htmlFor="gallery-image">Upload Images (Multiple)</Label>
+              <p className="text-xs text-muted-foreground mb-2">
+                💡 Tip: Hold Ctrl (Windows) or Cmd (Mac) to select multiple images at once
+              </p>
               <Input 
                 id="gallery-image" 
                 type="file" 
@@ -1959,10 +1968,13 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
   const [formData, setFormData] = useState(item);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
+    console.log(`Selected ${files.length} file(s) for edit`);
+    
     setUploading(true);
+    const file = files[0];
     const { url, error } = await uploadImageToSupabase(file, 'gallery');
     setUploading(false);
 
@@ -1972,6 +1984,8 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
       setFormData({ ...formData, image: url });
       toast.success('Image uploaded successfully');
     }
+    
+    e.target.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -2006,10 +2020,25 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
               <Input id="edit-gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
             </div>
             <div>
-              <Label htmlFor="edit-gallery-image">Upload Image</Label>
-              <Input id="edit-gallery-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+              <Label htmlFor="edit-gallery-image">Upload New Image</Label>
+              <p className="text-xs text-muted-foreground mb-2">
+                Upload a new image to replace the current one
+              </p>
+              <Input 
+                id="edit-gallery-image" 
+                type="file" 
+                accept="image/*" 
+                multiple
+                onChange={handleImageUpload} 
+                disabled={uploading} 
+              />
               {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
-              {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
+              {formData.image && (
+                <div className="mt-3">
+                  <p className="text-xs text-muted-foreground mb-1">Current Image:</p>
+                  <img src={formData.image} alt="Preview" className="w-32 h-32 object-cover rounded" />
+                </div>
+              )}
             </div>
             <div>
               <Label htmlFor="edit-gallery-category">Category</Label>
