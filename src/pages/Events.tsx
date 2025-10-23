@@ -210,9 +210,9 @@ const Events = () => {
 
           {/* Event Details Dialog */}
           <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-2xl md:max-w-3xl max-h-[85vh] sm:max-h-[90vh]">
               <DialogHeader>
-                <DialogTitle className="text-3xl font-bold flex items-center gap-3">
+                <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-bold flex items-center gap-2 sm:gap-3">
                   <span className="w-1 h-8 bg-primary" />
                   {selectedEvent?.title}
                 </DialogTitle>

@@ -127,9 +127,9 @@ const Gallery = () => {
 
         {/* Image View Dialog */}
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-          <DialogContent className="max-w-3xl">
+          <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-2xl md:max-w-3xl">
             <DialogHeader>
-              <DialogTitle className="text-2xl font-bold flex items-center gap-3">
+              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 sm:gap-3">
                 <span className="text-primary font-mono text-sm">{selectedImage?.category}</span>
                 <span className="w-1 h-6 bg-primary" />
                 {selectedImage?.title}

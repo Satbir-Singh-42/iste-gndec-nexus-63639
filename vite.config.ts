@@ -8,6 +8,12 @@ export default defineConfig(({ mode }) => ({
     host: "0.0.0.0", // ✅ Bind to all IPv4 interfaces
     port: 5000,      // ✅ Replit default port
     allowedHosts: true, // ✅ Avoid "Blocked request" issue
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

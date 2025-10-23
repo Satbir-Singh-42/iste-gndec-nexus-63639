@@ -1362,7 +1362,7 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Notice</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Add New Notice</DialogTitle>
           <DialogDescription>Create a new notice for the notice board</DialogDescription>
@@ -1469,7 +1469,7 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Edit Notice</DialogTitle>
           <DialogDescription>Update notice information</DialogDescription>
@@ -1585,7 +1585,7 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Event</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Add New Event</DialogTitle>
           <DialogDescription>Create a new event</DialogDescription>
@@ -1730,7 +1730,7 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Edit Event</DialogTitle>
           <DialogDescription>Update event information</DialogDescription>
@@ -1913,12 +1913,12 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Gallery Item</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add Gallery Items</DialogTitle>
           <DialogDescription>Add one or more images to the gallery</DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[60vh] pr-4">
+        <ScrollArea className="max-h-[50vh] sm:max-h-[60vh] pr-2 sm:pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="gallery-title">Title</Label>
@@ -2095,12 +2095,12 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh]">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Gallery Item</DialogTitle>
           <DialogDescription>Update gallery item information</DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[60vh] pr-4">
+        <ScrollArea className="max-h-[50vh] sm:max-h-[60vh] pr-2 sm:pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="edit-gallery-title">Title</Label>
@@ -2252,7 +2252,7 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Faculty</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add Faculty Member</DialogTitle>
           <DialogDescription>Add a new faculty advisor</DialogDescription>
@@ -2338,7 +2338,7 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Faculty Member</DialogTitle>
           <DialogDescription>Update faculty information</DialogDescription>
@@ -2442,7 +2442,7 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Member</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>Add a new team member</DialogDescription>
@@ -2528,7 +2528,7 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>Update member information</DialogDescription>
@@ -2635,7 +2635,7 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
       <DialogTrigger asChild>
         <Button><Plus className="h-4 w-4 mr-2" /> Add Event Highlight</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add Event Highlight</DialogTitle>
           <DialogDescription>Add a new past event highlight</DialogDescription>
@@ -2721,7 +2721,7 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
       <DialogTrigger asChild>
         <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Event Highlight</DialogTitle>
           <DialogDescription>Update event highlight information</DialogDescription>

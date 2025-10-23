@@ -42,12 +42,8 @@ const Contact = () => {
     const loadingToast = toast.loading('Sending your message...');
 
     try {
-      // Use the correct domain for API calls in Replit environment
-      const apiUrl = window.location.hostname.includes('replit.dev') 
-        ? `https://${window.location.hostname.replace('-5000.', '-3001.')}/api/contact`
-        : 'http://localhost:3001/api/contact';
-      
-      const response = await fetch(apiUrl, {
+      // Use relative URL - Vite proxy will forward to email server
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
