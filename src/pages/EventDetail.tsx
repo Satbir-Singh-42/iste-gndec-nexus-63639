@@ -275,9 +275,6 @@ const EventDetail = () => {
           </div>
         </div>
 
-        {/* Background Elements */}
-        <div className="absolute top-20 right-1/4 w-px h-64 bg-gradient-to-b from-transparent via-primary/30 to-transparent" />
-        <div className="absolute bottom-20 left-1/4 w-px h-48 bg-gradient-to-b from-transparent via-secondary/30 to-transparent" />
       </main>
 
       <TechFooter />
