@@ -37,29 +37,32 @@ const ParticleBackground = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const staticParticleCount = 25; // Just a few for aesthetic
+    const staticParticleCount = 30; // A few ambient particles
     const staticParticles: Particle[] = [];
 
-    console.log('✨ Mouse trail particle system initialized');
+    console.log('✨ Clean mouse trail system initialized');
 
-    // Create minimal static particles
+    // Create minimal ambient particles
     for (let i = 0; i < staticParticleCount; i++) {
       const particle = document.createElement('div');
       
       const x = Math.random() * 100;
       const y = Math.random() * 100;
-      const size = Math.random() * 2 + 1.5;
+      const size = Math.random() * 2.5 + 1.5;
+      const opacity = Math.random() * 0.4 + 0.2;
       
       particle.style.cssText = `
         position: absolute;
         width: ${size}px;
         height: ${size}px;
-        background: radial-gradient(circle, rgba(100, 200, 255, 0.3) 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%);
+        background: radial-gradient(circle, rgba(100, 200, 255, ${opacity}) 0%, rgba(255, 255, 255, ${opacity * 0.5}) 40%, transparent 100%);
         border-radius: 50%;
         left: ${x}%;
         top: ${y}%;
         pointer-events: none;
-        box-shadow: 0 0 ${size * 2}px rgba(100, 200, 255, 0.2);
+        box-shadow: 0 0 ${size * 3}px rgba(100, 200, 255, ${opacity * 0.4});
+        animation: float ${15 + Math.random() * 10}s ease-in-out infinite;
+        animation-delay: ${Math.random() * 5}s;
       `;
       
       container.appendChild(particle);
@@ -83,24 +86,24 @@ const ParticleBackground = () => {
       
       // Spawn trail particles (throttled)
       const now = Date.now();
-      if (now - lastSpawnTime.current > 30) { // Spawn every 30ms
+      if (now - lastSpawnTime.current > 25) { // Spawn every 25ms
         const dx = mouseRef.current.x - mouseRef.current.prevX;
         const dy = mouseRef.current.y - mouseRef.current.prevY;
         const speed = Math.sqrt(dx * dx + dy * dy);
         
         if (speed > 1) { // Only spawn if mouse is moving
-          // Spawn 1-2 particles based on speed
-          const particlesToSpawn = Math.min(Math.ceil(speed / 20), 2);
+          // Spawn 1-3 particles based on speed
+          const particlesToSpawn = Math.min(Math.ceil(speed / 15), 3);
           
           for (let i = 0; i < particlesToSpawn; i++) {
             trailParticlesRef.current.push({
-              x: mouseRef.current.x + (Math.random() - 0.5) * 5,
-              y: mouseRef.current.y + (Math.random() - 0.5) * 5,
-              vx: (Math.random() - 0.5) * 1.5 - dx * 0.05,
-              vy: (Math.random() - 0.5) * 1.5 - dy * 0.05,
+              x: mouseRef.current.x + (Math.random() - 0.5) * 8,
+              y: mouseRef.current.y + (Math.random() - 0.5) * 8,
+              vx: (Math.random() - 0.5) * 2 - dx * 0.04,
+              vy: (Math.random() - 0.5) * 2 - dy * 0.04,
               life: 1,
-              maxLife: Math.random() * 60 + 40, // 40-100 frames
-              size: Math.random() * 3 + 2
+              maxLife: Math.random() * 50 + 30, // 30-80 frames
+              size: Math.random() * 4 + 3
             });
           }
           
@@ -116,38 +119,6 @@ const ParticleBackground = () => {
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      const staticPixelPositions: { x: number; y: number }[] = [];
-      
-      // Convert static particles to pixel positions
-      staticParticles.forEach(particle => {
-        staticPixelPositions.push({
-          x: (particle.x / 100) * canvas.width,
-          y: (particle.y / 100) * canvas.height
-        });
-      });
-      
-      // Draw connection lines between static particles only
-      for (let i = 0; i < staticPixelPositions.length; i++) {
-        const p1 = staticPixelPositions[i];
-        
-        for (let j = i + 1; j < staticPixelPositions.length; j++) {
-          const p2 = staticPixelPositions[j];
-          const dist = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-          
-          const maxLineDistance = 200;
-          
-          if (dist < maxLineDistance) {
-            const opacity = (1 - dist / maxLineDistance) * 0.25;
-            ctx.strokeStyle = `rgba(100, 200, 255, ${opacity})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            ctx.stroke();
-          }
-        }
-      }
-      
       // Update and draw trail particles
       const trailParticles = trailParticlesRef.current;
       
@@ -159,9 +130,9 @@ const ParticleBackground = () => {
         p.y += p.vy;
         
         // Apply gentle drift and gravity
-        p.vy += 0.02; // Slight downward drift
-        p.vx *= 0.98; // Air resistance
-        p.vy *= 0.98;
+        p.vy += 0.03; // Slight downward drift
+        p.vx *= 0.97; // Air resistance
+        p.vy *= 0.97;
         
         // Update life
         p.life = 1 - ((p.maxLife - p.life * p.maxLife + 1) / p.maxLife);
@@ -172,24 +143,24 @@ const ParticleBackground = () => {
           continue;
         }
         
-        // Draw particle
-        const opacity = p.life * 0.6;
-        const size = p.size * p.life;
+        // Draw particle with glow
+        const opacity = p.life * 0.7;
+        const size = p.size * (0.5 + p.life * 0.5); // Shrink as it fades
         
         ctx.beginPath();
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
         
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
-        gradient.addColorStop(0, `rgba(150, 220, 255, ${opacity})`);
-        gradient.addColorStop(0.5, `rgba(100, 200, 255, ${opacity * 0.5})`);
+        gradient.addColorStop(0, `rgba(180, 230, 255, ${opacity})`);
+        gradient.addColorStop(0.4, `rgba(100, 200, 255, ${opacity * 0.6})`);
         gradient.addColorStop(1, `rgba(100, 200, 255, 0)`);
         
         ctx.fillStyle = gradient;
         ctx.fill();
         
-        // Subtle glow
-        ctx.shadowBlur = size * 2;
-        ctx.shadowColor = `rgba(100, 200, 255, ${opacity * 0.5})`;
+        // Enhanced glow effect
+        ctx.shadowBlur = size * 3;
+        ctx.shadowColor = `rgba(100, 200, 255, ${opacity * 0.6})`;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
@@ -236,7 +207,7 @@ const ParticleBackground = () => {
       ref={containerRef} 
       className="absolute inset-0 -z-10 overflow-hidden"
       style={{ 
-        background: 'radial-gradient(ellipse at center, rgba(0, 20, 40, 0.2) 0%, rgba(0, 5, 15, 0.05) 50%, transparent 100%)'
+        background: 'radial-gradient(ellipse at center, rgba(0, 25, 50, 0.25) 0%, rgba(0, 10, 20, 0.1) 50%, transparent 100%)'
       }}
     >
       <canvas 
@@ -244,6 +215,19 @@ const ParticleBackground = () => {
         className="absolute inset-0 w-full h-full"
         style={{ pointerEvents: 'none' }}
       />
+      
+      <style>{`
+        @keyframes float {
+          0%, 100% { 
+            transform: translate(0, 0);
+            opacity: 0.3;
+          }
+          50% { 
+            transform: translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px);
+            opacity: 0.6;
+          }
+        }
+      `}</style>
     </div>
   );
 };
