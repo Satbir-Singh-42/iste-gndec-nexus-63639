@@ -57,8 +57,10 @@ const TechNavbar = () => {
             )}
             <span className={cn(
               "font-black text-xl tracking-tight group-hover:text-primary transition-colors",
-              isScrolled ? "text-foreground" : "text-white drop-shadow-lg"
-            )}>
+              isScrolled ? "text-foreground" : "text-white"
+            )}
+            style={!isScrolled ? { textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' } : undefined}
+            >
               ISTE GNDEC
             </span>
           </NavLink>
@@ -77,9 +79,10 @@ const TechNavbar = () => {
                       ? 'text-primary'
                       : isScrolled 
                         ? 'text-muted-foreground hover:text-foreground'
-                        : 'text-white/90 hover:text-white drop-shadow-lg'
+                        : 'text-white/95 hover:text-white'
                   )
                 }
+                style={!isScrolled ? { textShadow: '0 2px 6px rgba(0,0,0,0.8)' } : undefined}
               >
                 {({ isActive }) => (
                   <>
@@ -98,8 +101,9 @@ const TechNavbar = () => {
             onClick={() => setIsOpen(!isOpen)}
             className={cn(
               "md:hidden p-2 hover:text-primary transition-colors",
-              isScrolled ? "text-foreground" : "text-white drop-shadow-lg"
+              isScrolled ? "text-foreground" : "text-white"
             )}
+            style={!isScrolled ? { filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.8))' } : undefined}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
