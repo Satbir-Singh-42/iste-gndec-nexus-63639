@@ -1,8 +1,12 @@
 import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
-import { Calendar, MapPin, Clock } from 'lucide-react';
+import { Calendar, MapPin, Clock, Users } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useState } from 'react';
 
 const Events = () => {
+  const [selectedEvent, setSelectedEvent] = useState<typeof upcomingEvents[0] | null>(null);
+
   const upcomingEvents = [
     {
       id: 1,
@@ -12,6 +16,10 @@ const Events = () => {
       location: 'Seminar Hall',
       description: 'Hands-on workshop on emerging technologies and innovations.',
       status: 'upcoming',
+      capacity: '100 participants',
+      organizer: 'Technical Society',
+      details: 'Join us for an intensive hands-on workshop covering the latest trends in AI, Machine Learning, and Web Development. Industry experts will guide you through practical sessions with real-world applications.',
+      agenda: ['Registration & Welcome', 'Session 1: AI Fundamentals', 'Lunch Break', 'Session 2: ML Practical', 'Session 3: Web Dev Workshop', 'Q&A & Networking'],
     },
     {
       id: 2,
@@ -21,6 +29,10 @@ const Events = () => {
       location: 'Computer Lab',
       description: 'Test your coding skills in this exciting competition.',
       status: 'upcoming',
+      capacity: '50 participants',
+      organizer: 'Technical Society',
+      details: 'An intense coding competition featuring algorithmic challenges and problem-solving tasks. Compete with peers and win exciting prizes!',
+      agenda: ['Registration', 'Round 1: Warm-up Problems', 'Round 2: Advanced Challenges', 'Final Round', 'Prize Distribution'],
     },
   ];
 
@@ -52,9 +64,13 @@ const Events = () => {
           
           <div className="grid md:grid-cols-2 gap-6">
             {upcomingEvents.map((event) => (
-              <div key={event.id} className="tech-card p-6 hover:border-primary/50 transition-all">
+              <div 
+                key={event.id} 
+                className="tech-card p-6 hover:border-primary/50 transition-all cursor-pointer group"
+                onClick={() => setSelectedEvent(event)}
+              >
                 <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-2xl font-bold text-foreground">{event.title}</h3>
+                  <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">{event.title}</h3>
                   <span className="px-3 py-1 text-xs font-mono bg-primary/20 text-primary border border-primary/30">
                     {event.status.toUpperCase()}
                   </span>
@@ -75,10 +91,93 @@ const Events = () => {
                     <MapPin className="w-4 h-4 text-primary" />
                     <span>{event.location}</span>
                   </div>
+                  <div className="flex items-center gap-3 text-foreground/80">
+                    <Users className="w-4 h-4 text-primary" />
+                    <span>{event.capacity}</span>
+                  </div>
+                </div>
+                
+                <div className="mt-4 pt-4 border-t border-border">
+                  <span className="text-xs font-mono text-primary">CLICK FOR DETAILS</span>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* Event Details Dialog */}
+          <Dialog open={!!selectedEvent} onOpenChange={() => setSelectedEvent(null)}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-3xl font-bold flex items-center gap-3">
+                  <span className="w-1 h-8 bg-primary" />
+                  {selectedEvent?.title}
+                </DialogTitle>
+              </DialogHeader>
+              
+              <div className="space-y-6">
+                <div className="flex items-center gap-2">
+                  <span className="px-3 py-1 text-xs font-mono bg-primary/20 text-primary border border-primary/30">
+                    {selectedEvent?.status.toUpperCase()}
+                  </span>
+                  <span className="text-sm text-muted-foreground">Organized by {selectedEvent?.organizer}</span>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 text-sm">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    <div>
+                      <div className="font-mono text-xs text-muted-foreground">DATE</div>
+                      <div className="font-semibold">{selectedEvent?.date}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Clock className="w-5 h-5 text-primary" />
+                    <div>
+                      <div className="font-mono text-xs text-muted-foreground">TIME</div>
+                      <div className="font-semibold">{selectedEvent?.time}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <MapPin className="w-5 h-5 text-primary" />
+                    <div>
+                      <div className="font-mono text-xs text-muted-foreground">LOCATION</div>
+                      <div className="font-semibold">{selectedEvent?.location}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <Users className="w-5 h-5 text-primary" />
+                    <div>
+                      <div className="font-mono text-xs text-muted-foreground">CAPACITY</div>
+                      <div className="font-semibold">{selectedEvent?.capacity}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="tech-card p-4">
+                  <h4 className="font-bold text-lg mb-2 flex items-center gap-2">
+                    <span className="w-1 h-5 bg-primary" />
+                    About
+                  </h4>
+                  <p className="text-muted-foreground">{selectedEvent?.details}</p>
+                </div>
+
+                <div className="tech-card p-4">
+                  <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
+                    <span className="w-1 h-5 bg-primary" />
+                    Agenda
+                  </h4>
+                  <div className="space-y-2">
+                    {selectedEvent?.agenda.map((item, index) => (
+                      <div key={index} className="flex items-start gap-3">
+                        <span className="font-mono text-xs text-primary mt-1">{String(index + 1).padStart(2, '0')}</span>
+                        <span className="text-sm text-foreground">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </section>
       </main>
 

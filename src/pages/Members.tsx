@@ -3,36 +3,49 @@ import TechFooter from '@/components/TechFooter';
 import { Mail, Linkedin, Github } from 'lucide-react';
 
 const Members = () => {
-  const coreTeam = [
+  const faculty = [
     {
       id: 1,
-      name: 'John Doe',
-      position: 'President',
+      name: 'Faculty Coordinator',
+      position: 'Faculty Coordinator',
       image: '/placeholder.svg',
-      email: 'john@example.com',
-    },
-    {
-      id: 2,
-      name: 'Jane Smith',
-      position: 'Vice President',
-      image: '/placeholder.svg',
-      email: 'jane@example.com',
-    },
-    {
-      id: 3,
-      name: 'Mike Johnson',
-      position: 'Technical Head',
-      image: '/placeholder.svg',
-      email: 'mike@example.com',
-    },
-    {
-      id: 4,
-      name: 'Sarah Williams',
-      position: 'Events Coordinator',
-      image: '/placeholder.svg',
-      email: 'sarah@example.com',
+      email: 'faculty@gne.edu.in',
     },
   ];
+
+  const coreTeam = [
+    { id: 1, name: 'Satbir Singh', position: 'Convenor', image: '/placeholder.svg', email: 'satbir@gne.edu.in' },
+    { id: 2, name: 'Harmandeep Singh', position: 'Co Convenor', image: '/placeholder.svg', email: 'harman@gne.edu.in' },
+    { id: 3, name: 'Palak Batra', position: 'Secretary', image: '/placeholder.svg', email: 'palak@gne.edu.in' },
+    { id: 4, name: 'Kanwarpartap Singh', position: 'Secretary', image: '/placeholder.svg', email: 'kanwar@gne.edu.in' },
+    { id: 5, name: 'Tanveer Kaur', position: 'PR Advisor', image: '/placeholder.svg', email: 'tanveer@gne.edu.in' },
+    { id: 6, name: 'Sakshi', position: 'Co Convenor', image: '/placeholder.svg', email: 'sakshi@gne.edu.in' },
+    { id: 7, name: 'Vivek Kumar', position: 'Publicity Officer', image: '/placeholder.svg', email: 'vivek@gne.edu.in' },
+  ];
+
+  const heads = [
+    { id: 1, name: 'Malika', position: 'Promotion Head', image: '/placeholder.svg', email: 'malika@gne.edu.in' },
+    { id: 2, name: 'Gurkamal', position: 'Content Head', image: '/placeholder.svg', email: 'gurkamal@gne.edu.in' },
+    { id: 3, name: 'Shruti Verma', position: 'Promotion Head', image: '/placeholder.svg', email: 'shruti@gne.edu.in' },
+    { id: 4, name: 'Manjot Kaur', position: 'Content Head', image: '/placeholder.svg', email: 'manjot@gne.edu.in' },
+    { id: 5, name: 'Jaskaran Singh Sokhal', position: 'Event Management Head', image: '/placeholder.svg', email: 'jaskaran@gne.edu.in' },
+    { id: 6, name: 'Raman Tiwari', position: 'Discipline Head', image: '/placeholder.svg', email: 'raman@gne.edu.in' },
+    { id: 7, name: 'Aryan Pandey', position: 'Database Head', image: '/placeholder.svg', email: 'aryan@gne.edu.in' },
+    { id: 8, name: 'Arshdeep Singh', position: 'Event Management Head', image: '/placeholder.svg', email: 'arshdeep@gne.edu.in' },
+    { id: 9, name: 'Navneet Saini', position: 'Creative Head', image: '/placeholder.svg', email: 'navneet@gne.edu.in' },
+    { id: 10, name: 'Anjali Kumari', position: 'Database Head', image: '/placeholder.svg', email: 'anjali@gne.edu.in' },
+    { id: 11, name: 'Kanika Mittal', position: 'Creative Head', image: '/placeholder.svg', email: 'kanika@gne.edu.in' },
+    { id: 12, name: 'Gurpreet Kaur', position: 'Event Management Head', image: '/placeholder.svg', email: 'gurpreet@gne.edu.in' },
+    { id: 13, name: 'Jeeya Thapar', position: 'Creative Head', image: '/placeholder.svg', email: 'jeeya@gne.edu.in' },
+  ];
+
+  const executiveTeam = Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: `Executive Member ${i + 1}`,
+    position: 'Executive Member',
+    image: '/placeholder.svg',
+    email: `exec${i + 1}@gne.edu.in`,
+  }));
 
   return (
     <div className="min-h-screen w-full">
@@ -52,6 +65,53 @@ const Members = () => {
             Meet the dedicated team members driving innovation and excellence
           </p>
         </div>
+
+        {/* Faculty */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+            <span className="w-1 h-8 bg-primary" />
+            Faculty Coordinator
+          </h2>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {faculty.map((member) => (
+              <div key={member.id} className="tech-card p-6 hover:border-primary/50 transition-all group">
+                <div className="aspect-square mb-4 overflow-hidden bg-muted relative">
+                  <img 
+                    src={member.image} 
+                    alt={member.name}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                  />
+                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                
+                <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
+                <p className="text-sm font-mono text-primary mb-4">{member.position}</p>
+                
+                <div className="flex items-center gap-3">
+                  <a 
+                    href={`mailto:${member.email}`}
+                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                  </a>
+                  <a 
+                    href="#"
+                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
+                  >
+                    <Linkedin className="w-4 h-4" />
+                  </a>
+                  <a 
+                    href="#"
+                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
+                  >
+                    <Github className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* Core Team */}
         <section className="mb-16">
@@ -95,6 +155,79 @@ const Members = () => {
                     <Github className="w-4 h-4" />
                   </a>
                 </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Department Heads */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+            <span className="w-1 h-8 bg-primary" />
+            Department Heads
+          </h2>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {heads.map((member) => (
+              <div key={member.id} className="tech-card p-6 hover:border-primary/50 transition-all group">
+                <div className="aspect-square mb-4 overflow-hidden bg-muted relative">
+                  <img 
+                    src={member.image} 
+                    alt={member.name}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                  />
+                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                
+                <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
+                <p className="text-sm font-mono text-primary mb-4">{member.position}</p>
+                
+                <div className="flex items-center gap-3">
+                  <a 
+                    href={`mailto:${member.email}`}
+                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                  </a>
+                  <a 
+                    href="#"
+                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
+                  >
+                    <Linkedin className="w-4 h-4" />
+                  </a>
+                  <a 
+                    href="#"
+                    className="w-8 h-8 border border-border hover:border-primary flex items-center justify-center transition-colors"
+                  >
+                    <Github className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Executive Team */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+            <span className="w-1 h-8 bg-primary" />
+            Executive Team
+          </h2>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {executiveTeam.map((member) => (
+              <div key={member.id} className="tech-card p-4 hover:border-primary/50 transition-all group">
+                <div className="aspect-square mb-3 overflow-hidden bg-muted relative">
+                  <img 
+                    src={member.image} 
+                    alt={member.name}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                  />
+                  <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
+                
+                <h3 className="text-sm font-bold text-foreground mb-1">{member.name}</h3>
+                <p className="text-xs font-mono text-primary">{member.position}</p>
               </div>
             ))}
           </div>
