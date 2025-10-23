@@ -242,8 +242,8 @@ const TechNoticeBoard = () => {
       </div>
 
       {/* Background Elements */}
-      <div className="absolute top-0 right-1/4 w-px h-64 bg-gradient-to-b from-transparent via-primary/30 to-transparent" />
-      <div className="absolute bottom-0 left-1/3 w-px h-48 bg-gradient-to-b from-transparent via-secondary/30 to-transparent" />
+      <div className="absolute top-0 right-1/4 w-px h-64 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+      <div className="absolute bottom-0 left-1/3 w-px h-48 bg-gradient-to-b from-transparent via-secondary/5 to-transparent" />
     </section>
   );
 };
