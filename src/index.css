@@ -89,6 +89,37 @@ All colors MUST be HSL.
   html {
     scroll-behavior: smooth;
   }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+    border-left: 1px solid hsl(var(--border));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--primary) / 0.7));
+    border-radius: 2px;
+    border: 2px solid hsl(var(--background));
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, hsl(var(--primary) / 0.9), hsl(var(--primary)));
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: hsl(var(--secondary));
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary)) hsl(var(--background));
+  }
 }
 
 @layer utilities {
