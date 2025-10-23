@@ -71,8 +71,8 @@ const TechNoticeBoard = () => {
       const { data, error } = await supabase
         .from('notices')
         .select('*')
-        .order('date', { ascending: true })
-        .limit(4);
+        .order('date', { ascending: false })
+        .limit(3);
 
       if (error) throw error;
       setNotices(data || []);
