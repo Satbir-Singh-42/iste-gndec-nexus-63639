@@ -44,7 +44,7 @@ interface Event {
 interface GalleryItem {
   id: number;
   title: string;
-  image: string;
+  images: string[];
   category: string;
   description: string;
   hidden?: boolean;
@@ -821,7 +821,16 @@ const Admin = () => {
                           <TableCell>{item.title}</TableCell>
                           <TableCell>{item.category}</TableCell>
                           <TableCell>
-                            <img src={item.image} alt={item.title} className="w-16 h-16 object-cover rounded" />
+                            <div className="flex gap-1">
+                              {item.images?.slice(0, 3).map((img, idx) => (
+                                <img key={idx} src={img} alt={`${item.title} ${idx + 1}`} className="w-12 h-12 object-cover rounded" />
+                              ))}
+                              {item.images?.length > 3 && (
+                                <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-xs">
+                                  +{item.images.length - 3}
+                                </div>
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
@@ -1860,28 +1869,42 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
+  const moveImageUp = (index: number) => {
+    if (index === 0) return;
+    const newImages = [...uploadedImages];
+    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    setUploadedImages(newImages);
+  };
+
+  const moveImageDown = (index: number) => {
+    if (index === uploadedImages.length - 1) return;
+    const newImages = [...uploadedImages];
+    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    setUploadedImages(newImages);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase || uploadedImages.length === 0) return;
 
     try {
-      const galleryItems = uploadedImages.map(imageUrl => ({
+      const galleryItem = {
         title: formData.title,
-        image: imageUrl,
+        images: uploadedImages,
         category: formData.category,
         description: formData.description
-      }));
+      };
 
-      const { error } = await supabase.from('gallery').insert(galleryItems);
+      const { error } = await supabase.from('gallery').insert([galleryItem]);
       if (error) throw error;
       
-      toast.success(`${uploadedImages.length} gallery item(s) added successfully`);
+      toast.success(`Gallery item added with ${uploadedImages.length} image(s)`);
       setOpen(false);
       setFormData({ title: "", category: "Events", description: "" });
       setUploadedImages([]);
       onSuccess();
     } catch (error: any) {
-      toast.error(`Failed to add gallery items: ${error.message}`);
+      toast.error(`Failed to add gallery item: ${error.message}`);
     }
   };
 
@@ -1920,13 +1943,39 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
                   {uploadedImages.map((url, index) => (
                     <div key={index} className="relative group">
                       <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
+                      <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {index > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => moveImageUp(index)}
+                            className="bg-blue-500 text-white rounded-full p-1"
+                            title="Move left"
+                          >
+                            <ChevronUp className="h-3 w-3" />
+                          </button>
+                        )}
+                        {index < uploadedImages.length - 1 && (
+                          <button
+                            type="button"
+                            onClick={() => moveImageDown(index)}
+                            className="bg-blue-500 text-white rounded-full p-1"
+                            title="Move right"
+                          >
+                            <ChevronDown className="h-3 w-3" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="bg-red-500 text-white rounded-full p-1"
+                          title="Remove"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                      <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-1.5 py-0.5 rounded">
+                        {index + 1}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -2016,32 +2065,16 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
     if (!supabase) return;
 
     try {
-      // Update the original item with the first uploaded image (if any) or keep current
+      // Update the gallery item with all images (either new uploads or keep existing)
       const updatedData = {
         ...formData,
-        image: uploadedImages.length > 0 ? uploadedImages[0] : formData.image
+        images: uploadedImages.length > 0 ? uploadedImages : formData.images
       };
       
       const { error } = await supabase.from('gallery').update(updatedData).eq('id', item.id);
       if (error) throw error;
       
-      // If there are additional images, create new gallery items for them
-      if (uploadedImages.length > 1) {
-        const additionalItems = uploadedImages.slice(1).map(imageUrl => ({
-          title: formData.title,
-          image: imageUrl,
-          category: formData.category,
-          description: formData.description
-        }));
-        
-        const { error: insertError } = await supabase.from('gallery').insert(additionalItems);
-        if (insertError) throw insertError;
-      }
-      
-      toast.success(uploadedImages.length > 1 
-        ? `Gallery item updated and ${uploadedImages.length - 1} new item(s) added`
-        : 'Gallery item updated successfully'
-      );
+      toast.success(`Gallery item updated with ${uploadedImages.length > 0 ? uploadedImages.length : formData.images.length} image(s)`);
       setOpen(false);
       setUploadedImages([]);
       onSuccess();
@@ -2067,9 +2100,9 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
               <Input id="edit-gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
             </div>
             <div>
-              <Label htmlFor="edit-gallery-image">Upload New Image(s)</Label>
+              <Label htmlFor="edit-gallery-image">Images</Label>
               <p className="text-xs text-muted-foreground mb-2">
-                Upload one or more images. The first will replace the current one, additional images will be added as new items.
+                Upload new images or manage existing ones. You can reorder images by using the up/down arrows.
               </p>
               <Input 
                 id="edit-gallery-image" 
@@ -2080,42 +2113,46 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                 disabled={uploading} 
               />
               {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
-              {uploadedImages.length > 0 && (
+              {(uploadedImages.length > 0 || formData.images?.length > 0) && (
                 <div className="mt-3">
-                  <p className="text-xs text-muted-foreground mb-2">New Images ({uploadedImages.length}):</p>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {uploadedImages.length > 0 ? `New Images (${uploadedImages.length})` : `Current Images (${formData.images.length})`}:
+                  </p>
                   <div className="grid grid-cols-3 gap-2">
-                    {uploadedImages.map((url, index) => (
+                    {(uploadedImages.length > 0 ? uploadedImages : formData.images).map((url, index) => (
                       <div key={index} className="relative group">
                         <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
                         <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           {index > 0 && (
                             <button
                               type="button"
-                              onClick={() => moveImageUp(index)}
+                              onClick={() => uploadedImages.length > 0 ? moveImageUp(index) : {}}
                               className="bg-blue-500 text-white rounded-full p-1"
-                              title="Move up"
+                              title="Move left"
                             >
                               <ChevronUp className="h-3 w-3" />
                             </button>
                           )}
-                          {index < uploadedImages.length - 1 && (
+                          {index < (uploadedImages.length > 0 ? uploadedImages.length : formData.images.length) - 1 && (
                             <button
                               type="button"
-                              onClick={() => moveImageDown(index)}
+                              onClick={() => uploadedImages.length > 0 ? moveImageDown(index) : {}}
                               className="bg-blue-500 text-white rounded-full p-1"
-                              title="Move down"
+                              title="Move right"
                             >
                               <ChevronDown className="h-3 w-3" />
                             </button>
                           )}
-                          <button
-                            type="button"
-                            onClick={() => removeImage(index)}
-                            className="bg-red-500 text-white rounded-full p-1"
-                            title="Remove"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
+                          {uploadedImages.length > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="bg-red-500 text-white rounded-full p-1"
+                              title="Remove"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          )}
                         </div>
                         <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-1.5 py-0.5 rounded">
                           {index + 1}
@@ -2123,12 +2160,6 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-              {formData.image && uploadedImages.length === 0 && (
-                <div className="mt-3">
-                  <p className="text-xs text-muted-foreground mb-1">Current Image:</p>
-                  <img src={formData.image} alt="Preview" className="w-32 h-32 object-cover rounded" />
                 </div>
               )}
             </div>

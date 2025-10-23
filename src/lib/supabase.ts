@@ -92,7 +92,7 @@ export type Database = {
         Row: {
           id: number;
           title: string;
-          image: string;
+          images: string[];
           category: string;
           description: string;
           created_at: string;
