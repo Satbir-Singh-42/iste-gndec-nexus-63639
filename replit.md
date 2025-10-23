@@ -179,3 +179,41 @@ src/
 4. Real-time updates without redeployment
 
 **Migration Status**: ✅ COMPLETE - All database tables created, data migrated, and all pages successfully loading from Supabase. Admin panel fully functional at `/admin` route. See `MIGRATION_GUIDE.md` for details.
+
+## Email Integration
+
+**Contact Form Email System**: Professional email functionality using Gmail SMTP (without Express framework).
+
+**Implementation**:
+- Lightweight Node.js HTTP server (`server/email-server.js`) running on port 3001
+- Uses nodemailer with Gmail SMTP for sending emails
+- No Express dependency - built with Node.js native `http` module
+- CORS enabled for frontend communication
+
+**Features**:
+- Automatic email sending when contact form is submitted
+- Sends email to ISTE GNDEC team
+- Auto-reply confirmation email to the user
+- Form validation and error handling
+- Loading states and success/error toasts
+
+**Required Environment Variables** (stored in Replit Secrets):
+- `GMAIL_USER` - Gmail address (istegndec.original@gmail.com)
+- `GMAIL_PASSWORD` - Gmail App Password (16-character code from Google)
+- `GMAIL_TO` - Recipient email address (istegndec.original@gmail.com)
+
+**How to Generate Gmail App Password**:
+1. Enable 2-Step Verification at https://myaccount.google.com/security
+2. Visit https://myaccount.google.com/apppasswords
+3. Select app: Mail, device: Other (ISTE Website)
+4. Copy the 16-character password to `GMAIL_PASSWORD` secret
+
+**Workflow**:
+- Two separate workflows run simultaneously:
+  - "Start Game" - Vite dev server on port 5000 (frontend)
+  - "Email Server" - Email API server on port 3001 (backend)
+
+**API Endpoint**:
+- `POST http://localhost:3001/api/contact`
+- Request body: `{ name, email, message }`
+- Returns: `{ success: true, message: "..." }` or error

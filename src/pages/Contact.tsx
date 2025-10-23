@@ -29,7 +29,7 @@ const Contact = () => {
     },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate form
@@ -38,28 +38,42 @@ const Contact = () => {
       return;
     }
 
-    // Create mailto link with pre-filled data
-    const subject = encodeURIComponent(`Contact Form: Message from ${formData.name}`);
-    const body = encodeURIComponent(
-      `Name: ${formData.name}\n` +
-      `Email: ${formData.email}\n\n` +
-      `Message:\n${formData.message}`
-    );
-    
-    const mailtoLink = `mailto:istegndec.original@gmail.com?subject=${subject}&body=${body}`;
-    
-    // Open email client
-    window.location.href = mailtoLink;
-    
-    // Show success message
-    toast.success('Opening your email client...');
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      message: '',
-    });
+    // Show loading toast
+    const loadingToast = toast.loading('Sending your message...');
+
+    try {
+      const response = await fetch('http://localhost:3001/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(data.message || 'Message sent successfully!', {
+          id: loadingToast,
+        });
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          message: '',
+        });
+      } else {
+        toast.error(data.error || 'Failed to send message', {
+          id: loadingToast,
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Failed to send message. Please try again.', {
+        id: loadingToast,
+      });
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
