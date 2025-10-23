@@ -68,8 +68,7 @@ const TechHero = () => {
       <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
         <h1 
           ref={titleRef}
-          data-text="ISTE GNDEC"
-          className="glitch mb-6 text-7xl md:text-9xl font-black tracking-tighter"
+          className="mb-6 text-7xl md:text-9xl font-black tracking-tighter"
         >
           ISTE GNDEC
         </h1>

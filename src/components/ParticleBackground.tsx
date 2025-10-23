@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 
 interface BinaryStream {
@@ -26,6 +27,7 @@ interface Star {
 }
 
 const ParticleBackground = () => {
+  const location = useLocation();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamsRef = useRef<BinaryStream[]>([]);
@@ -34,6 +36,9 @@ const ParticleBackground = () => {
   const animationFrameRef = useRef<number | null>(null);
   const mouseRef = useRef({ x: -1000, y: -1000, prevX: -1000, prevY: -1000 });
   const lastSpawnTime = useRef(0);
+  
+  // Only show binary streams on home page
+  const isHomePage = location.pathname === '/';
 
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
@@ -80,27 +85,30 @@ const ParticleBackground = () => {
 
     starsRef.current = stars;
 
-    // Create binary streams (very subtle)
-    const streamCount = Math.floor(window.innerWidth / 60);
+    // Create binary streams (very subtle) - only on home page
     const streams: BinaryStream[] = [];
+    
+    if (isHomePage) {
+      const streamCount = Math.floor(window.innerWidth / 60);
 
-    for (let i = 0; i < streamCount; i++) {
-      const streamLength = Math.floor(Math.random() * 8) + 5;
-      const digits: string[] = [];
-      const opacity: number[] = [];
+      for (let i = 0; i < streamCount; i++) {
+        const streamLength = Math.floor(Math.random() * 8) + 5;
+        const digits: string[] = [];
+        const opacity: number[] = [];
 
-      for (let j = 0; j < streamLength; j++) {
-        digits.push(Math.random() > 0.5 ? '1' : '0');
-        opacity.push(1 - (j / streamLength));
+        for (let j = 0; j < streamLength; j++) {
+          digits.push(Math.random() > 0.5 ? '1' : '0');
+          opacity.push(1 - (j / streamLength));
+        }
+
+        streams.push({
+          x: i * 60 + Math.random() * 40,
+          y: Math.random() * -canvas.height,
+          speed: Math.random() * 0.8 + 0.2,
+          digits,
+          opacity
+        });
       }
-
-      streams.push({
-        x: i * 60 + Math.random() * 40,
-        y: Math.random() * -canvas.height,
-        speed: Math.random() * 0.8 + 0.2,
-        digits,
-        opacity
-      });
     }
 
     streamsRef.current = streams;
@@ -149,8 +157,9 @@ const ParticleBackground = () => {
       ctx.font = `${fontSize}px "Courier New", monospace`;
       ctx.textAlign = 'center';
 
-      // Draw binary streams (extremely translucent)
-      streams.forEach((stream) => {
+      // Draw binary streams (extremely translucent) - only on home page
+      if (isHomePage) {
+        streams.forEach((stream) => {
         stream.y += stream.speed;
 
         if (stream.y > canvas.height + stream.digits.length * fontSize) {
@@ -184,11 +193,12 @@ const ParticleBackground = () => {
           }
         });
 
-        if (Math.random() < 0.008) {
-          const randomIndex = Math.floor(Math.random() * stream.digits.length);
-          stream.digits[randomIndex] = stream.digits[randomIndex] === '1' ? '0' : '1';
-        }
-      });
+          if (Math.random() < 0.008) {
+            const randomIndex = Math.floor(Math.random() * stream.digits.length);
+            stream.digits[randomIndex] = stream.digits[randomIndex] === '1' ? '0' : '1';
+          }
+        });
+      }
 
       // Draw clean mouse trail particles
       const trailParticles = trailParticlesRef.current;
@@ -267,7 +277,7 @@ const ParticleBackground = () => {
         }
       });
     };
-  }, []);
+  }, [isHomePage]);
 
   return (
     <div 

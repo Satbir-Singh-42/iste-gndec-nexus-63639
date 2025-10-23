@@ -19,11 +19,11 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      {/* Global background - persists across all pages */}
-      <div className="fixed inset-0 -z-10">
-        <ParticleBackground />
-      </div>
       <BrowserRouter>
+        {/* Global background - persists across all pages */}
+        <div className="fixed inset-0 -z-10">
+          <ParticleBackground />
+        </div>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/events" element={<Events />} />
