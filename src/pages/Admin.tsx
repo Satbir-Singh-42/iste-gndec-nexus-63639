@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Trash2, Edit, Plus } from "lucide-react";
+import { Trash2, Edit, Plus, Eye, EyeOff, ChevronUp, ChevronDown, Search } from "lucide-react";
 import { uploadImageToSupabase } from "@/lib/imageUpload";
 
 interface Notice {
@@ -55,6 +55,8 @@ interface Member {
   linkedin?: string;
   github?: string;
   instagram?: string;
+  hidden?: boolean;
+  display_order?: number;
 }
 
 interface Faculty {
@@ -63,6 +65,11 @@ interface Faculty {
   title: string;
   image: string;
   description: string;
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
+  hidden?: boolean;
+  display_order?: number;
 }
 
 interface EventHighlight {
@@ -93,6 +100,7 @@ const Admin = () => {
   const [executive, setExecutive] = useState<Member[]>([]);
   const [eventHighlights, setEventHighlights] = useState<EventHighlight[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     checkAuthStatus();
@@ -709,37 +717,39 @@ const Admin = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Image</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {faculty.map((member) => (
-                        <TableRow key={member.id}>
-                          <TableCell>{member.id}</TableCell>
-                          <TableCell>{member.name}</TableCell>
-                          <TableCell>{member.title}</TableCell>
-                          <TableCell>
-                            <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <EditFacultyDialog member={member} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                              <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_faculty', 'faculty member')}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
+                  <div className="max-h-96 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>ID</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Image</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {faculty.map((member) => (
+                          <TableRow key={member.id}>
+                            <TableCell>{member.id}</TableCell>
+                            <TableCell>{member.name}</TableCell>
+                            <TableCell>{member.title}</TableCell>
+                            <TableCell>
+                              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <EditFacultyDialog member={member} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                                <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_faculty', 'faculty member')}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -754,39 +764,41 @@ const Admin = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Position</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Image</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {coreTeam.map((member) => (
-                        <TableRow key={member.id}>
-                          <TableCell>{member.id}</TableCell>
-                          <TableCell>{member.name}</TableCell>
-                          <TableCell>{member.position}</TableCell>
-                          <TableCell>{member.email}</TableCell>
-                          <TableCell>
-                            <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <EditMemberDialog member={member} table="members_core_team" title="Edit Core Team Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                              <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_core_team', 'core team member')}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
+                  <div className="max-h-96 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>ID</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Position</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Image</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {coreTeam.map((member) => (
+                          <TableRow key={member.id}>
+                            <TableCell>{member.id}</TableCell>
+                            <TableCell>{member.name}</TableCell>
+                            <TableCell>{member.position}</TableCell>
+                            <TableCell>{member.email}</TableCell>
+                            <TableCell>
+                              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <EditMemberDialog member={member} table="members_core_team" title="Edit Core Team Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                                <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_core_team', 'core team member')}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -801,39 +813,41 @@ const Admin = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Position</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Image</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {postHolders.map((member) => (
-                        <TableRow key={member.id}>
-                          <TableCell>{member.id}</TableCell>
-                          <TableCell>{member.name}</TableCell>
-                          <TableCell>{member.position}</TableCell>
-                          <TableCell>{member.email}</TableCell>
-                          <TableCell>
-                            <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <EditMemberDialog member={member} table="members_post_holders" title="Edit Post Holder" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                              <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_post_holders', 'post holder')}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
+                  <div className="max-h-96 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>ID</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Position</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Image</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {postHolders.map((member) => (
+                          <TableRow key={member.id}>
+                            <TableCell>{member.id}</TableCell>
+                            <TableCell>{member.name}</TableCell>
+                            <TableCell>{member.position}</TableCell>
+                            <TableCell>{member.email}</TableCell>
+                            <TableCell>
+                              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <EditMemberDialog member={member} table="members_post_holders" title="Edit Post Holder" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                                <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_post_holders', 'post holder')}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -848,39 +862,41 @@ const Admin = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Position</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Image</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {executive.map((member) => (
-                        <TableRow key={member.id}>
-                          <TableCell>{member.id}</TableCell>
-                          <TableCell>{member.name}</TableCell>
-                          <TableCell>{member.position}</TableCell>
-                          <TableCell>{member.email}</TableCell>
-                          <TableCell>
-                            <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <EditMemberDialog member={member} table="members_executive" title="Edit Executive Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                              <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_executive', 'executive member')}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
+                  <div className="max-h-96 overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>ID</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Position</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Image</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {executive.map((member) => (
+                          <TableRow key={member.id}>
+                            <TableCell>{member.id}</TableCell>
+                            <TableCell>{member.name}</TableCell>
+                            <TableCell>{member.position}</TableCell>
+                            <TableCell>{member.email}</TableCell>
+                            <TableCell>
+                              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <EditMemberDialog member={member} table="members_executive" title="Edit Executive Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                                <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_executive', 'executive member')}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </CardContent>
               </Card>
             </div>
