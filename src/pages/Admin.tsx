@@ -12,8 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Trash2, Edit, Plus, Eye, EyeOff, ChevronUp, ChevronDown, Search, X } from "lucide-react";
+import { Trash2, Edit, Plus, Eye, EyeOff, ChevronUp, ChevronDown, Search, X, CalendarIcon } from "lucide-react";
 import { uploadImageToSupabase, uploadMultipleImages } from "@/lib/imageUpload";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 interface Notice {
   id: number;
@@ -108,6 +111,9 @@ const Admin = () => {
   const [eventHighlights, setEventHighlights] = useState<EventHighlight[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [noticesSearch, setNoticesSearch] = useState("");
+  const [eventsSearch, setEventsSearch] = useState("");
+  const [highlightsSearch, setHighlightsSearch] = useState("");
   const [facultySearch, setFacultySearch] = useState("");
   const [coreTeamSearch, setCoreTeamSearch] = useState("");
   const [postHoldersSearch, setPostHoldersSearch] = useState("");
@@ -637,6 +643,17 @@ const Admin = () => {
                   </div>
                   <AddNoticeDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
+                <div className="mt-4">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by title or type..."
+                      value={noticesSearch}
+                      onChange={(e) => setNoticesSearch(e.target.value)}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <Table>
@@ -652,7 +669,12 @@ const Admin = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {notices.map((notice) => (
+                    {notices
+                      .filter(notice => 
+                        notice.title.toLowerCase().includes(noticesSearch.toLowerCase()) ||
+                        notice.type.toLowerCase().includes(noticesSearch.toLowerCase())
+                      )
+                      .map((notice) => (
                       <TableRow key={notice.id}>
                         <TableCell>{notice.id}</TableCell>
                         <TableCell>{notice.title}</TableCell>
@@ -686,6 +708,17 @@ const Admin = () => {
                   </div>
                   <AddEventDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
+                <div className="mt-4">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by title or location..."
+                      value={eventsSearch}
+                      onChange={(e) => setEventsSearch(e.target.value)}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="max-h-96 overflow-y-auto">
@@ -702,14 +735,19 @@ const Admin = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {events.map((event, index) => (
+                      {events
+                        .filter(event => 
+                          event.title.toLowerCase().includes(eventsSearch.toLowerCase()) ||
+                          event.location.toLowerCase().includes(eventsSearch.toLowerCase())
+                        )
+                        .map((event, index, filteredArray) => (
                         <TableRow key={event.id} className={event.hidden ? 'opacity-50' : ''}>
                           <TableCell>
                             <div className="flex flex-col gap-1">
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                onClick={() => moveEventUp(events, index)}
+                                onClick={() => moveEventUp(events, events.indexOf(event))}
                                 disabled={index === 0}
                                 className="h-6 w-6 p-0"
                               >
@@ -718,8 +756,8 @@ const Admin = () => {
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                onClick={() => moveEventDown(events, index)}
-                                disabled={index === events.length - 1}
+                                onClick={() => moveEventDown(events, events.indexOf(event))}
+                                disabled={index === filteredArray.length - 1}
                                 className="h-6 w-6 p-0"
                               >
                                 <ChevronDown className="h-4 w-4" />
@@ -1257,6 +1295,17 @@ const Admin = () => {
                   </div>
                   <AddEventHighlightDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
+                <div className="mt-4">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by title or location..."
+                      value={highlightsSearch}
+                      onChange={(e) => setHighlightsSearch(e.target.value)}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="max-h-96 overflow-y-auto">
@@ -1272,14 +1321,19 @@ const Admin = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {eventHighlights.map((highlight, index) => (
+                      {eventHighlights
+                        .filter(highlight => 
+                          highlight.title.toLowerCase().includes(highlightsSearch.toLowerCase()) ||
+                          highlight.location.toLowerCase().includes(highlightsSearch.toLowerCase())
+                        )
+                        .map((highlight, index, filteredArray) => (
                         <TableRow key={highlight.id} className={highlight.hidden ? 'opacity-50' : ''}>
                           <TableCell>
                             <div className="flex flex-col gap-1">
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                onClick={() => moveHighlightUp(eventHighlights, index)}
+                                onClick={() => moveHighlightUp(eventHighlights, eventHighlights.indexOf(highlight))}
                                 disabled={index === 0}
                                 className="h-6 w-6 p-0"
                               >
@@ -1288,8 +1342,8 @@ const Admin = () => {
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
-                                onClick={() => moveHighlightDown(eventHighlights, index)}
-                                disabled={index === eventHighlights.length - 1}
+                                onClick={() => moveHighlightDown(eventHighlights, eventHighlights.indexOf(highlight))}
+                                disabled={index === filteredArray.length - 1}
                                 className="h-6 w-6 p-0"
                               >
                                 <ChevronDown className="h-4 w-4" />
