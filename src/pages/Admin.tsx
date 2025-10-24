@@ -2511,13 +2511,13 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
             <Input id="member-instagram" type="url" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="https://instagram.com/username" />
           </div>
           <div>
-            <Label htmlFor="member-image">Profile Image</Label>
+            <Label htmlFor="member-image">Profile Image (optional)</Label>
             <Input id="member-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
             {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
             {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={uploading || !formData.image}>Add Member</Button>
+            <Button type="submit" disabled={uploading}>Add Member</Button>
           </DialogFooter>
           </form>
         </ScrollArea>
