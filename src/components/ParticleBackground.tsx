@@ -328,10 +328,11 @@ const ParticleBackground = () => {
   return (
     <div 
       ref={containerRef} 
-      className="absolute inset-0 -z-10 overflow-hidden"
+      className="absolute inset-0 overflow-hidden"
       style={{ 
+        zIndex: -10,
         background: isLightMode 
-          ? 'linear-gradient(135deg, #E8F4FF 0%, #F0F8FF 25%, #FFFFFF 50%, #EFF6FF 75%, #E0F0FF 100%)'
+          ? 'transparent'
           : 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
       }}
     >
@@ -340,6 +341,7 @@ const ParticleBackground = () => {
         className="absolute inset-0 w-full h-full"
         style={{ 
           pointerEvents: 'none',
+          zIndex: 1,
           background: isLightMode
             ? 'transparent'
             : 'linear-gradient(to bottom, rgba(4, 6, 15, 1) 0%, rgba(6, 10, 20, 1) 50%, rgba(4, 6, 15, 1) 100%)'

@@ -185,7 +185,8 @@ All colors MUST be HSL.
     transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  body::before {
+  /* Dark mode only - scanline blocks particles in light mode */
+  html:not(.light) body::before {
     content: '';
     position: fixed;
     top: 0;
