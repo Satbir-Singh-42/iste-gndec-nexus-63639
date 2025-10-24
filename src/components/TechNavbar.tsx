@@ -10,7 +10,7 @@ const staticNavItems = [
   { name: 'Events', path: '/events' },
   { name: 'Members', path: '/members' },
   { name: 'Gallery', path: '/gallery' },
-  { name: 'Contact us', path: '/contact' },
+  { name: 'Contact Us', path: '/contact' },
 ];
 
 const TechNavbar = () => {

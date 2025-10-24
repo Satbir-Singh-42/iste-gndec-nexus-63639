@@ -19,6 +19,11 @@ create table public.event_highlights (
   constraint event_highlights_pkey primary key (id)
 ) TABLESPACE pg_default;
 
+create index IF not exists idx_event_highlights_display_order on public.event_highlights using btree (display_order) TABLESPACE pg_default;
+
+create index IF not exists idx_event_highlights_hidden on public.event_highlights using btree (hidden) TABLESPACE pg_default;
+
+
 -- Events Table
 -- Stores event information with details, agenda, and status
 create table public.events (
@@ -29,15 +34,22 @@ create table public.events (
   location text not null,
   description text not null,
   status text not null,
-  capacity text not null,
+  capacity text null,
   organizer text not null,
   details text not null,
-  agenda text[] not null,
+  agenda text[] null,
   created_at timestamp with time zone null default now(),
   hidden boolean null default false,
   display_order integer null,
   constraint events_pkey primary key (id)
 ) TABLESPACE pg_default;
+
+create index IF not exists idx_events_display_order on public.events using btree (display_order) TABLESPACE pg_default;
+
+create index IF not exists idx_events_hidden on public.events using btree (hidden) TABLESPACE pg_default;
+
+create index IF not exists idx_events_status on public.events using btree (status) TABLESPACE pg_default;
+
 
 -- Gallery Table
 -- Stores photo galleries with categories and multiple images
@@ -53,6 +65,13 @@ create table public.gallery (
   constraint gallery_pkey primary key (id)
 ) TABLESPACE pg_default;
 
+create index IF not exists idx_gallery_display_order on public.gallery using btree (display_order) TABLESPACE pg_default;
+
+create index IF not exists idx_gallery_hidden on public.gallery using btree (hidden) TABLESPACE pg_default;
+
+create index IF not exists idx_gallery_category on public.gallery using btree (category) TABLESPACE pg_default;
+
+
 -- Core Team Members Table
 -- Stores information about core team members
 create table public.members_core_team (
@@ -60,7 +79,7 @@ create table public.members_core_team (
   name text not null,
   position text not null,
   image text not null,
-  email text not null,
+  email text null,
   created_at timestamp with time zone null default now(),
   hidden boolean null default false,
   display_order integer null default 0,
@@ -70,6 +89,10 @@ create table public.members_core_team (
   constraint members_core_team_pkey primary key (id)
 ) TABLESPACE pg_default;
 
+create index IF not exists idx_members_core_display_order on public.members_core_team using btree (display_order) TABLESPACE pg_default;
+
+
+
 -- Executive Team Members Table
 -- Stores information about executive team members
 create table public.members_executive (
@@ -77,7 +100,7 @@ create table public.members_executive (
   name text not null,
   position text not null,
   image text not null,
-  email text not null,
+  email text null,
   created_at timestamp with time zone null default now(),
   hidden boolean null default false,
   display_order integer null default 0,
@@ -86,6 +109,9 @@ create table public.members_executive (
   instagram text null,
   constraint members_executive_pkey primary key (id)
 ) TABLESPACE pg_default;
+
+create index IF not exists idx_members_executive_display_order on public.members_executive using btree (display_order) TABLESPACE pg_default;
+
 
 -- Faculty Members Table
 -- Stores information about faculty advisors
@@ -111,7 +137,7 @@ create table public.members_post_holders (
   name text not null,
   position text not null,
   image text not null,
-  email text not null,
+  email text null,
   created_at timestamp with time zone null default now(),
   hidden boolean null default false,
   display_order integer null default 0,
@@ -120,6 +146,9 @@ create table public.members_post_holders (
   instagram text null,
   constraint members_post_holders_pkey primary key (id)
 ) TABLESPACE pg_default;
+
+create index IF not exists idx_members_post_holders_display_order on public.members_post_holders using btree (display_order) TABLESPACE pg_default;
+
 
 -- Notices Table
 -- Stores notice board items with rich content support
@@ -140,6 +169,15 @@ create table public.notices (
   display_order integer null,
   constraint notices_pkey primary key (id)
 ) TABLESPACE pg_default;
+
+create index IF not exists idx_notices_display_order on public.notices using btree (display_order) TABLESPACE pg_default;
+
+create index IF not exists idx_notices_hidden on public.notices using btree (hidden) TABLESPACE pg_default;
+
+create index IF not exists idx_notices_type on public.notices using btree (type) TABLESPACE pg_default;
+
+create index IF not exists idx_notices_status on public.notices using btree (status) TABLESPACE pg_default;
+
 
 -- Projects Table
 -- Stores student project showcase information

@@ -47,10 +47,8 @@ const Contact = () => {
       return;
     }
 
-    // Check if we're in development (localhost or Replit)
-    const isDevelopment =
-      window.location.hostname === "localhost" ||
-      window.location.hostname.includes("replit");
+    // Check if we're in development (localhost)
+    const isDevelopment = window.location.hostname === "localhost";
 
     if (isDevelopment) {
       toast.info(
