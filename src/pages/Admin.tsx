@@ -1742,6 +1742,81 @@ const Admin = () => {
   );
 };
 
+// SelectWithOther component for dropdowns with custom "other" option
+function SelectWithOther({ 
+  label, 
+  id, 
+  value, 
+  options, 
+  onChange 
+}: { 
+  label: string; 
+  id: string; 
+  value: string; 
+  options: { value: string; label: string }[]; 
+  onChange: (value: string) => void; 
+}) {
+  const [showOtherInput, setShowOtherInput] = useState(false);
+  const [otherValue, setOtherValue] = useState("");
+
+  // Check if current value is not in predefined options
+  useEffect(() => {
+    const isPredefined = options.some(opt => opt.value === value);
+    if (!isPredefined && value) {
+      setShowOtherInput(true);
+      setOtherValue(value);
+    }
+  }, [value, options]);
+
+  const handleSelectChange = (selectedValue: string) => {
+    if (selectedValue === "other") {
+      setShowOtherInput(true);
+      setOtherValue("");
+    } else {
+      setShowOtherInput(false);
+      setOtherValue("");
+      onChange(selectedValue);
+    }
+  };
+
+  const handleOtherInputChange = (inputValue: string) => {
+    setOtherValue(inputValue);
+    onChange(inputValue);
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      <Select 
+        value={showOtherInput ? "other" : value} 
+        onValueChange={handleSelectChange}
+      >
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map(option => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+          <SelectItem value="other">Other (type your own)</SelectItem>
+        </SelectContent>
+      </Select>
+      {showOtherInput && (
+        <Input
+          id={`${id}-other`}
+          value={otherValue}
+          onChange={(e) => handleOtherInputChange(e.target.value)}
+          placeholder="Enter custom value"
+          required
+          className="mt-2"
+        />
+      )}
+    </div>
+  );
+}
+
 function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -1839,28 +1914,28 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="type">Type</Label>
-              <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="EVENT">EVENT</SelectItem>
-                  <SelectItem value="ANNOUNCEMENT">ANNOUNCEMENT</SelectItem>
-                  <SelectItem value="WORKSHOP">WORKSHOP</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="status">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
-                  <SelectItem value="REGISTRATION">REGISTRATION</SelectItem>
-                  <SelectItem value="SCHEDULED">SCHEDULED</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithOther
+              label="Type"
+              id="type"
+              value={formData.type}
+              options={[
+                { value: "EVENT", label: "EVENT" },
+                { value: "ANNOUNCEMENT", label: "ANNOUNCEMENT" },
+                { value: "WORKSHOP", label: "WORKSHOP" }
+              ]}
+              onChange={(value) => setFormData({ ...formData, type: value })}
+            />
+            <SelectWithOther
+              label="Status"
+              id="status"
+              value={formData.status}
+              options={[
+                { value: "UPCOMING", label: "UPCOMING" },
+                { value: "REGISTRATION", label: "REGISTRATION" },
+                { value: "SCHEDULED", label: "SCHEDULED" }
+              ]}
+              onChange={(value) => setFormData({ ...formData, status: value })}
+            />
           </div>
           <div>
             <Label htmlFor="description">Description</Label>
@@ -1978,28 +2053,28 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="edit-type">Type</Label>
-              <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="EVENT">EVENT</SelectItem>
-                  <SelectItem value="ANNOUNCEMENT">ANNOUNCEMENT</SelectItem>
-                  <SelectItem value="WORKSHOP">WORKSHOP</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="edit-status">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
-                  <SelectItem value="REGISTRATION">REGISTRATION</SelectItem>
-                  <SelectItem value="SCHEDULED">SCHEDULED</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithOther
+              label="Type"
+              id="edit-type"
+              value={formData.type}
+              options={[
+                { value: "EVENT", label: "EVENT" },
+                { value: "ANNOUNCEMENT", label: "ANNOUNCEMENT" },
+                { value: "WORKSHOP", label: "WORKSHOP" }
+              ]}
+              onChange={(value) => setFormData({ ...formData, type: value })}
+            />
+            <SelectWithOther
+              label="Status"
+              id="edit-status"
+              value={formData.status}
+              options={[
+                { value: "UPCOMING", label: "UPCOMING" },
+                { value: "REGISTRATION", label: "REGISTRATION" },
+                { value: "SCHEDULED", label: "SCHEDULED" }
+              ]}
+              onChange={(value) => setFormData({ ...formData, status: value })}
+            />
           </div>
           <div>
             <Label htmlFor="edit-description">Description</Label>
@@ -2129,17 +2204,17 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
             <Textarea id="event-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="event-status">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
-                  <SelectItem value="ONGOING">ONGOING</SelectItem>
-                  <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithOther
+              label="Status"
+              id="event-status"
+              value={formData.status}
+              options={[
+                { value: "UPCOMING", label: "UPCOMING" },
+                { value: "ONGOING", label: "ONGOING" },
+                { value: "COMPLETED", label: "COMPLETED" }
+              ]}
+              onChange={(value) => setFormData({ ...formData, status: value })}
+            />
             <div>
               <Label htmlFor="event-capacity">Capacity</Label>
               <Input 
@@ -2286,17 +2361,17 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
             <Textarea id="edit-event-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="edit-event-status">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="UPCOMING">UPCOMING</SelectItem>
-                  <SelectItem value="ONGOING">ONGOING</SelectItem>
-                  <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithOther
+              label="Status"
+              id="edit-event-status"
+              value={formData.status}
+              options={[
+                { value: "UPCOMING", label: "UPCOMING" },
+                { value: "ONGOING", label: "ONGOING" },
+                { value: "COMPLETED", label: "COMPLETED" }
+              ]}
+              onChange={(value) => setFormData({ ...formData, status: value })}
+            />
             <div>
               <Label htmlFor="edit-event-capacity">Capacity</Label>
               <Input 
@@ -2360,7 +2435,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: "",
-    category: "site",
+    category: "event",
     description: ""
   });
 
@@ -2425,7 +2500,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
       
       toast.success(`Gallery item added with ${uploadedImages.length} image(s)`);
       setOpen(false);
-      setFormData({ title: "", category: "site", description: "" });
+      setFormData({ title: "", category: "event", description: "" });
       setUploadedImages([]);
       onSuccess();
     } catch (error: any) {
@@ -2509,19 +2584,16 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
                 {uploadedImages.length} image(s) selected
               </p>
             </div>
-            <div>
-              <Label htmlFor="gallery-category">Category</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="site">Site</SelectItem>
-                  <SelectItem value="trip">Trip</SelectItem>
-                  <SelectItem value="visit">Visit</SelectItem>
-                  <SelectItem value="event">Event</SelectItem>
-                  <SelectItem value="workshop">Workshop</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithOther
+              label="Category"
+              id="gallery-category"
+              value={formData.category}
+              options={[
+                { value: "event", label: "Event" },
+                { value: "workshop", label: "Workshop" }
+              ]}
+              onChange={(value) => setFormData({ ...formData, category: value })}
+            />
             <div>
               <Label htmlFor="gallery-description">Description</Label>
               <Textarea id="gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
@@ -2696,19 +2768,16 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                 </div>
               )}
             </div>
-            <div>
-              <Label htmlFor="edit-gallery-category">Category</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="site">Site</SelectItem>
-                  <SelectItem value="trip">Trip</SelectItem>
-                  <SelectItem value="visit">Visit</SelectItem>
-                  <SelectItem value="event">Event</SelectItem>
-                  <SelectItem value="workshop">Workshop</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <SelectWithOther
+              label="Category"
+              id="edit-gallery-category"
+              value={formData.category}
+              options={[
+                { value: "event", label: "Event" },
+                { value: "workshop", label: "Workshop" }
+              ]}
+              onChange={(value) => setFormData({ ...formData, category: value })}
+            />
             <div>
               <Label htmlFor="edit-gallery-description">Description</Label>
               <Textarea id="edit-gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
@@ -3365,10 +3434,7 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
     image_url: "",
     technologies: "",
     github_link: "",
-    demo_link: "",
-    status: "ongoing",
-    category: "",
-    featured: false
+    demo_link: ""
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3406,10 +3472,7 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
         image_url: "",
         technologies: "",
         github_link: "",
-        demo_link: "",
-        status: "ongoing",
-        category: "",
-        featured: false
+        demo_link: ""
       });
       onSuccess();
     } catch (error: any) {
@@ -3447,25 +3510,6 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
               <Label htmlFor="project-technologies">Technologies (comma-separated) *</Label>
               <Input id="project-technologies" value={formData.technologies} onChange={(e) => setFormData({ ...formData, technologies: e.target.value })} placeholder="React, TypeScript, Node.js" required />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="project-category">Category *</Label>
-                <Input id="project-category" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} placeholder="Web, Mobile, AI, etc." required />
-              </div>
-              <div>
-                <Label htmlFor="project-status">Status *</Label>
-                <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ongoing">Ongoing</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
             <div>
               <Label htmlFor="project-github">GitHub Link (optional)</Label>
               <Input id="project-github" type="url" value={formData.github_link} onChange={(e) => setFormData({ ...formData, github_link: e.target.value })} placeholder="https://github.com/..." />
@@ -3473,16 +3517,6 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
             <div>
               <Label htmlFor="project-demo">Demo Link (optional)</Label>
               <Input id="project-demo" type="url" value={formData.demo_link} onChange={(e) => setFormData({ ...formData, demo_link: e.target.value })} placeholder="https://..." />
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="project-featured"
-                checked={formData.featured}
-                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                className="w-4 h-4"
-              />
-              <Label htmlFor="project-featured">Featured Project</Label>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={uploading}>Add Project</Button>
@@ -3503,10 +3537,7 @@ function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess
     image_url: project.image_url,
     technologies: project.technologies.join(', '),
     github_link: project.github_link || "",
-    demo_link: project.demo_link || "",
-    status: project.status,
-    category: project.category,
-    featured: project.featured || false
+    demo_link: project.demo_link || ""
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3574,25 +3605,6 @@ function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess
               <Label htmlFor="edit-project-technologies">Technologies (comma-separated) *</Label>
               <Input id="edit-project-technologies" value={formData.technologies} onChange={(e) => setFormData({ ...formData, technologies: e.target.value })} placeholder="React, TypeScript, Node.js" required />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-project-category">Category *</Label>
-                <Input id="edit-project-category" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} placeholder="Web, Mobile, AI, etc." required />
-              </div>
-              <div>
-                <Label htmlFor="edit-project-status">Status *</Label>
-                <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ongoing">Ongoing</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="archived">Archived</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
             <div>
               <Label htmlFor="edit-project-github">GitHub Link (optional)</Label>
               <Input id="edit-project-github" type="url" value={formData.github_link} onChange={(e) => setFormData({ ...formData, github_link: e.target.value })} placeholder="https://github.com/..." />
@@ -3600,16 +3612,6 @@ function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess
             <div>
               <Label htmlFor="edit-project-demo">Demo Link (optional)</Label>
               <Input id="edit-project-demo" type="url" value={formData.demo_link} onChange={(e) => setFormData({ ...formData, demo_link: e.target.value })} placeholder="https://..." />
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="edit-project-featured"
-                checked={formData.featured}
-                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                className="w-4 h-4"
-              />
-              <Label htmlFor="edit-project-featured">Featured Project</Label>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={uploading}>Update Project</Button>
