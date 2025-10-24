@@ -36,6 +36,8 @@ export type Database = {
           details: string;
           agenda: string[];
           created_at: string;
+          hidden?: boolean;
+          display_order?: number;
         };
         Insert: Omit<Database['public']['Tables']['events']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['events']['Insert']>;
@@ -116,6 +118,8 @@ export type Database = {
           category: string;
           description: string;
           created_at: string;
+          hidden?: boolean;
+          display_order?: number;
         };
         Insert: Omit<Database['public']['Tables']['gallery']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['gallery']['Insert']>;
@@ -138,6 +142,8 @@ export type Database = {
           }[];
           external_link?: string;
           created_at: string;
+          hidden?: boolean;
+          display_order?: number;
         };
         Insert: Omit<Database['public']['Tables']['notices']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['notices']['Insert']>;
@@ -154,6 +160,8 @@ export type Database = {
           attendees: string;
           highlights: string[];
           created_at: string;
+          hidden?: boolean;
+          display_order?: number;
         };
         Insert: Omit<Database['public']['Tables']['event_highlights']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['event_highlights']['Insert']>;
