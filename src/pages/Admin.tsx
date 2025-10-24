@@ -659,7 +659,6 @@ const Admin = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>ID</TableHead>
                       <TableHead>Title</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Time</TableHead>
@@ -676,7 +675,6 @@ const Admin = () => {
                       )
                       .map((notice) => (
                       <TableRow key={notice.id}>
-                        <TableCell>{notice.id}</TableCell>
                         <TableCell>{notice.title}</TableCell>
                         <TableCell>{notice.date}</TableCell>
                         <TableCell>{notice.time}</TableCell>
