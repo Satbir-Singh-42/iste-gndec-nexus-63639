@@ -222,6 +222,8 @@ const Admin = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [showProjectsInNavbar, setShowProjectsInNavbar] = useState(false);
   const [showExecutiveTeam, setShowExecutiveTeam] = useState(true);
+  const [showNoticeBoardOnHome, setShowNoticeBoardOnHome] = useState(true);
+  const [contactFormEnabled, setContactFormEnabled] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [noticesSearch, setNoticesSearch] = useState("");
@@ -1044,6 +1046,26 @@ const Admin = () => {
       if (executiveData) {
         setShowExecutiveTeam(executiveData.setting_value);
       }
+
+      const { data: noticeBoardData } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "show_notice_board_on_home")
+        .single();
+
+      if (noticeBoardData) {
+        setShowNoticeBoardOnHome(noticeBoardData.setting_value);
+      }
+
+      const { data: contactFormData } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "contact_form_enabled")
+        .single();
+
+      if (contactFormData) {
+        setContactFormEnabled(contactFormData.setting_value);
+      }
     } catch (error: any) {
       console.error("Error fetching site settings:", error);
     }
@@ -1112,6 +1134,74 @@ const Admin = () => {
         `Executive Team section ${
           value ? "shown on" : "hidden from"
         } Members page`
+      );
+      window.location.reload();
+    } catch (error: any) {
+      toast.error(`Failed to update setting: ${error.message}`);
+    }
+  };
+
+  const updateNoticeBoardSetting = async (value: boolean) => {
+    if (!supabase) return;
+    try {
+      const { data: existing } = await supabase
+        .from("site_settings")
+        .select("id")
+        .eq("setting_key", "show_notice_board_on_home")
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from("site_settings")
+          .update({ setting_value: value })
+          .eq("setting_key", "show_notice_board_on_home");
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("site_settings")
+          .insert([
+            { setting_key: "show_notice_board_on_home", setting_value: value },
+          ]);
+        if (error) throw error;
+      }
+
+      setShowNoticeBoardOnHome(value);
+      toast.success(
+        `Notice Board ${value ? "shown on" : "hidden from"} homepage`
+      );
+      window.location.reload();
+    } catch (error: any) {
+      toast.error(`Failed to update setting: ${error.message}`);
+    }
+  };
+
+  const updateContactFormSetting = async (value: boolean) => {
+    if (!supabase) return;
+    try {
+      const { data: existing } = await supabase
+        .from("site_settings")
+        .select("id")
+        .eq("setting_key", "contact_form_enabled")
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from("site_settings")
+          .update({ setting_value: value })
+          .eq("setting_key", "contact_form_enabled");
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("site_settings")
+          .insert([
+            { setting_key: "contact_form_enabled", setting_value: value },
+          ]);
+        if (error) throw error;
+      }
+
+      setContactFormEnabled(value);
+      toast.success(
+        `Contact Form ${value ? "enabled" : "disabled"}`
       );
       window.location.reload();
     } catch (error: any) {
@@ -2589,6 +2679,42 @@ const Admin = () => {
                       updateExecutiveTeamSetting(!showExecutiveTeam)
                     }>
                     {showExecutiveTeam ? "Enabled" : "Disabled"}
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <h3 className="font-medium">
+                      Show Notice Board on Homepage
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Display the Notice Board section on the homepage
+                    </p>
+                  </div>
+                  <Button
+                    variant={showNoticeBoardOnHome ? "default" : "outline"}
+                    onClick={() =>
+                      updateNoticeBoardSetting(!showNoticeBoardOnHome)
+                    }>
+                    {showNoticeBoardOnHome ? "Enabled" : "Disabled"}
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <h3 className="font-medium">
+                      Contact Form Enabled
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Enable or disable the contact form (useful during maintenance)
+                    </p>
+                  </div>
+                  <Button
+                    variant={contactFormEnabled ? "default" : "outline"}
+                    onClick={() =>
+                      updateContactFormSetting(!contactFormEnabled)
+                    }>
+                    {contactFormEnabled ? "Enabled" : "Disabled"}
                   </Button>
                 </div>
               </CardContent>

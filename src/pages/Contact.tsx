@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { Helmet } from "react-helmet-async";
+import { supabase } from "@/lib/supabase";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,6 +18,7 @@ const Contact = () => {
     email: "",
     message: "",
   });
+  const [contactFormEnabled, setContactFormEnabled] = useState(true);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const leftSectionRef = useRef<HTMLDivElement>(null);
@@ -38,8 +40,35 @@ const Contact = () => {
     },
   ];
 
+  useEffect(() => {
+    fetchContactFormSetting();
+  }, []);
+
+  const fetchContactFormSetting = async () => {
+    if (!supabase) return;
+    try {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "contact_form_enabled")
+        .single();
+
+      if (data) {
+        setContactFormEnabled(data.setting_value);
+      }
+    } catch (error) {
+      console.error("Error fetching contact form setting:", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check if contact form is disabled
+    if (!contactFormEnabled) {
+      toast.error("Contact form is currently disabled. Please email us directly at istegndec.original@gmail.com");
+      return;
+    }
 
     // Validate form
     if (!formData.name || !formData.email || !formData.message) {
@@ -310,6 +339,16 @@ const Contact = () => {
             {/* Contact Form */}
             <div ref={formRef} className="tech-card p-8">
               <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
+              {!contactFormEnabled && (
+                <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/50 rounded-lg">
+                  <p className="text-sm text-yellow-500">
+                    The contact form is currently disabled for maintenance. Please email us directly at{" "}
+                    <a href="mailto:istegndec.original@gmail.com" className="underline hover:text-yellow-400">
+                      istegndec.original@gmail.com
+                    </a>
+                  </p>
+                </div>
+              )}
               <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="form-field">
                   <label className="block text-sm font-mono text-foreground/80 mb-2">
@@ -321,6 +360,7 @@ const Contact = () => {
                     onChange={handleChange}
                     placeholder="Your name"
                     className="bg-background border-border"
+                    disabled={!contactFormEnabled}
                     required
                   />
                 </div>
@@ -336,6 +376,7 @@ const Contact = () => {
                     onChange={handleChange}
                     placeholder="your@email.com"
                     className="bg-background border-border"
+                    disabled={!contactFormEnabled}
                     required
                   />
                 </div>
@@ -351,6 +392,7 @@ const Contact = () => {
                     placeholder="Your message..."
                     rows={8}
                     className="bg-background border-border resize-none"
+                    disabled={!contactFormEnabled}
                     required
                   />
                 </div>
@@ -358,9 +400,10 @@ const Contact = () => {
                 <div className="form-field">
                   <Button
                     type="submit"
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono tracking-wider">
+                    disabled={!contactFormEnabled}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-mono tracking-wider disabled:opacity-50 disabled:cursor-not-allowed">
                     <Send className="w-4 h-4 mr-2" />
-                    SEND MESSAGE
+                    {contactFormEnabled ? "SEND MESSAGE" : "FORM DISABLED"}
                   </Button>
                 </div>
               </form>
