@@ -32,61 +32,44 @@ const ScrollToTop = () => {
   return null;
 };
 
-const App = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider 
-        attribute="class" 
-        defaultTheme="dark" 
-        enableSystem={false}
-        storageKey="iste-theme"
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-
-            {/* Global background */}
-            <div className="fixed inset-0 -z-10">
-              <ParticleBackground />
-            </div>
-
-            {/* Conditional Navbar */}
-            <RouteBasedNavbar />
-
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/events/:id" element={<EventDetail />} />
-              <Route path="/members" element={<Members />} />
-              <Route path="/gallery" element={<Gallery />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/notices" element={<Notices />} />
-              <Route path="/notices/:id" element={<NoticeDetail />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/projects/:id" element={<ProjectDetail />} />
-              <Route path="/admin" element={<Admin />} />
-              {/* Catch-all 404 */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
-};
-
-// Separate component to handle conditional navbar
-const RouteBasedNavbar = () => {
-  const { pathname } = useLocation();
-
-  // Hide navbar on 404 page
-  const hideNavbarPaths = ["admin"]; // you can add more routes if needed
-  const shouldHideNavbar = pathname === "/404" || pathname === "/admin";
-
-  return !shouldHideNavbar ? <TechNavbar /> : null;
-};
-
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider 
+      attribute="class" 
+      defaultTheme="dark" 
+      enableSystem={false}
+      storageKey="iste-theme"
+    >
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ScrollToTop />
+          {/* Global background - persists across all pages */}
+          <div className="fixed inset-0 -z-10">
+            <ParticleBackground />
+          </div>
+          {/* Global navbar - persists across all pages */}
+          <TechNavbar />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/events/:id" element={<EventDetail />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/notices" element={<Notices />} />
+            <Route path="/notices/:id" element={<NoticeDetail />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
+            <Route path="/admin" element={<Admin />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
 
 export default App;
