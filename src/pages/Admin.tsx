@@ -1833,6 +1833,24 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [timeInput, setTimeInput] = useState("");
 
+  // Auto-populate current date and time when dialog opens
+  useEffect(() => {
+    if (open) {
+      const now = new Date();
+      setSelectedDate(now);
+      
+      const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const timeStr = now.toTimeString().slice(0, 5); // HH:MM format
+      
+      setTimeInput(timeStr);
+      setFormData(prev => ({
+        ...prev,
+        date: dateStr,
+        time: timeStr
+      }));
+    }
+  }, [open]);
+
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (date) {
