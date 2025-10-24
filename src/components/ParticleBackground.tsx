@@ -328,7 +328,7 @@ const ParticleBackground = () => {
       className="absolute inset-0 -z-10 overflow-hidden"
       style={{ 
         background: isLightMode 
-          ? 'linear-gradient(to bottom, rgba(200, 220, 255, 1) 0%, rgba(230, 240, 255, 1) 30%, rgba(250, 252, 255, 1) 50%, rgba(230, 240, 255, 1) 70%, rgba(210, 225, 255, 1) 100%)'
+          ? 'transparent'
           : 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
       }}
     >

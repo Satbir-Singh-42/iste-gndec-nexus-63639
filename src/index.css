@@ -111,7 +111,7 @@ All colors MUST be HSL.
   }
 
   .light html {
-    background: linear-gradient(to bottom, #C8DCFF 0%, #E6F0FF 30%, #FAFCFF 50%, #E6F0FF 70%, #D2E1FF 100%);
+    background: hsl(var(--background));
   }
 
   body {
