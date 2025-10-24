@@ -1851,7 +1851,13 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('notices').insert([formData]);
+      // Auto-populate basic description from rich_description if empty
+      const submitData = {
+        ...formData,
+        description: formData.description || formData.rich_description?.replace(/<[^>]*>/g, '').substring(0, 200) || 'No description'
+      };
+      
+      const { error } = await supabase.from('notices').insert([submitData]);
       if (error) throw error;
       toast.success('Notice added successfully');
       setOpen(false);
@@ -1950,25 +1956,18 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             />
           </div>
           <div>
-            <Label htmlFor="description">Basic Description</Label>
-            <Textarea 
-              id="description" 
-              value={formData.description} 
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-              placeholder="Add a brief plain text description (required)" 
-              rows={3}
-              required 
-            />
-          </div>
-          <div>
-            <Label htmlFor="rich-description">Rich Text Description (Optional)</Label>
+            <Label htmlFor="rich-description">Description (with formatting)</Label>
             <RichTextEditor
               value={formData.rich_description || ''}
-              onChange={(value) => setFormData({ ...formData, rich_description: value })}
-              placeholder="Add formatted content with bold, links, and lists..."
+              onChange={(value) => setFormData({ 
+                ...formData, 
+                rich_description: value,
+                description: value.replace(/<[^>]*>/g, '').substring(0, 200) || 'No description'
+              })}
+              placeholder="Add your notice content with bold, links, and lists..."
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Use this editor for rich formatting including bold text, links, and lists
+              Use bold text, add links, and create lists. This will show in cards and full notice page.
             </p>
           </div>
           <FileUploadField
@@ -2035,7 +2034,13 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('notices').update(formData).eq('id', notice.id);
+      // Auto-populate basic description from rich_description if empty
+      const submitData = {
+        ...formData,
+        description: formData.description || formData.rich_description?.replace(/<[^>]*>/g, '').substring(0, 200) || 'No description'
+      };
+      
+      const { error } = await supabase.from('notices').update(submitData).eq('id', notice.id);
       if (error) throw error;
       toast.success('Notice updated successfully');
       setOpen(false);
@@ -2125,25 +2130,18 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
             />
           </div>
           <div>
-            <Label htmlFor="edit-description">Basic Description</Label>
-            <Textarea 
-              id="edit-description" 
-              value={formData.description} 
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-              placeholder="Add a brief plain text description (required)" 
-              rows={3}
-              required 
-            />
-          </div>
-          <div>
-            <Label htmlFor="edit-rich-description">Rich Text Description (Optional)</Label>
+            <Label htmlFor="edit-rich-description">Description (with formatting)</Label>
             <RichTextEditor
               value={formData.rich_description || ''}
-              onChange={(value) => setFormData({ ...formData, rich_description: value })}
-              placeholder="Add formatted content with bold, links, and lists..."
+              onChange={(value) => setFormData({ 
+                ...formData, 
+                rich_description: value,
+                description: value.replace(/<[^>]*>/g, '').substring(0, 200) || 'No description'
+              })}
+              placeholder="Add your notice content with bold, links, and lists..."
             />
             <p className="text-sm text-muted-foreground mt-1">
-              Use this editor for rich formatting including bold text, links, and lists
+              Use bold text, add links, and create lists. This will show in cards and full notice page.
             </p>
           </div>
           <FileUploadField

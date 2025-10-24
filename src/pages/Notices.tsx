@@ -33,27 +33,18 @@ const Notices = () => {
     return match ? match[0] : null;
   };
 
-  const renderDescriptionWithLinks = (description: string) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = description.split(urlRegex);
+  const getTruncatedHTML = (html: string, maxLength: number = 150) => {
+    // Strip HTML tags for length calculation
+    const textContent = html.replace(/<[^>]*>/g, '');
+    if (textContent.length <= maxLength) return html;
     
-    return parts.map((part, index) => {
-      if (part.match(urlRegex)) {
-        return (
-          <a 
-            key={index}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {part}
-          </a>
-        );
-      }
-      return part;
-    });
+    // Find a good breaking point
+    const truncated = textContent.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    const cutPoint = lastSpace > 0 ? lastSpace : maxLength;
+    
+    // Return truncated plain text
+    return textContent.substring(0, cutPoint) + '...';
   };
 
   useEffect(() => {
@@ -198,12 +189,21 @@ const Notices = () => {
                       </div>
                     </div>
 
-                    {/* Description - Fixed height with expand/collapse */}
+                    {/* Description - Rich HTML with truncation */}
                     <div className="relative mb-4">
-                      <p className={`text-sm text-foreground/70 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}>
-                        {renderDescriptionWithLinks(notice.description)}
-                      </p>
-                      {notice.description.length > 120 && (
+                      {notice.rich_description ? (
+                        <div 
+                          className="text-sm text-foreground/70 leading-relaxed prose prose-sm max-w-none prose-p:my-2 prose-headings:my-2 prose-ul:my-2 prose-ol:my-2"
+                          dangerouslySetInnerHTML={{ 
+                            __html: isExpanded ? notice.rich_description : getTruncatedHTML(notice.rich_description, 150)
+                          }}
+                        />
+                      ) : (
+                        <p className="text-sm text-foreground/70 leading-relaxed">
+                          {notice.description}
+                        </p>
+                      )}
+                      {((notice.rich_description && notice.rich_description.replace(/<[^>]*>/g, '').length > 150) || notice.description.length > 120) && (
                         <button
                           onClick={(e) => toggleNoticeExpansion(notice.id, e)}
                           className="text-xs text-primary hover:underline mt-1 font-mono"
