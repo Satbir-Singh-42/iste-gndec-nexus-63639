@@ -196,7 +196,7 @@ const Admin = () => {
   const fetchEvents = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('events').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      const { data, error } = await supabase.from('events').select('*').order('display_order', { ascending: false, nullsFirst: false }).order('id', { ascending: false });
       if (error) throw error;
       setEvents(data || []);
     } catch (error: any) {
