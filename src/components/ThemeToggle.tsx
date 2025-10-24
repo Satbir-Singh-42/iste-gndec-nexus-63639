@@ -6,9 +6,10 @@ import gsap from "gsap";
 
 interface ThemeToggleProps {
   className?: string;
+  showLabel?: boolean;
 }
 
-export function ThemeToggle({ className }: ThemeToggleProps) {
+export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -41,11 +42,17 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
     <button
       onClick={toggleTheme}
       className={cn(
-        "relative p-2 rounded-lg transition-all duration-300 hover:bg-primary/10 text-muted-foreground hover:text-foreground",
+        "relative transition-all duration-300 text-muted-foreground hover:text-foreground",
+        showLabel 
+          ? "flex items-center hover:bg-muted/70" 
+          : "p-2 rounded-lg hover:bg-primary/10",
         className
       )}
       aria-label="Toggle theme"
     >
+      {showLabel && (
+        <span className="text-muted-foreground">Theme</span>
+      )}
       <div className="relative w-5 h-5">
         <Sun
           className={cn(

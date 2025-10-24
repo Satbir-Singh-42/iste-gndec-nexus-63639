@@ -175,10 +175,7 @@ const TechNavbar = () => {
                 {item.name}
               </NavLink>
             ))}
-            <div className="flex items-center justify-between px-4 py-3 tech-border bg-muted/50 min-h-[46px]">
-              <span className="font-mono text-sm tracking-wider text-muted-foreground">Theme</span>
-              <ThemeToggle />
-            </div>
+            <ThemeToggle className="w-full justify-between px-4 py-3 tech-border bg-muted/50 hover:bg-muted/70 font-mono text-sm tracking-wider rounded-none" showLabel />
           </div>
         </div>
       )}
