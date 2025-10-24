@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -8,13 +8,17 @@ let supabaseClient = null;
 if (supabaseUrl && supabaseAnonKey) {
   try {
     supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('✅ Supabase client initialized successfully');
+    console.log("✅ Supabase client initialized successfully");
   } catch (error) {
-    console.error('❌ Failed to create Supabase client:', error);
-    console.error('Please check your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables');
+    console.error("❌ Failed to create Supabase client:", error);
+    console.error(
+      "Please check your VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables"
+    );
   }
 } else {
-  console.warn('⚠️  Supabase not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to environment variables.');
+  console.warn(
+    "⚠️  Supabase not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to environment variables."
+  );
 }
 
 export const supabase = supabaseClient as any;
@@ -39,8 +43,11 @@ export type Database = {
           hidden?: boolean;
           display_order?: number;
         };
-        Insert: Omit<Database['public']['Tables']['events']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['events']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["events"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["events"]["Insert"]>;
       };
       members_core_team: {
         Row: {
@@ -56,8 +63,13 @@ export type Database = {
           display_order?: number;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['members_core_team']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['members_core_team']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["members_core_team"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<
+          Database["public"]["Tables"]["members_core_team"]["Insert"]
+        >;
       };
       members_post_holders: {
         Row: {
@@ -73,8 +85,13 @@ export type Database = {
           display_order?: number;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['members_post_holders']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['members_post_holders']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["members_post_holders"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<
+          Database["public"]["Tables"]["members_post_holders"]["Insert"]
+        >;
       };
       members_executive: {
         Row: {
@@ -90,8 +107,13 @@ export type Database = {
           display_order?: number;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['members_executive']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['members_executive']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["members_executive"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<
+          Database["public"]["Tables"]["members_executive"]["Insert"]
+        >;
       };
       members_faculty: {
         Row: {
@@ -107,8 +129,13 @@ export type Database = {
           display_order?: number;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['members_faculty']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['members_faculty']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["members_faculty"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<
+          Database["public"]["Tables"]["members_faculty"]["Insert"]
+        >;
       };
       gallery: {
         Row: {
@@ -121,8 +148,11 @@ export type Database = {
           hidden?: boolean;
           display_order?: number;
         };
-        Insert: Omit<Database['public']['Tables']['gallery']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['gallery']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["gallery"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["gallery"]["Insert"]>;
       };
       notices: {
         Row: {
@@ -145,8 +175,11 @@ export type Database = {
           hidden?: boolean;
           display_order?: number;
         };
-        Insert: Omit<Database['public']['Tables']['notices']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['notices']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["notices"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["notices"]["Insert"]>;
       };
       event_highlights: {
         Row: {
@@ -163,8 +196,13 @@ export type Database = {
           hidden?: boolean;
           display_order?: number;
         };
-        Insert: Omit<Database['public']['Tables']['event_highlights']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['event_highlights']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["event_highlights"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<
+          Database["public"]["Tables"]["event_highlights"]["Insert"]
+        >;
       };
       projects: {
         Row: {
@@ -182,8 +220,11 @@ export type Database = {
           display_order?: number;
           created_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['projects']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['projects']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["projects"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["projects"]["Insert"]>;
       };
       site_settings: {
         Row: {
@@ -192,8 +233,13 @@ export type Database = {
           setting_value: boolean;
           updated_at: string;
         };
-        Insert: Omit<Database['public']['Tables']['site_settings']['Row'], 'id' | 'updated_at'>;
-        Update: Partial<Database['public']['Tables']['site_settings']['Insert']>;
+        Insert: Omit<
+          Database["public"]["Tables"]["site_settings"]["Row"],
+          "id" | "updated_at"
+        >;
+        Update: Partial<
+          Database["public"]["Tables"]["site_settings"]["Insert"]
+        >;
       };
     };
   };

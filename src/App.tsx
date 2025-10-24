@@ -35,10 +35,20 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const isNotFoundPage = !['/', '/events', '/members', '/gallery', '/contact', '/notices', '/projects', '/admin'].some(path => 
-    location.pathname === path || location.pathname.startsWith(path + '/')
+  const isNotFoundPage = ![
+    "/",
+    "/events",
+    "/members",
+    "/gallery",
+    "/contact",
+    "/notices",
+    "/projects",
+    "/admin",
+  ].some(
+    (path) =>
+      location.pathname === path || location.pathname.startsWith(path + "/")
   );
-  const isAdminPage = location.pathname === '/admin';
+  const isAdminPage = location.pathname === "/admin";
   const showNavbar = !isNotFoundPage && !isAdminPage;
 
   return (
@@ -51,20 +61,20 @@ const AppContent = () => {
       {/* Global navbar - hidden on 404 and admin pages */}
       {showNavbar && <TechNavbar />}
       <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/events/:id" element={<EventDetail />} />
-            <Route path="/members" element={<Members />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/notices" element={<Notices />} />
-            <Route path="/notices/:id" element={<NoticeDetail />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/projects/:id" element={<ProjectDetail />} />
-            <Route path="/admin" element={<Admin />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/members" element={<Members />} />
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/notices" element={<Notices />} />
+        <Route path="/notices/:id" element={<NoticeDetail />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/projects/:id" element={<ProjectDetail />} />
+        <Route path="/admin" element={<Admin />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </>
   );
 };

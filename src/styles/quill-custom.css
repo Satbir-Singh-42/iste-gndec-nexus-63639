@@ -93,11 +93,11 @@
 }
 
 .ql-tooltip.ql-editing a.ql-action::after {
-  content: 'Save' !important;
+  content: "Save" !important;
   color: hsl(var(--primary)) !important;
 }
 
 .ql-tooltip a.ql-remove::before {
-  content: 'Remove' !important;
+  content: "Remove" !important;
   color: hsl(var(--destructive)) !important;
 }

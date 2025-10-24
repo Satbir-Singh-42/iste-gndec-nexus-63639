@@ -44,7 +44,7 @@ All colors MUST be HSL.
     --tech-cyan: 195 85% 50%;
     --tech-sky: 200 95% 55%;
     --tech-grid: 210 70% 35%;
-    
+
     /* Technical Effects */
     --scanline-opacity: 0.03;
   }
@@ -85,17 +85,17 @@ All colors MUST be HSL.
     --tech-sky: 200 60% 42%;
     --tech-purple: 235 60% 52%;
     --tech-grid: 220 25% 78%;
-    
+
     /* Gradient colors for enhanced visuals */
     --gradient-start: 210 70% 48%;
     --gradient-mid: 195 65% 45%;
     --gradient-end: 235 60% 52%;
-    
+
     /* Shadow colors */
     --shadow-sm: 210 25% 55% / 0.04;
     --shadow-md: 210 25% 55% / 0.06;
-    --shadow-lg: 210 25% 55% / 0.10;
-    
+    --shadow-lg: 210 25% 55% / 0.1;
+
     /* Technical Effects */
     --scanline-opacity: 0.01;
   }
@@ -117,7 +117,7 @@ All colors MUST be HSL.
   }
 
   html.light {
-    background: #E8F3FF;
+    background: #e8f3ff;
     min-height: 100vh;
   }
 
@@ -126,8 +126,8 @@ All colors MUST be HSL.
     position: relative;
     background: hsl(var(--background));
     min-height: 100vh;
-    transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
-                color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
@@ -137,50 +137,88 @@ All colors MUST be HSL.
   }
 
   html.light body {
-    background: 
-      radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(14, 165, 233, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 50% 50%, rgba(147, 197, 253, 0.04) 0%, transparent 70%),
-      linear-gradient(135deg, #E0EFFF 0%, #EBF5FF 25%, #F0F6FF 50%, #E8F3FF 75%, #DDF0FF 100%) !important;
+    background: radial-gradient(
+        circle at 20% 30%,
+        rgba(59, 130, 246, 0.08) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 70%,
+        rgba(14, 165, 233, 0.06) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 50% 50%,
+        rgba(147, 197, 253, 0.04) 0%,
+        transparent 70%
+      ),
+      linear-gradient(
+        135deg,
+        #e0efff 0%,
+        #ebf5ff 25%,
+        #f0f6ff 50%,
+        #e8f3ff 75%,
+        #ddf0ff 100%
+      ) !important;
   }
-  
+
   html.light body::after {
-    content: '';
+    content: "";
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
-      linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+    background-image: linear-gradient(
+        rgba(59, 130, 246, 0.03) 1px,
+        transparent 1px
+      ),
       linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
     background-size: 60px 60px;
     pointer-events: none;
     z-index: 2;
     opacity: 0.5;
   }
-  
+
   /* Floating shapes for light theme */
   @keyframes float-1 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(30px, -30px) rotate(120deg); }
-    66% { transform: translate(-20px, 20px) rotate(240deg); }
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+      transform: translate(30px, -30px) rotate(120deg);
+    }
+    66% {
+      transform: translate(-20px, 20px) rotate(240deg);
+    }
   }
-  
+
   @keyframes float-2 {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(-40px, 40px) rotate(-120deg); }
-    66% { transform: translate(20px, -20px) rotate(-240deg); }
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+      transform: translate(-40px, 40px) rotate(-120deg);
+    }
+    66% {
+      transform: translate(20px, -20px) rotate(-240deg);
+    }
   }
-  
+
   html.light body::before {
-    content: '';
+    content: "";
     position: fixed;
     top: 10%;
     right: 15%;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+    background: radial-gradient(
+      circle,
+      rgba(59, 130, 246, 0.1) 0%,
+      transparent 70%
+    );
     border-radius: 50%;
     animation: float-1 20s ease-in-out infinite;
     pointer-events: none;
@@ -199,20 +237,19 @@ All colors MUST be HSL.
 
   /* Dark mode only - scanline blocks particles in light mode */
   html:not(.light) body::before {
-    content: '';
+    content: "";
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: 
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        hsl(var(--background)) 2px,
-        hsl(var(--background)) 4px
-      );
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(var(--background)) 2px,
+      hsl(var(--background)) 4px
+    );
     opacity: var(--scanline-opacity);
     pointer-events: none;
     z-index: 9999;
@@ -220,8 +257,12 @@ All colors MUST be HSL.
   }
 
   @keyframes scanline {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(4px); }
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(4px);
+    }
   }
 
   html {
@@ -240,7 +281,8 @@ All colors MUST be HSL.
     }
   }
 
-  main, .page-content {
+  main,
+  .page-content {
     animation: fadeInUp 0.5s ease-out;
   }
 
@@ -256,13 +298,21 @@ All colors MUST be HSL.
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--primary) / 0.7));
+    background: linear-gradient(
+      180deg,
+      hsl(var(--primary)),
+      hsl(var(--primary) / 0.7)
+    );
     border-radius: 2px;
     border: 2px solid hsl(var(--background));
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, hsl(var(--primary) / 0.9), hsl(var(--primary)));
+    background: linear-gradient(
+      180deg,
+      hsl(var(--primary) / 0.9),
+      hsl(var(--primary))
+    );
   }
 
   ::-webkit-scrollbar-thumb:active {
@@ -279,11 +329,18 @@ All colors MUST be HSL.
 @layer utilities {
   .tech-card {
     @apply bg-card border-2 border-border relative;
-    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    clip-path: polygon(
+      0 0,
+      calc(100% - 16px) 0,
+      100% 16px,
+      100% 100%,
+      16px 100%,
+      0 calc(100% - 16px)
+    );
   }
 
   .tech-card::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     right: 0;
@@ -300,7 +357,7 @@ All colors MUST be HSL.
 
   .tech-border::before,
   .tech-border::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 8px;
     height: 8px;
@@ -323,7 +380,11 @@ All colors MUST be HSL.
 
   .text-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--tech-blue)), hsl(var(--tech-cyan)));
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--tech-blue)),
+      hsl(var(--tech-cyan))
+    );
   }
 
   .glitch {
@@ -354,24 +415,48 @@ All colors MUST be HSL.
   }
 
   @keyframes glitch-1 {
-    0%, 100% { transform: translate(0); }
-    20% { transform: translate(-2px, 2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(2px, 2px); }
-    80% { transform: translate(2px, -2px); }
+    0%,
+    100% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      transform: translate(-2px, -2px);
+    }
+    60% {
+      transform: translate(2px, 2px);
+    }
+    80% {
+      transform: translate(2px, -2px);
+    }
   }
 
   @keyframes glitch-2 {
-    0%, 100% { transform: translate(0); }
-    20% { transform: translate(2px, -2px); }
-    40% { transform: translate(2px, 2px); }
-    60% { transform: translate(-2px, -2px); }
-    80% { transform: translate(-2px, 2px); }
+    0%,
+    100% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(2px, -2px);
+    }
+    40% {
+      transform: translate(2px, 2px);
+    }
+    60% {
+      transform: translate(-2px, -2px);
+    }
+    80% {
+      transform: translate(-2px, 2px);
+    }
   }
 
   .grid-bg {
-    background-image: 
-      linear-gradient(hsl(var(--tech-grid) / 0.1) 1px, transparent 1px),
+    background-image: linear-gradient(
+        hsl(var(--tech-grid) / 0.1) 1px,
+        transparent 1px
+      ),
       linear-gradient(90deg, hsl(var(--tech-grid) / 0.1) 1px, transparent 1px);
     background-size: 50px 50px;
   }
@@ -383,12 +468,12 @@ All colors MUST be HSL.
 
   /* Hide scrollbar for horizontal scroll containers */
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari, Opera */
+    display: none; /* Chrome, Safari, Opera */
   }
 
   /* Mobile menu slide-down animation */
@@ -424,52 +509,55 @@ All colors MUST be HSL.
 
   /* Enhanced shadows for light theme */
   .light .shadow-tech-sm {
-    box-shadow: 0 1px 3px hsl(var(--shadow-sm)),
-                0 1px 2px hsl(var(--shadow-sm));
+    box-shadow: 0 1px 3px hsl(var(--shadow-sm)), 0 1px 2px hsl(var(--shadow-sm));
   }
 
   .light .shadow-tech-md {
     box-shadow: 0 4px 6px -1px hsl(var(--shadow-md)),
-                0 2px 4px -1px hsl(var(--shadow-sm));
+      0 2px 4px -1px hsl(var(--shadow-sm));
   }
 
   .light .shadow-tech-lg {
     box-shadow: 0 10px 15px -3px hsl(var(--shadow-lg)),
-                0 4px 6px -2px hsl(var(--shadow-md));
+      0 4px 6px -2px hsl(var(--shadow-md));
   }
 
   .light .shadow-tech-xl {
     box-shadow: 0 20px 25px -5px hsl(var(--shadow-lg)),
-                0 10px 10px -5px hsl(var(--shadow-md));
+      0 10px 10px -5px hsl(var(--shadow-md));
   }
 
   /* Gradient backgrounds for light theme */
   .light .gradient-bg-primary {
-    background: linear-gradient(135deg, 
-      hsl(var(--gradient-start)), 
-      hsl(var(--gradient-mid)));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gradient-start)),
+      hsl(var(--gradient-mid))
+    );
   }
 
   .light .gradient-bg-accent {
-    background: linear-gradient(135deg, 
-      hsl(var(--gradient-mid)), 
-      hsl(var(--gradient-end)));
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gradient-mid)),
+      hsl(var(--gradient-end))
+    );
   }
 
   .light .gradient-bg-full {
-    background: linear-gradient(135deg, 
-      hsl(var(--gradient-start)) 0%, 
-      hsl(var(--gradient-mid)) 50%, 
-      hsl(var(--gradient-end)) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--gradient-start)) 0%,
+      hsl(var(--gradient-mid)) 50%,
+      hsl(var(--gradient-end)) 100%
+    );
   }
 
   /* Enhanced borders for light theme */
   .light .border-gradient {
     border: 2px solid transparent;
     background-image: linear-gradient(hsl(var(--card)), hsl(var(--card))),
-                      linear-gradient(135deg, 
-                        hsl(var(--tech-blue)), 
-                        hsl(var(--tech-cyan)));
+      linear-gradient(135deg, hsl(var(--tech-blue)), hsl(var(--tech-cyan)));
     background-origin: border-box;
     background-clip: padding-box, border-box;
   }
@@ -480,7 +568,7 @@ All colors MUST be HSL.
     backdrop-filter: blur(12px);
     border: 1px solid hsl(var(--border) / 0.5);
     box-shadow: 0 8px 32px hsl(var(--shadow-lg)),
-                inset 0 1px 1px hsl(210 30% 90% / 0.8);
+      inset 0 1px 1px hsl(210 30% 90% / 0.8);
   }
 
   /* Hover effects for light theme */
@@ -491,21 +579,25 @@ All colors MUST be HSL.
   .light .hover-lift:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 24px -6px hsl(var(--shadow-lg)),
-                0 6px 12px -3px hsl(var(--shadow-md));
+      0 6px 12px -3px hsl(var(--shadow-md));
   }
 
   /* Enhanced text gradients for light theme */
   .light .text-gradient-primary {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, 
-      hsl(var(--tech-blue)), 
-      hsl(var(--tech-cyan)));
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--tech-blue)),
+      hsl(var(--tech-cyan))
+    );
   }
 
   .light .text-gradient-accent {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, 
-      hsl(var(--tech-cyan)), 
-      hsl(var(--tech-purple)));
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--tech-cyan)),
+      hsl(var(--tech-purple))
+    );
   }
 }

@@ -4,17 +4,59 @@ import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
-import { Trash2, Edit, Plus, Eye, EyeOff, ChevronUp, ChevronDown, Search, X, CalendarIcon } from "lucide-react";
+import {
+  Trash2,
+  Edit,
+  Plus,
+  Eye,
+  EyeOff,
+  ChevronUp,
+  ChevronDown,
+  Search,
+  X,
+  CalendarIcon,
+} from "lucide-react";
 import { uploadImageToSupabase, uploadMultipleImages } from "@/lib/imageUpload";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { RichTextEditor } from "@/components/RichTextEditor";
@@ -26,14 +68,14 @@ import { normalizeUrl } from "@/lib/utils";
 // Helper function to convert time to 12-hour format (handles both 24-hour and 12-hour input)
 const convertTo12Hour = (time: string): string => {
   if (!time) return "";
-  
+
   // If already in 12-hour format, return as is
   if (time.match(/AM|PM|am|pm/)) return time;
-  
+
   // Convert from 24-hour format
-  const [hours, minutes] = time.split(':');
+  const [hours, minutes] = time.split(":");
   const hour = parseInt(hours, 10);
-  const period = hour >= 12 ? 'PM' : 'AM';
+  const period = hour >= 12 ? "PM" : "AM";
   const hour12 = hour % 12 || 12;
   return `${hour12}:${minutes} ${period}`;
 };
@@ -43,17 +85,17 @@ const convertTo24Hour = (time12: string): string => {
   if (!time12) return "";
   const match = time12.match(/(\d+):(\d+)\s*(AM|PM)/i);
   if (!match) return time12;
-  
+
   let [, hours, minutes, period] = match;
   let hour = parseInt(hours, 10);
-  
-  if (period.toUpperCase() === 'PM' && hour !== 12) {
+
+  if (period.toUpperCase() === "PM" && hour !== 12) {
     hour += 12;
-  } else if (period.toUpperCase() === 'AM' && hour === 12) {
+  } else if (period.toUpperCase() === "AM" && hour === 12) {
     hour = 0;
   }
-  
-  return `${hour.toString().padStart(2, '0')}:${minutes}`;
+
+  return `${hour.toString().padStart(2, "0")}:${minutes}`;
 };
 
 interface Notice {
@@ -213,10 +255,12 @@ const Admin = () => {
     }
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
     } catch (error) {
-      console.error('Error checking auth status:', error);
+      console.error("Error checking auth status:", error);
     } finally {
       setCheckingAuth(false);
     }
@@ -226,7 +270,9 @@ const Admin = () => {
     e.preventDefault();
 
     if (!supabase) {
-      toast.error("Supabase is not configured. Please check your environment variables.");
+      toast.error(
+        "Supabase is not configured. Please check your environment variables."
+      );
       return;
     }
 
@@ -251,7 +297,7 @@ const Admin = () => {
 
   const handleLogout = async () => {
     if (!supabase) return;
-    
+
     await supabase.auth.signOut();
     setIsAuthenticated(false);
     toast.success("Logged out successfully!");
@@ -260,7 +306,10 @@ const Admin = () => {
   const fetchNotices = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('notices').select('*').order('id', { ascending: false });
+      const { data, error } = await supabase
+        .from("notices")
+        .select("*")
+        .order("id", { ascending: false });
       if (error) throw error;
       setNotices(data || []);
     } catch (error: any) {
@@ -271,7 +320,11 @@ const Admin = () => {
   const fetchEvents = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('events').select('*').order('display_order', { ascending: false, nullsFirst: false }).order('id', { ascending: false });
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .order("display_order", { ascending: false, nullsFirst: false })
+        .order("id", { ascending: false });
       if (error) throw error;
       setEvents(data || []);
     } catch (error: any) {
@@ -282,7 +335,11 @@ const Admin = () => {
   const fetchGallery = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('gallery').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: false });
+      const { data, error } = await supabase
+        .from("gallery")
+        .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: false });
       if (error) throw error;
       setGallery(data || []);
     } catch (error: any) {
@@ -291,12 +348,13 @@ const Admin = () => {
   };
 
   const deleteNotice = async (id: number) => {
-    if (!supabase || !confirm('Are you sure you want to delete this notice?')) return;
+    if (!supabase || !confirm("Are you sure you want to delete this notice?"))
+      return;
     try {
-      const { error } = await supabase.from('notices').delete().eq('id', id);
+      const { error } = await supabase.from("notices").delete().eq("id", id);
       if (error) throw error;
-      toast.success('Notice deleted successfully');
-      setRefreshTrigger(prev => prev + 1);
+      toast.success("Notice deleted successfully");
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to delete notice: ${error.message}`);
     }
@@ -305,46 +363,64 @@ const Admin = () => {
   const toggleNoticeVisibility = async (id: number, currentHidden: boolean) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('notices').update({ hidden: !currentHidden }).eq('id', id);
+      const { error } = await supabase
+        .from("notices")
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
       if (error) throw error;
-      toast.success(`Notice ${!currentHidden ? 'hidden' : 'visible'} successfully`);
-      setRefreshTrigger(prev => prev + 1);
+      toast.success(
+        `Notice ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update notice visibility: ${error.message}`);
     }
   };
 
   const deleteEvent = async (id: number) => {
-    if (!supabase || !confirm('Are you sure you want to delete this event?')) return;
+    if (!supabase || !confirm("Are you sure you want to delete this event?"))
+      return;
     try {
-      const { error } = await supabase.from('events').delete().eq('id', id);
+      const { error } = await supabase.from("events").delete().eq("id", id);
       if (error) throw error;
-      toast.success('Event deleted successfully');
-      setRefreshTrigger(prev => prev + 1);
+      toast.success("Event deleted successfully");
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to delete event: ${error.message}`);
     }
   };
 
   const deleteGalleryItem = async (id: number) => {
-    if (!supabase || !confirm('Are you sure you want to delete this gallery item?')) return;
+    if (
+      !supabase ||
+      !confirm("Are you sure you want to delete this gallery item?")
+    )
+      return;
     try {
-      const { error } = await supabase.from('gallery').delete().eq('id', id);
+      const { error } = await supabase.from("gallery").delete().eq("id", id);
       if (error) throw error;
-      toast.success('Gallery item deleted successfully');
-      setRefreshTrigger(prev => prev + 1);
+      toast.success("Gallery item deleted successfully");
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to delete gallery item: ${error.message}`);
     }
   };
 
-  const toggleGalleryVisibility = async (id: number, currentHidden: boolean) => {
+  const toggleGalleryVisibility = async (
+    id: number,
+    currentHidden: boolean
+  ) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('gallery').update({ hidden: !currentHidden }).eq('id', id);
+      const { error } = await supabase
+        .from("gallery")
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
       if (error) throw error;
-      toast.success(`Gallery item ${!currentHidden ? 'hidden' : 'visible'} successfully`);
-      setRefreshTrigger(prev => prev + 1);
+      toast.success(
+        `Gallery item ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update visibility: ${error.message}`);
     }
@@ -353,10 +429,13 @@ const Admin = () => {
   const updateGalleryOrder = async (id: number, newOrder: number) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('gallery').update({ display_order: newOrder }).eq('id', id);
+      const { error } = await supabase
+        .from("gallery")
+        .update({ display_order: newOrder })
+        .eq("id", id);
       if (error) throw error;
-      toast.success('Gallery item order updated');
-      setRefreshTrigger(prev => prev + 1);
+      toast.success("Gallery item order updated");
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update order: ${error.message}`);
     }
@@ -385,7 +464,11 @@ const Admin = () => {
   const fetchFaculty = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('members_faculty').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      const { data, error } = await supabase
+        .from("members_faculty")
+        .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
       if (error) throw error;
       setFaculty(data || []);
     } catch (error: any) {
@@ -396,7 +479,11 @@ const Admin = () => {
   const fetchCoreTeam = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('members_core_team').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      const { data, error } = await supabase
+        .from("members_core_team")
+        .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
       if (error) throw error;
       setCoreTeam(data || []);
     } catch (error: any) {
@@ -407,7 +494,11 @@ const Admin = () => {
   const fetchPostHolders = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('members_post_holders').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      const { data, error } = await supabase
+        .from("members_post_holders")
+        .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
       if (error) throw error;
       setPostHolders(data || []);
     } catch (error: any) {
@@ -418,7 +509,11 @@ const Admin = () => {
   const fetchExecutive = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('members_executive').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      const { data, error } = await supabase
+        .from("members_executive")
+        .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
       if (error) throw error;
       setExecutive(data || []);
     } catch (error: any) {
@@ -427,42 +522,66 @@ const Admin = () => {
   };
 
   const deleteMember = async (id: number, table: string, type: string) => {
-    if (!supabase || !confirm(`Are you sure you want to delete this ${type}?`)) return;
+    if (!supabase || !confirm(`Are you sure you want to delete this ${type}?`))
+      return;
     try {
-      const { error } = await supabase.from(table).delete().eq('id', id);
+      const { error } = await supabase.from(table).delete().eq("id", id);
       if (error) throw error;
       toast.success(`${type} deleted successfully`);
-      setRefreshTrigger(prev => prev + 1);
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to delete ${type}: ${error.message}`);
     }
   };
 
-  const toggleMemberVisibility = async (id: number, table: string, currentHidden: boolean, type: string) => {
+  const toggleMemberVisibility = async (
+    id: number,
+    table: string,
+    currentHidden: boolean,
+    type: string
+  ) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from(table).update({ hidden: !currentHidden }).eq('id', id);
+      const { error } = await supabase
+        .from(table)
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
       if (error) throw error;
-      toast.success(`${type} ${!currentHidden ? 'hidden' : 'visible'} successfully`);
-      setRefreshTrigger(prev => prev + 1);
+      toast.success(
+        `${type} ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update visibility: ${error.message}`);
     }
   };
 
-  const updateMemberOrder = async (id: number, table: string, newOrder: number, type: string) => {
+  const updateMemberOrder = async (
+    id: number,
+    table: string,
+    newOrder: number,
+    type: string
+  ) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from(table).update({ display_order: newOrder }).eq('id', id);
+      const { error } = await supabase
+        .from(table)
+        .update({ display_order: newOrder })
+        .eq("id", id);
       if (error) throw error;
       toast.success(`${type} order updated`);
-      setRefreshTrigger(prev => prev + 1);
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update order: ${error.message}`);
     }
   };
 
-  const moveMemberUp = (members: (Member | Faculty)[], index: number, table: string, type: string) => {
+  const moveMemberUp = (
+    members: (Member | Faculty)[],
+    index: number,
+    table: string,
+    type: string
+  ) => {
     if (index === 0) return;
     const currentMember = members[index];
     const previousMember = members[index - 1];
@@ -472,7 +591,12 @@ const Admin = () => {
     updateMemberOrder(previousMember.id, table, currentOrder, type);
   };
 
-  const moveMemberDown = (members: (Member | Faculty)[], index: number, table: string, type: string) => {
+  const moveMemberDown = (
+    members: (Member | Faculty)[],
+    index: number,
+    table: string,
+    type: string
+  ) => {
     if (index === members.length - 1) return;
     const currentMember = members[index];
     const nextMember = members[index + 1];
@@ -485,7 +609,11 @@ const Admin = () => {
   const fetchEventHighlights = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('event_highlights').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      const { data, error } = await supabase
+        .from("event_highlights")
+        .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
       if (error) throw error;
       setEventHighlights(data || []);
     } catch (error: any) {
@@ -494,12 +622,19 @@ const Admin = () => {
   };
 
   const deleteEventHighlight = async (id: number) => {
-    if (!supabase || !confirm('Are you sure you want to delete this event highlight?')) return;
+    if (
+      !supabase ||
+      !confirm("Are you sure you want to delete this event highlight?")
+    )
+      return;
     try {
-      const { error } = await supabase.from('event_highlights').delete().eq('id', id);
+      const { error } = await supabase
+        .from("event_highlights")
+        .delete()
+        .eq("id", id);
       if (error) throw error;
-      toast.success('Event highlight deleted successfully');
-      setRefreshTrigger(prev => prev + 1);
+      toast.success("Event highlight deleted successfully");
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to delete event highlight: ${error.message}`);
     }
@@ -508,23 +643,35 @@ const Admin = () => {
   const toggleEventVisibility = async (id: number, currentHidden: boolean) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('events').update({ hidden: !currentHidden }).eq('id', id);
+      const { error } = await supabase
+        .from("events")
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
       if (error) throw error;
-      toast.success(`Event ${!currentHidden ? 'hidden' : 'visible'} successfully`);
-      setRefreshTrigger(prev => prev + 1);
+      toast.success(
+        `Event ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update visibility: ${error.message}`);
     }
   };
 
-  const updateEventOrder = async (id: number, newOrder: number, skipRefresh: boolean = false) => {
+  const updateEventOrder = async (
+    id: number,
+    newOrder: number,
+    skipRefresh: boolean = false
+  ) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('events').update({ display_order: newOrder }).eq('id', id);
+      const { error } = await supabase
+        .from("events")
+        .update({ display_order: newOrder })
+        .eq("id", id);
       if (error) throw error;
       if (!skipRefresh) {
-        toast.success('Event order updated');
-        setRefreshTrigger(prev => prev + 1);
+        toast.success("Event order updated");
+        setRefreshTrigger((prev) => prev + 1);
       }
     } catch (error: any) {
       toast.error(`Failed to update order: ${error.message}`);
@@ -535,46 +682,62 @@ const Admin = () => {
     if (index === 0) return;
     const currentItem = items[index];
     const previousItem = items[index - 1];
-    const currentOrder = currentItem.display_order ?? (items.length - index);
-    const previousOrder = previousItem.display_order ?? (items.length - index + 1);
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const previousOrder =
+      previousItem.display_order ?? items.length - index + 1;
     await updateEventOrder(currentItem.id, previousOrder, true);
     await updateEventOrder(previousItem.id, currentOrder, true);
-    toast.success('Event order updated');
-    setRefreshTrigger(prev => prev + 1);
+    toast.success("Event order updated");
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const moveEventDown = async (items: Event[], index: number) => {
     if (index === items.length - 1) return;
     const currentItem = items[index];
     const nextItem = items[index + 1];
-    const currentOrder = currentItem.display_order ?? (items.length - index);
-    const nextOrder = nextItem.display_order ?? (items.length - index - 1);
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const nextOrder = nextItem.display_order ?? items.length - index - 1;
     await updateEventOrder(currentItem.id, nextOrder, true);
     await updateEventOrder(nextItem.id, currentOrder, true);
-    toast.success('Event order updated');
-    setRefreshTrigger(prev => prev + 1);
+    toast.success("Event order updated");
+    setRefreshTrigger((prev) => prev + 1);
   };
 
-  const toggleHighlightVisibility = async (id: number, currentHidden: boolean) => {
+  const toggleHighlightVisibility = async (
+    id: number,
+    currentHidden: boolean
+  ) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('event_highlights').update({ hidden: !currentHidden }).eq('id', id);
+      const { error } = await supabase
+        .from("event_highlights")
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
       if (error) throw error;
-      toast.success(`Highlight ${!currentHidden ? 'hidden' : 'visible'} successfully`);
-      setRefreshTrigger(prev => prev + 1);
+      toast.success(
+        `Highlight ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update visibility: ${error.message}`);
     }
   };
 
-  const updateHighlightOrder = async (id: number, newOrder: number, skipRefresh: boolean = false) => {
+  const updateHighlightOrder = async (
+    id: number,
+    newOrder: number,
+    skipRefresh: boolean = false
+  ) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('event_highlights').update({ display_order: newOrder }).eq('id', id);
+      const { error } = await supabase
+        .from("event_highlights")
+        .update({ display_order: newOrder })
+        .eq("id", id);
       if (error) throw error;
       if (!skipRefresh) {
-        toast.success('Highlight order updated');
-        setRefreshTrigger(prev => prev + 1);
+        toast.success("Highlight order updated");
+        setRefreshTrigger((prev) => prev + 1);
       }
     } catch (error: any) {
       toast.error(`Failed to update order: ${error.message}`);
@@ -585,30 +748,35 @@ const Admin = () => {
     if (index === 0) return;
     const currentItem = items[index];
     const previousItem = items[index - 1];
-    const currentOrder = currentItem.display_order ?? (items.length - index);
-    const previousOrder = previousItem.display_order ?? (items.length - index + 1);
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const previousOrder =
+      previousItem.display_order ?? items.length - index + 1;
     await updateHighlightOrder(currentItem.id, previousOrder, true);
     await updateHighlightOrder(previousItem.id, currentOrder, true);
-    toast.success('Highlight order updated');
-    setRefreshTrigger(prev => prev + 1);
+    toast.success("Highlight order updated");
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const moveHighlightDown = async (items: EventHighlight[], index: number) => {
     if (index === items.length - 1) return;
     const currentItem = items[index];
     const nextItem = items[index + 1];
-    const currentOrder = currentItem.display_order ?? (items.length - index);
-    const nextOrder = nextItem.display_order ?? (items.length - index - 1);
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const nextOrder = nextItem.display_order ?? items.length - index - 1;
     await updateHighlightOrder(currentItem.id, nextOrder, true);
     await updateHighlightOrder(nextItem.id, currentOrder, true);
-    toast.success('Highlight order updated');
-    setRefreshTrigger(prev => prev + 1);
+    toast.success("Highlight order updated");
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const fetchProjects = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('projects').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
       if (error) throw error;
       setProjects(data || []);
     } catch (error: any) {
@@ -617,37 +785,53 @@ const Admin = () => {
   };
 
   const deleteProject = async (id: number) => {
-    if (!supabase || !confirm('Are you sure you want to delete this project?')) return;
+    if (!supabase || !confirm("Are you sure you want to delete this project?"))
+      return;
     try {
-      const { error } = await supabase.from('projects').delete().eq('id', id);
+      const { error } = await supabase.from("projects").delete().eq("id", id);
       if (error) throw error;
-      toast.success('Project deleted successfully');
-      setRefreshTrigger(prev => prev + 1);
+      toast.success("Project deleted successfully");
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to delete project: ${error.message}`);
     }
   };
 
-  const toggleProjectVisibility = async (id: number, currentHidden: boolean) => {
+  const toggleProjectVisibility = async (
+    id: number,
+    currentHidden: boolean
+  ) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('projects').update({ hidden: !currentHidden }).eq('id', id);
+      const { error } = await supabase
+        .from("projects")
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
       if (error) throw error;
-      toast.success(`Project ${!currentHidden ? 'hidden' : 'visible'} successfully`);
-      setRefreshTrigger(prev => prev + 1);
+      toast.success(
+        `Project ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update visibility: ${error.message}`);
     }
   };
 
-  const updateProjectOrder = async (id: number, newOrder: number, skipRefresh: boolean = false) => {
+  const updateProjectOrder = async (
+    id: number,
+    newOrder: number,
+    skipRefresh: boolean = false
+  ) => {
     if (!supabase) return;
     try {
-      const { error } = await supabase.from('projects').update({ display_order: newOrder }).eq('id', id);
+      const { error } = await supabase
+        .from("projects")
+        .update({ display_order: newOrder })
+        .eq("id", id);
       if (error) throw error;
       if (!skipRefresh) {
-        toast.success('Project order updated');
-        setRefreshTrigger(prev => prev + 1);
+        toast.success("Project order updated");
+        setRefreshTrigger((prev) => prev + 1);
       }
     } catch (error: any) {
       toast.error(`Failed to update order: ${error.message}`);
@@ -658,50 +842,51 @@ const Admin = () => {
     if (index === 0) return;
     const currentItem = items[index];
     const previousItem = items[index - 1];
-    const currentOrder = currentItem.display_order ?? (items.length - index);
-    const previousOrder = previousItem.display_order ?? (items.length - index + 1);
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const previousOrder =
+      previousItem.display_order ?? items.length - index + 1;
     await updateProjectOrder(currentItem.id, previousOrder, true);
     await updateProjectOrder(previousItem.id, currentOrder, true);
-    toast.success('Project order updated');
-    setRefreshTrigger(prev => prev + 1);
+    toast.success("Project order updated");
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const moveProjectDown = async (items: Project[], index: number) => {
     if (index === items.length - 1) return;
     const currentItem = items[index];
     const nextItem = items[index + 1];
-    const currentOrder = currentItem.display_order ?? (items.length - index);
-    const nextOrder = nextItem.display_order ?? (items.length - index - 1);
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const nextOrder = nextItem.display_order ?? items.length - index - 1;
     await updateProjectOrder(currentItem.id, nextOrder, true);
     await updateProjectOrder(nextItem.id, currentOrder, true);
-    toast.success('Project order updated');
-    setRefreshTrigger(prev => prev + 1);
+    toast.success("Project order updated");
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const fetchSiteSettings = async () => {
     if (!supabase) return;
     try {
       const { data: projectsData } = await supabase
-        .from('site_settings')
-        .select('*')
-        .eq('setting_key', 'show_projects_in_navbar')
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "show_projects_in_navbar")
         .single();
-      
+
       if (projectsData) {
         setShowProjectsInNavbar(projectsData.setting_value);
       }
 
       const { data: executiveData } = await supabase
-        .from('site_settings')
-        .select('*')
-        .eq('setting_key', 'show_executive_team')
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "show_executive_team")
         .single();
-      
+
       if (executiveData) {
         setShowExecutiveTeam(executiveData.setting_value);
       }
     } catch (error: any) {
-      console.error('Error fetching site settings:', error);
+      console.error("Error fetching site settings:", error);
     }
   };
 
@@ -709,26 +894,30 @@ const Admin = () => {
     if (!supabase) return;
     try {
       const { data: existing } = await supabase
-        .from('site_settings')
-        .select('id')
-        .eq('setting_key', 'show_projects_in_navbar')
+        .from("site_settings")
+        .select("id")
+        .eq("setting_key", "show_projects_in_navbar")
         .single();
 
       if (existing) {
         const { error } = await supabase
-          .from('site_settings')
+          .from("site_settings")
           .update({ setting_value: value })
-          .eq('setting_key', 'show_projects_in_navbar');
+          .eq("setting_key", "show_projects_in_navbar");
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from('site_settings')
-          .insert([{ setting_key: 'show_projects_in_navbar', setting_value: value }]);
+          .from("site_settings")
+          .insert([
+            { setting_key: "show_projects_in_navbar", setting_value: value },
+          ]);
         if (error) throw error;
       }
 
       setShowProjectsInNavbar(value);
-      toast.success(`Projects link ${value ? 'shown in' : 'hidden from'} navbar`);
+      toast.success(
+        `Projects link ${value ? "shown in" : "hidden from"} navbar`
+      );
       window.location.reload();
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
@@ -739,26 +928,32 @@ const Admin = () => {
     if (!supabase) return;
     try {
       const { data: existing } = await supabase
-        .from('site_settings')
-        .select('id')
-        .eq('setting_key', 'show_executive_team')
+        .from("site_settings")
+        .select("id")
+        .eq("setting_key", "show_executive_team")
         .single();
 
       if (existing) {
         const { error } = await supabase
-          .from('site_settings')
+          .from("site_settings")
           .update({ setting_value: value })
-          .eq('setting_key', 'show_executive_team');
+          .eq("setting_key", "show_executive_team");
         if (error) throw error;
       } else {
         const { error } = await supabase
-          .from('site_settings')
-          .insert([{ setting_key: 'show_executive_team', setting_value: value }]);
+          .from("site_settings")
+          .insert([
+            { setting_key: "show_executive_team", setting_value: value },
+          ]);
         if (error) throw error;
       }
 
       setShowExecutiveTeam(value);
-      toast.success(`Executive Team section ${value ? 'shown on' : 'hidden from'} Members page`);
+      toast.success(
+        `Executive Team section ${
+          value ? "shown on" : "hidden from"
+        } Members page`
+      );
       window.location.reload();
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
@@ -781,19 +976,35 @@ const Admin = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-8 relative z-10">
         <Card className="w-full max-w-2xl">
           <CardHeader>
-            <CardTitle className="text-destructive">Configuration Error</CardTitle>
-            <CardDescription>Supabase is not properly configured</CardDescription>
+            <CardTitle className="text-destructive">
+              Configuration Error
+            </CardTitle>
+            <CardDescription>
+              Supabase is not properly configured
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm">
-              The application cannot connect to Supabase. Please ensure the following environment variables are set:
+              The application cannot connect to Supabase. Please ensure the
+              following environment variables are set:
             </p>
             <ul className="list-disc list-inside space-y-2 text-sm">
-              <li><code className="bg-muted px-2 py-1 rounded">VITE_SUPABASE_URL</code> - Your Supabase project URL</li>
-              <li><code className="bg-muted px-2 py-1 rounded">VITE_SUPABASE_ANON_KEY</code> - Your Supabase anonymous key</li>
+              <li>
+                <code className="bg-muted px-2 py-1 rounded">
+                  VITE_SUPABASE_URL
+                </code>{" "}
+                - Your Supabase project URL
+              </li>
+              <li>
+                <code className="bg-muted px-2 py-1 rounded">
+                  VITE_SUPABASE_ANON_KEY
+                </code>{" "}
+                - Your Supabase anonymous key
+              </li>
             </ul>
             <p className="text-sm text-muted-foreground">
-              After adding the environment variables, restart the application for changes to take effect.
+              After adding the environment variables, restart the application
+              for changes to take effect.
             </p>
             <Button onClick={() => navigate("/")} className="w-full">
               Back to Home
@@ -839,8 +1050,7 @@ const Admin = () => {
                 type="button"
                 variant="outline"
                 className="w-full"
-                onClick={() => navigate("/")}
-              >
+                onClick={() => navigate("/")}>
                 Back to Home
               </Button>
             </form>
@@ -854,12 +1064,20 @@ const Admin = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 pt-20 sm:pt-24 pb-8 px-4 sm:px-8 relative z-10">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Admin Panel</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
+            Admin Panel
+          </h1>
           <div className="flex gap-2 sm:gap-4 w-full sm:w-auto">
-            <Button variant="outline" onClick={() => navigate("/")} className="flex-1 sm:flex-none text-xs sm:text-sm">
+            <Button
+              variant="outline"
+              onClick={() => navigate("/")}
+              className="flex-1 sm:flex-none text-xs sm:text-sm">
               Back to Home
             </Button>
-            <Button variant="destructive" onClick={handleLogout} className="flex-1 sm:flex-none text-xs sm:text-sm">
+            <Button
+              variant="destructive"
+              onClick={handleLogout}
+              className="flex-1 sm:flex-none text-xs sm:text-sm">
               Logout
             </Button>
           </div>
@@ -868,13 +1086,41 @@ const Admin = () => {
         <Tabs defaultValue="notices" className="w-full">
           <div className="w-full overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
             <TabsList className="inline-flex w-auto min-w-full sm:w-full sm:grid sm:grid-cols-7 h-auto sm:h-10 gap-1 p-1">
-              <TabsTrigger value="notices" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Notices</TabsTrigger>
-              <TabsTrigger value="events" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Events</TabsTrigger>
-              <TabsTrigger value="gallery" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Gallery</TabsTrigger>
-              <TabsTrigger value="highlights" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Highlights</TabsTrigger>
-              <TabsTrigger value="projects" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Projects</TabsTrigger>
-              <TabsTrigger value="members" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Members</TabsTrigger>
-              <TabsTrigger value="settings" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Settings</TabsTrigger>
+              <TabsTrigger
+                value="notices"
+                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                Notices
+              </TabsTrigger>
+              <TabsTrigger
+                value="events"
+                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                Events
+              </TabsTrigger>
+              <TabsTrigger
+                value="gallery"
+                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                Gallery
+              </TabsTrigger>
+              <TabsTrigger
+                value="highlights"
+                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                Highlights
+              </TabsTrigger>
+              <TabsTrigger
+                value="projects"
+                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                Projects
+              </TabsTrigger>
+              <TabsTrigger
+                value="members"
+                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                Members
+              </TabsTrigger>
+              <TabsTrigger
+                value="settings"
+                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                Settings
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -883,10 +1129,16 @@ const Admin = () => {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle className="text-lg sm:text-xl">Manage Notices</CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete notices</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">
+                      Manage Notices
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      Add, edit, or delete notices
+                    </CardDescription>
                   </div>
-                  <AddNoticeDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  <AddNoticeDialog
+                    onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                  />
                 </div>
                 <div className="mt-4">
                   <div className="relative">
@@ -915,36 +1167,59 @@ const Admin = () => {
                   </TableHeader>
                   <TableBody>
                     {notices
-                      .filter(notice => 
-                        notice.title.toLowerCase().includes(noticesSearch.toLowerCase()) ||
-                        notice.type.toLowerCase().includes(noticesSearch.toLowerCase())
+                      .filter(
+                        (notice) =>
+                          notice.title
+                            .toLowerCase()
+                            .includes(noticesSearch.toLowerCase()) ||
+                          notice.type
+                            .toLowerCase()
+                            .includes(noticesSearch.toLowerCase())
                       )
                       .map((notice) => (
-                      <TableRow key={notice.id} className={notice.hidden ? 'opacity-50' : ''}>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => toggleNoticeVisibility(notice.id, notice.hidden || false)}
-                          >
-                            {notice.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </Button>
-                        </TableCell>
-                        <TableCell>{notice.title}</TableCell>
-                        <TableCell>{notice.date}</TableCell>
-                        <TableCell>{convertTo12Hour(notice.time)}</TableCell>
-                        <TableCell>{notice.type}</TableCell>
-                        <TableCell>{notice.status}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <EditNoticeDialog notice={notice} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                            <Button variant="destructive" size="sm" onClick={() => deleteNotice(notice.id)}>
-                              <Trash2 className="h-4 w-4" />
+                        <TableRow
+                          key={notice.id}
+                          className={notice.hidden ? "opacity-50" : ""}>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                toggleNoticeVisibility(
+                                  notice.id,
+                                  notice.hidden || false
+                                )
+                              }>
+                              {notice.hidden ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
                             </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          </TableCell>
+                          <TableCell>{notice.title}</TableCell>
+                          <TableCell>{notice.date}</TableCell>
+                          <TableCell>{convertTo12Hour(notice.time)}</TableCell>
+                          <TableCell>{notice.type}</TableCell>
+                          <TableCell>{notice.status}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditNoticeDialog
+                                notice={notice}
+                                onSuccess={() =>
+                                  setRefreshTrigger((prev) => prev + 1)
+                                }
+                              />
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => deleteNotice(notice.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -956,10 +1231,16 @@ const Admin = () => {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle className="text-lg sm:text-xl">Manage Events</CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete events</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">
+                      Manage Events
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      Add, edit, or delete events
+                    </CardDescription>
                   </div>
-                  <AddEventDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  <AddEventDialog
+                    onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                  />
                 </div>
                 <div className="mt-4">
                   <div className="relative">
@@ -989,57 +1270,82 @@ const Admin = () => {
                     </TableHeader>
                     <TableBody>
                       {events
-                        .filter(event => 
-                          event.title.toLowerCase().includes(eventsSearch.toLowerCase()) ||
-                          event.location.toLowerCase().includes(eventsSearch.toLowerCase())
+                        .filter(
+                          (event) =>
+                            event.title
+                              .toLowerCase()
+                              .includes(eventsSearch.toLowerCase()) ||
+                            event.location
+                              .toLowerCase()
+                              .includes(eventsSearch.toLowerCase())
                         )
                         .map((event, index, filteredArray) => (
-                        <TableRow key={event.id} className={event.hidden ? 'opacity-50' : ''}>
-                          <TableCell>
-                            <div className="flex flex-col gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => moveEventUp(events, events.indexOf(event))}
-                                disabled={index === 0}
-                                className="h-6 w-6 p-0"
-                              >
-                                <ChevronUp className="h-4 w-4" />
+                          <TableRow
+                            key={event.id}
+                            className={event.hidden ? "opacity-50" : ""}>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    moveEventUp(events, events.indexOf(event))
+                                  }
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0">
+                                  <ChevronUp className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    moveEventDown(events, events.indexOf(event))
+                                  }
+                                  disabled={index === filteredArray.length - 1}
+                                  className="h-6 w-6 p-0">
+                                  <ChevronDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  toggleEventVisibility(
+                                    event.id,
+                                    event.hidden || false
+                                  )
+                                }>
+                                {event.hidden ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
                               </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => moveEventDown(events, events.indexOf(event))}
-                                disabled={index === filteredArray.length - 1}
-                                className="h-6 w-6 p-0"
-                              >
-                                <ChevronDown className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleEventVisibility(event.id, event.hidden || false)}
-                            >
-                              {event.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </TableCell>
-                          <TableCell>{event.title}</TableCell>
-                          <TableCell>{event.date}</TableCell>
-                          <TableCell>{event.location}</TableCell>
-                          <TableCell>{event.status}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <EditEventDialog event={event} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                              <Button variant="destructive" size="sm" onClick={() => deleteEvent(event.id)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell>{event.title}</TableCell>
+                            <TableCell>{event.date}</TableCell>
+                            <TableCell>{event.location}</TableCell>
+                            <TableCell>{event.status}</TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <EditEventDialog
+                                  event={event}
+                                  onSuccess={() =>
+                                    setRefreshTrigger((prev) => prev + 1)
+                                  }
+                                />
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => deleteEvent(event.id)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </div>
@@ -1052,10 +1358,16 @@ const Admin = () => {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle className="text-lg sm:text-xl">Manage Gallery</CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete gallery items</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">
+                      Manage Gallery
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      Add, edit, or delete gallery items
+                    </CardDescription>
                   </div>
-                  <AddGalleryDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  <AddGalleryDialog
+                    onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                  />
                 </div>
                 <div className="mt-4">
                   <div className="relative">
@@ -1084,67 +1396,103 @@ const Admin = () => {
                     </TableHeader>
                     <TableBody>
                       {gallery
-                        .filter(item => 
-                          item.title.toLowerCase().includes(gallerySearch.toLowerCase()) ||
-                          item.category.toLowerCase().includes(gallerySearch.toLowerCase())
+                        .filter(
+                          (item) =>
+                            item.title
+                              .toLowerCase()
+                              .includes(gallerySearch.toLowerCase()) ||
+                            item.category
+                              .toLowerCase()
+                              .includes(gallerySearch.toLowerCase())
                         )
                         .map((item, index, filteredArray) => (
-                        <TableRow key={item.id} className={item.hidden ? 'opacity-50' : ''}>
-                          <TableCell>
-                            <div className="flex flex-col gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => moveGalleryUp(gallery, gallery.indexOf(item))}
-                                disabled={index === 0}
-                                className="h-6 w-6 p-0"
-                              >
-                                <ChevronUp className="h-4 w-4" />
+                          <TableRow
+                            key={item.id}
+                            className={item.hidden ? "opacity-50" : ""}>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    moveGalleryUp(
+                                      gallery,
+                                      gallery.indexOf(item)
+                                    )
+                                  }
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0">
+                                  <ChevronUp className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    moveGalleryDown(
+                                      gallery,
+                                      gallery.indexOf(item)
+                                    )
+                                  }
+                                  disabled={index === filteredArray.length - 1}
+                                  className="h-6 w-6 p-0">
+                                  <ChevronDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  toggleGalleryVisibility(
+                                    item.id,
+                                    item.hidden || false
+                                  )
+                                }>
+                                {item.hidden ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
                               </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => moveGalleryDown(gallery, gallery.indexOf(item))}
-                                disabled={index === filteredArray.length - 1}
-                                className="h-6 w-6 p-0"
-                              >
-                                <ChevronDown className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleGalleryVisibility(item.id, item.hidden || false)}
-                            >
-                              {item.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </TableCell>
-                          <TableCell>{item.title}</TableCell>
-                          <TableCell>{item.category}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-1">
-                              {item.images?.slice(0, 3).map((img, idx) => (
-                                <img key={idx} src={img} alt={`${item.title} ${idx + 1}`} className="w-12 h-12 object-cover rounded" />
-                              ))}
-                              {item.images?.length > 3 && (
-                                <div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-xs">
-                                  +{item.images.length - 3}
-                                </div>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <EditGalleryDialog item={item} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                              <Button variant="destructive" size="sm" onClick={() => deleteGalleryItem(item.id)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell>{item.title}</TableCell>
+                            <TableCell>{item.category}</TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                {item.images?.slice(0, 3).map((img, idx) => (
+                                  <img
+                                    key={idx}
+                                    src={img}
+                                    alt={`${item.title} ${idx + 1}`}
+                                    className="w-12 h-12 object-cover rounded"
+                                  />
+                                ))}
+                                {item.images?.length > 3 && (
+                                  <div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-xs">
+                                    +{item.images.length - 3}
+                                  </div>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <EditGalleryDialog
+                                  item={item}
+                                  onSuccess={() =>
+                                    setRefreshTrigger((prev) => prev + 1)
+                                  }
+                                />
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => deleteGalleryItem(item.id)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </div>
@@ -1158,10 +1506,16 @@ const Admin = () => {
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle className="text-lg sm:text-xl">Faculty</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">Manage faculty advisors</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">
+                        Faculty
+                      </CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Manage faculty advisors
+                      </CardDescription>
                     </div>
-                    <AddFacultyDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                    <AddFacultyDialog
+                      onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                    />
                   </div>
                   <div className="mt-4">
                     <div className="relative">
@@ -1190,66 +1544,111 @@ const Admin = () => {
                       </TableHeader>
                       <TableBody>
                         {faculty
-                          .filter(member => 
-                            member.name.toLowerCase().includes(facultySearch.toLowerCase()) ||
-                            member.title.toLowerCase().includes(facultySearch.toLowerCase())
+                          .filter(
+                            (member) =>
+                              member.name
+                                .toLowerCase()
+                                .includes(facultySearch.toLowerCase()) ||
+                              member.title
+                                .toLowerCase()
+                                .includes(facultySearch.toLowerCase())
                           )
                           .map((member, index, filteredArray) => (
-                          <TableRow key={member.id} className={member.hidden ? 'opacity-50' : ''}>
-                            <TableCell>
-                              <div className="flex flex-col gap-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => moveMemberUp(faculty, faculty.indexOf(member), 'members_faculty', 'faculty')}
-                                  disabled={index === 0}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <ChevronUp className="h-4 w-4" />
+                            <TableRow
+                              key={member.id}
+                              className={member.hidden ? "opacity-50" : ""}>
+                              <TableCell>
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      moveMemberUp(
+                                        faculty,
+                                        faculty.indexOf(member),
+                                        "members_faculty",
+                                        "faculty"
+                                      )
+                                    }
+                                    disabled={index === 0}
+                                    className="h-6 w-6 p-0">
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      moveMemberDown(
+                                        faculty,
+                                        faculty.indexOf(member),
+                                        "members_faculty",
+                                        "faculty"
+                                      )
+                                    }
+                                    disabled={
+                                      index === filteredArray.length - 1
+                                    }
+                                    className="h-6 w-6 p-0">
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    toggleMemberVisibility(
+                                      member.id,
+                                      "members_faculty",
+                                      member.hidden || false,
+                                      "faculty"
+                                    )
+                                  }>
+                                  {member.hidden ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
                                 </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => moveMemberDown(faculty, faculty.indexOf(member), 'members_faculty', 'faculty')}
-                                  disabled={index === filteredArray.length - 1}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <ChevronDown className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleMemberVisibility(member.id, 'members_faculty', member.hidden || false, 'faculty')}
-                              >
-                                {member.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                              </Button>
-                            </TableCell>
-                            <TableCell>{member.name}</TableCell>
-                            <TableCell>{member.title}</TableCell>
-                            <TableCell>
-                              <img 
-                                src={member.image || '/default-avatar.png'} 
-                                alt={member.name} 
-                                className="w-10 h-10 rounded-full object-cover"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src = '/default-avatar.png';
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <EditFacultyDialog member={member} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                                <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_faculty', 'faculty member')}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              </TableCell>
+                              <TableCell>{member.name}</TableCell>
+                              <TableCell>{member.title}</TableCell>
+                              <TableCell>
+                                <img
+                                  src={member.image || "/default-avatar.png"}
+                                  alt={member.name}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = "/default-avatar.png";
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <EditFacultyDialog
+                                    member={member}
+                                    onSuccess={() =>
+                                      setRefreshTrigger((prev) => prev + 1)
+                                    }
+                                  />
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() =>
+                                      deleteMember(
+                                        member.id,
+                                        "members_faculty",
+                                        "faculty member"
+                                      )
+                                    }>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </div>
@@ -1260,10 +1659,18 @@ const Admin = () => {
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle className="text-lg sm:text-xl">Core Team</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">Manage core team members</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">
+                        Core Team
+                      </CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Manage core team members
+                      </CardDescription>
                     </div>
-                    <AddMemberDialog table="members_core_team" title="Add Core Team Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                    <AddMemberDialog
+                      table="members_core_team"
+                      title="Add Core Team Member"
+                      onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                    />
                   </div>
                   <div className="mt-4">
                     <div className="relative">
@@ -1293,67 +1700,114 @@ const Admin = () => {
                       </TableHeader>
                       <TableBody>
                         {coreTeam
-                          .filter(member => 
-                            member.name.toLowerCase().includes(coreTeamSearch.toLowerCase()) ||
-                            member.position.toLowerCase().includes(coreTeamSearch.toLowerCase())
+                          .filter(
+                            (member) =>
+                              member.name
+                                .toLowerCase()
+                                .includes(coreTeamSearch.toLowerCase()) ||
+                              member.position
+                                .toLowerCase()
+                                .includes(coreTeamSearch.toLowerCase())
                           )
                           .map((member, index, filteredArray) => (
-                          <TableRow key={member.id} className={member.hidden ? 'opacity-50' : ''}>
-                            <TableCell>
-                              <div className="flex flex-col gap-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => moveMemberUp(coreTeam, coreTeam.indexOf(member), 'members_core_team', 'core team member')}
-                                  disabled={index === 0}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <ChevronUp className="h-4 w-4" />
+                            <TableRow
+                              key={member.id}
+                              className={member.hidden ? "opacity-50" : ""}>
+                              <TableCell>
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      moveMemberUp(
+                                        coreTeam,
+                                        coreTeam.indexOf(member),
+                                        "members_core_team",
+                                        "core team member"
+                                      )
+                                    }
+                                    disabled={index === 0}
+                                    className="h-6 w-6 p-0">
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      moveMemberDown(
+                                        coreTeam,
+                                        coreTeam.indexOf(member),
+                                        "members_core_team",
+                                        "core team member"
+                                      )
+                                    }
+                                    disabled={
+                                      index === filteredArray.length - 1
+                                    }
+                                    className="h-6 w-6 p-0">
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    toggleMemberVisibility(
+                                      member.id,
+                                      "members_core_team",
+                                      member.hidden || false,
+                                      "core team member"
+                                    )
+                                  }>
+                                  {member.hidden ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
                                 </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => moveMemberDown(coreTeam, coreTeam.indexOf(member), 'members_core_team', 'core team member')}
-                                  disabled={index === filteredArray.length - 1}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <ChevronDown className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleMemberVisibility(member.id, 'members_core_team', member.hidden || false, 'core team member')}
-                              >
-                                {member.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                              </Button>
-                            </TableCell>
-                            <TableCell>{member.name}</TableCell>
-                            <TableCell>{member.position}</TableCell>
-                            <TableCell>{member.email}</TableCell>
-                            <TableCell>
-                              <img 
-                                src={member.image || '/default-avatar.png'} 
-                                alt={member.name} 
-                                className="w-10 h-10 rounded-full object-cover"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src = '/default-avatar.png';
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <EditMemberDialog member={member} table="members_core_team" title="Edit Core Team Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                                <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_core_team', 'core team member')}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              </TableCell>
+                              <TableCell>{member.name}</TableCell>
+                              <TableCell>{member.position}</TableCell>
+                              <TableCell>{member.email}</TableCell>
+                              <TableCell>
+                                <img
+                                  src={member.image || "/default-avatar.png"}
+                                  alt={member.name}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = "/default-avatar.png";
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <EditMemberDialog
+                                    member={member}
+                                    table="members_core_team"
+                                    title="Edit Core Team Member"
+                                    onSuccess={() =>
+                                      setRefreshTrigger((prev) => prev + 1)
+                                    }
+                                  />
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() =>
+                                      deleteMember(
+                                        member.id,
+                                        "members_core_team",
+                                        "core team member"
+                                      )
+                                    }>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </div>
@@ -1367,7 +1821,11 @@ const Admin = () => {
                       <CardTitle>Post Holders</CardTitle>
                       <CardDescription>Manage post holders</CardDescription>
                     </div>
-                    <AddMemberDialog table="members_post_holders" title="Add Post Holder" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                    <AddMemberDialog
+                      table="members_post_holders"
+                      title="Add Post Holder"
+                      onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                    />
                   </div>
                   <div className="mt-4">
                     <div className="relative">
@@ -1397,67 +1855,114 @@ const Admin = () => {
                       </TableHeader>
                       <TableBody>
                         {postHolders
-                          .filter(member => 
-                            member.name.toLowerCase().includes(postHoldersSearch.toLowerCase()) ||
-                            member.position.toLowerCase().includes(postHoldersSearch.toLowerCase())
+                          .filter(
+                            (member) =>
+                              member.name
+                                .toLowerCase()
+                                .includes(postHoldersSearch.toLowerCase()) ||
+                              member.position
+                                .toLowerCase()
+                                .includes(postHoldersSearch.toLowerCase())
                           )
                           .map((member, index, filteredArray) => (
-                          <TableRow key={member.id} className={member.hidden ? 'opacity-50' : ''}>
-                            <TableCell>
-                              <div className="flex flex-col gap-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => moveMemberUp(postHolders, postHolders.indexOf(member), 'members_post_holders', 'post holder')}
-                                  disabled={index === 0}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <ChevronUp className="h-4 w-4" />
+                            <TableRow
+                              key={member.id}
+                              className={member.hidden ? "opacity-50" : ""}>
+                              <TableCell>
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      moveMemberUp(
+                                        postHolders,
+                                        postHolders.indexOf(member),
+                                        "members_post_holders",
+                                        "post holder"
+                                      )
+                                    }
+                                    disabled={index === 0}
+                                    className="h-6 w-6 p-0">
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      moveMemberDown(
+                                        postHolders,
+                                        postHolders.indexOf(member),
+                                        "members_post_holders",
+                                        "post holder"
+                                      )
+                                    }
+                                    disabled={
+                                      index === filteredArray.length - 1
+                                    }
+                                    className="h-6 w-6 p-0">
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    toggleMemberVisibility(
+                                      member.id,
+                                      "members_post_holders",
+                                      member.hidden || false,
+                                      "post holder"
+                                    )
+                                  }>
+                                  {member.hidden ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
                                 </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => moveMemberDown(postHolders, postHolders.indexOf(member), 'members_post_holders', 'post holder')}
-                                  disabled={index === filteredArray.length - 1}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <ChevronDown className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleMemberVisibility(member.id, 'members_post_holders', member.hidden || false, 'post holder')}
-                              >
-                                {member.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                              </Button>
-                            </TableCell>
-                            <TableCell>{member.name}</TableCell>
-                            <TableCell>{member.position}</TableCell>
-                            <TableCell>{member.email}</TableCell>
-                            <TableCell>
-                              <img 
-                                src={member.image || '/default-avatar.png'} 
-                                alt={member.name} 
-                                className="w-10 h-10 rounded-full object-cover"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src = '/default-avatar.png';
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <EditMemberDialog member={member} table="members_post_holders" title="Edit Post Holder" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                                <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_post_holders', 'post holder')}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              </TableCell>
+                              <TableCell>{member.name}</TableCell>
+                              <TableCell>{member.position}</TableCell>
+                              <TableCell>{member.email}</TableCell>
+                              <TableCell>
+                                <img
+                                  src={member.image || "/default-avatar.png"}
+                                  alt={member.name}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = "/default-avatar.png";
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <EditMemberDialog
+                                    member={member}
+                                    table="members_post_holders"
+                                    title="Edit Post Holder"
+                                    onSuccess={() =>
+                                      setRefreshTrigger((prev) => prev + 1)
+                                    }
+                                  />
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() =>
+                                      deleteMember(
+                                        member.id,
+                                        "members_post_holders",
+                                        "post holder"
+                                      )
+                                    }>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </div>
@@ -1468,10 +1973,18 @@ const Admin = () => {
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle className="text-lg sm:text-xl">Executive Team</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">Manage executive team members</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">
+                        Executive Team
+                      </CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Manage executive team members
+                      </CardDescription>
                     </div>
-                    <AddMemberDialog table="members_executive" title="Add Executive Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                    <AddMemberDialog
+                      table="members_executive"
+                      title="Add Executive Member"
+                      onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                    />
                   </div>
                   <div className="mt-4">
                     <div className="relative">
@@ -1501,67 +2014,114 @@ const Admin = () => {
                       </TableHeader>
                       <TableBody>
                         {executive
-                          .filter(member => 
-                            member.name.toLowerCase().includes(executiveSearch.toLowerCase()) ||
-                            member.position.toLowerCase().includes(executiveSearch.toLowerCase())
+                          .filter(
+                            (member) =>
+                              member.name
+                                .toLowerCase()
+                                .includes(executiveSearch.toLowerCase()) ||
+                              member.position
+                                .toLowerCase()
+                                .includes(executiveSearch.toLowerCase())
                           )
                           .map((member, index, filteredArray) => (
-                          <TableRow key={member.id} className={member.hidden ? 'opacity-50' : ''}>
-                            <TableCell>
-                              <div className="flex flex-col gap-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => moveMemberUp(executive, executive.indexOf(member), 'members_executive', 'executive member')}
-                                  disabled={index === 0}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <ChevronUp className="h-4 w-4" />
+                            <TableRow
+                              key={member.id}
+                              className={member.hidden ? "opacity-50" : ""}>
+                              <TableCell>
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      moveMemberUp(
+                                        executive,
+                                        executive.indexOf(member),
+                                        "members_executive",
+                                        "executive member"
+                                      )
+                                    }
+                                    disabled={index === 0}
+                                    className="h-6 w-6 p-0">
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      moveMemberDown(
+                                        executive,
+                                        executive.indexOf(member),
+                                        "members_executive",
+                                        "executive member"
+                                      )
+                                    }
+                                    disabled={
+                                      index === filteredArray.length - 1
+                                    }
+                                    className="h-6 w-6 p-0">
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    toggleMemberVisibility(
+                                      member.id,
+                                      "members_executive",
+                                      member.hidden || false,
+                                      "executive member"
+                                    )
+                                  }>
+                                  {member.hidden ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
                                 </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => moveMemberDown(executive, executive.indexOf(member), 'members_executive', 'executive member')}
-                                  disabled={index === filteredArray.length - 1}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  <ChevronDown className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => toggleMemberVisibility(member.id, 'members_executive', member.hidden || false, 'executive member')}
-                              >
-                                {member.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                              </Button>
-                            </TableCell>
-                            <TableCell>{member.name}</TableCell>
-                            <TableCell>{member.position}</TableCell>
-                            <TableCell>{member.email}</TableCell>
-                            <TableCell>
-                              <img 
-                                src={member.image || '/default-avatar.png'} 
-                                alt={member.name} 
-                                className="w-10 h-10 rounded-full object-cover"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.src = '/default-avatar.png';
-                                }}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-2">
-                                <EditMemberDialog member={member} table="members_executive" title="Edit Executive Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                                <Button variant="destructive" size="sm" onClick={() => deleteMember(member.id, 'members_executive', 'executive member')}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                              </TableCell>
+                              <TableCell>{member.name}</TableCell>
+                              <TableCell>{member.position}</TableCell>
+                              <TableCell>{member.email}</TableCell>
+                              <TableCell>
+                                <img
+                                  src={member.image || "/default-avatar.png"}
+                                  alt={member.name}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = "/default-avatar.png";
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <EditMemberDialog
+                                    member={member}
+                                    table="members_executive"
+                                    title="Edit Executive Member"
+                                    onSuccess={() =>
+                                      setRefreshTrigger((prev) => prev + 1)
+                                    }
+                                  />
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() =>
+                                      deleteMember(
+                                        member.id,
+                                        "members_executive",
+                                        "executive member"
+                                      )
+                                    }>
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </div>
@@ -1575,10 +2135,16 @@ const Admin = () => {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle className="text-lg sm:text-xl">Manage Event Highlights</CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete past event highlights</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">
+                      Manage Event Highlights
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      Add, edit, or delete past event highlights
+                    </CardDescription>
                   </div>
-                  <AddEventHighlightDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  <AddEventHighlightDialog
+                    onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                  />
                 </div>
                 <div className="mt-4">
                   <div className="relative">
@@ -1607,56 +2173,89 @@ const Admin = () => {
                     </TableHeader>
                     <TableBody>
                       {eventHighlights
-                        .filter(highlight => 
-                          highlight.title.toLowerCase().includes(highlightsSearch.toLowerCase()) ||
-                          highlight.location.toLowerCase().includes(highlightsSearch.toLowerCase())
+                        .filter(
+                          (highlight) =>
+                            highlight.title
+                              .toLowerCase()
+                              .includes(highlightsSearch.toLowerCase()) ||
+                            highlight.location
+                              .toLowerCase()
+                              .includes(highlightsSearch.toLowerCase())
                         )
                         .map((highlight, index, filteredArray) => (
-                        <TableRow key={highlight.id} className={highlight.hidden ? 'opacity-50' : ''}>
-                          <TableCell>
-                            <div className="flex flex-col gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => moveHighlightUp(eventHighlights, eventHighlights.indexOf(highlight))}
-                                disabled={index === 0}
-                                className="h-6 w-6 p-0"
-                              >
-                                <ChevronUp className="h-4 w-4" />
+                          <TableRow
+                            key={highlight.id}
+                            className={highlight.hidden ? "opacity-50" : ""}>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    moveHighlightUp(
+                                      eventHighlights,
+                                      eventHighlights.indexOf(highlight)
+                                    )
+                                  }
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0">
+                                  <ChevronUp className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    moveHighlightDown(
+                                      eventHighlights,
+                                      eventHighlights.indexOf(highlight)
+                                    )
+                                  }
+                                  disabled={index === filteredArray.length - 1}
+                                  className="h-6 w-6 p-0">
+                                  <ChevronDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  toggleHighlightVisibility(
+                                    highlight.id,
+                                    highlight.hidden || false
+                                  )
+                                }>
+                                {highlight.hidden ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
                               </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => moveHighlightDown(eventHighlights, eventHighlights.indexOf(highlight))}
-                                disabled={index === filteredArray.length - 1}
-                                className="h-6 w-6 p-0"
-                              >
-                                <ChevronDown className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleHighlightVisibility(highlight.id, highlight.hidden || false)}
-                            >
-                              {highlight.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </TableCell>
-                          <TableCell>{highlight.title}</TableCell>
-                          <TableCell>{highlight.date}</TableCell>
-                          <TableCell>{highlight.location}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <EditEventHighlightDialog highlight={highlight} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                              <Button variant="destructive" size="sm" onClick={() => deleteEventHighlight(highlight.id)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell>{highlight.title}</TableCell>
+                            <TableCell>{highlight.date}</TableCell>
+                            <TableCell>{highlight.location}</TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <EditEventHighlightDialog
+                                  highlight={highlight}
+                                  onSuccess={() =>
+                                    setRefreshTrigger((prev) => prev + 1)
+                                  }
+                                />
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() =>
+                                    deleteEventHighlight(highlight.id)
+                                  }>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </div>
@@ -1669,10 +2268,16 @@ const Admin = () => {
               <CardHeader>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle className="text-lg sm:text-xl">Manage Projects</CardTitle>
-                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete projects</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">
+                      Manage Projects
+                    </CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">
+                      Add, edit, or delete projects
+                    </CardDescription>
                   </div>
-                  <AddProjectDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                  <AddProjectDialog
+                    onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                  />
                 </div>
                 <div className="mt-4">
                   <div className="relative">
@@ -1699,54 +2304,85 @@ const Admin = () => {
                     </TableHeader>
                     <TableBody>
                       {projects
-                        .filter(project => 
-                          project.title.toLowerCase().includes(projectsSearch.toLowerCase()) ||
-                          project.category.toLowerCase().includes(projectsSearch.toLowerCase())
+                        .filter(
+                          (project) =>
+                            project.title
+                              .toLowerCase()
+                              .includes(projectsSearch.toLowerCase()) ||
+                            project.category
+                              .toLowerCase()
+                              .includes(projectsSearch.toLowerCase())
                         )
                         .map((project, index, filteredArray) => (
-                        <TableRow key={project.id} className={project.hidden ? 'opacity-50' : ''}>
-                          <TableCell>
-                            <div className="flex flex-col gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => moveProjectUp(projects, projects.indexOf(project))}
-                                disabled={index === 0}
-                                className="h-6 w-6 p-0"
-                              >
-                                <ChevronUp className="h-4 w-4" />
+                          <TableRow
+                            key={project.id}
+                            className={project.hidden ? "opacity-50" : ""}>
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    moveProjectUp(
+                                      projects,
+                                      projects.indexOf(project)
+                                    )
+                                  }
+                                  disabled={index === 0}
+                                  className="h-6 w-6 p-0">
+                                  <ChevronUp className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    moveProjectDown(
+                                      projects,
+                                      projects.indexOf(project)
+                                    )
+                                  }
+                                  disabled={index === filteredArray.length - 1}
+                                  className="h-6 w-6 p-0">
+                                  <ChevronDown className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  toggleProjectVisibility(
+                                    project.id,
+                                    project.hidden || false
+                                  )
+                                }>
+                                {project.hidden ? (
+                                  <EyeOff className="h-4 w-4" />
+                                ) : (
+                                  <Eye className="h-4 w-4" />
+                                )}
                               </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => moveProjectDown(projects, projects.indexOf(project))}
-                                disabled={index === filteredArray.length - 1}
-                                className="h-6 w-6 p-0"
-                              >
-                                <ChevronDown className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => toggleProjectVisibility(project.id, project.hidden || false)}
-                            >
-                              {project.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
-                          </TableCell>
-                          <TableCell>{project.title}</TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              <EditProjectDialog project={project} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
-                              <Button variant="destructive" size="sm" onClick={() => deleteProject(project.id)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                            </TableCell>
+                            <TableCell>{project.title}</TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <EditProjectDialog
+                                  project={project}
+                                  onSuccess={() =>
+                                    setRefreshTrigger((prev) => prev + 1)
+                                  }
+                                />
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => deleteProject(project.id)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </TableBody>
                   </Table>
                 </div>
@@ -1757,8 +2393,12 @@ const Admin = () => {
           <TabsContent value="settings">
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg sm:text-xl">Site Settings</CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Configure website appearance and functionality</CardDescription>
+                <CardTitle className="text-lg sm:text-xl">
+                  Site Settings
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
+                  Configure website appearance and functionality
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -1770,24 +2410,26 @@ const Admin = () => {
                   </div>
                   <Button
                     variant={showProjectsInNavbar ? "default" : "outline"}
-                    onClick={() => updateNavbarSetting(!showProjectsInNavbar)}
-                  >
-                    {showProjectsInNavbar ? 'Enabled' : 'Disabled'}
+                    onClick={() => updateNavbarSetting(!showProjectsInNavbar)}>
+                    {showProjectsInNavbar ? "Enabled" : "Disabled"}
                   </Button>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="space-y-1">
-                    <h3 className="font-medium">Show Executive Team in Members</h3>
+                    <h3 className="font-medium">
+                      Show Executive Team in Members
+                    </h3>
                     <p className="text-sm text-muted-foreground">
                       Display the Executive Team section on the Members page
                     </p>
                   </div>
                   <Button
                     variant={showExecutiveTeam ? "default" : "outline"}
-                    onClick={() => updateExecutiveTeamSetting(!showExecutiveTeam)}
-                  >
-                    {showExecutiveTeam ? 'Enabled' : 'Disabled'}
+                    onClick={() =>
+                      updateExecutiveTeamSetting(!showExecutiveTeam)
+                    }>
+                    {showExecutiveTeam ? "Enabled" : "Disabled"}
                   </Button>
                 </div>
               </CardContent>
@@ -1800,25 +2442,25 @@ const Admin = () => {
 };
 
 // SelectWithOther component for dropdowns with custom "other" option
-function SelectWithOther({ 
-  label, 
-  id, 
-  value, 
-  options, 
-  onChange 
-}: { 
-  label: string; 
-  id: string; 
-  value: string; 
-  options: { value: string; label: string }[]; 
-  onChange: (value: string) => void; 
+function SelectWithOther({
+  label,
+  id,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  id: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
 }) {
   const [showOtherInput, setShowOtherInput] = useState(false);
   const [otherValue, setOtherValue] = useState("");
 
   // Check if current value is not in predefined options
   useEffect(() => {
-    const isPredefined = options.some(opt => opt.value === value);
+    const isPredefined = options.some((opt) => opt.value === value);
     if (!isPredefined && value) {
       setShowOtherInput(true);
       setOtherValue(value);
@@ -1844,15 +2486,14 @@ function SelectWithOther({
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
-      <Select 
-        value={showOtherInput ? "other" : value} 
-        onValueChange={handleSelectChange}
-      >
+      <Select
+        value={showOtherInput ? "other" : value}
+        onValueChange={handleSelectChange}>
         <SelectTrigger>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          {options.map(option => (
+          {options.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
@@ -1886,7 +2527,7 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
     rich_description: "",
     poster_url: "",
     attachments: [] as { name: string; url: string; type: string }[],
-    external_link: ""
+    external_link: "",
   });
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [timeInput, setTimeInput] = useState("");
@@ -1896,15 +2537,23 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
     if (open) {
       const now = new Date();
       setSelectedDate(now);
-      
-      const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }); // 12-hour format
-      
+
+      const dateStr = now.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+      const timeStr = now.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }); // 12-hour format
+
       setTimeInput(timeStr);
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         date: dateStr,
-        time: timeStr
+        time: timeStr,
       }));
     }
   }, [open]);
@@ -1912,7 +2561,11 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (date) {
-      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const dateStr = date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
       setFormData({ ...formData, date: dateStr });
     }
   };
@@ -1930,24 +2583,29 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
       // Auto-populate basic description from rich_description if empty
       const submitData = {
         ...formData,
-        description: formData.description || formData.rich_description?.replace(/<[^>]*>/g, '').substring(0, 200) || 'No description'
+        description:
+          formData.description ||
+          formData.rich_description
+            ?.replace(/<[^>]*>/g, "")
+            .substring(0, 200) ||
+          "No description",
       };
-      
-      const { error } = await supabase.from('notices').insert([submitData]);
+
+      const { error } = await supabase.from("notices").insert([submitData]);
       if (error) throw error;
-      toast.success('Notice added successfully');
+      toast.success("Notice added successfully");
       setOpen(false);
-      setFormData({ 
-        title: "", 
-        date: "", 
-        time: "", 
-        type: "EVENT", 
-        status: "UPCOMING", 
+      setFormData({
+        title: "",
+        date: "",
+        time: "",
+        type: "EVENT",
+        status: "UPCOMING",
         description: "",
         rich_description: "",
         poster_url: "",
         attachments: [],
-        external_link: ""
+        external_link: "",
       });
       setSelectedDate(undefined);
       setTimeInput("");
@@ -1960,116 +2618,147 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Notice</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Notice
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add New Notice</DialogTitle>
-          <DialogDescription>Create a new notice for the notice board</DialogDescription>
+          <DialogDescription>
+            Create a new notice for the notice board
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={handleDateSelect}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div>
-              <Label htmlFor="time">Time</Label>
-              <Input 
-                id="time" 
-                type="text"
-                value={timeInput} 
-                onChange={(e) => handleTimeChange(e.target.value)} 
-                placeholder="11:30 PM"
-                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
-                title="Enter time in 12-hour format (e.g., 11:30 PM)"
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 required
               />
-              <p className="text-xs text-muted-foreground mt-1">Format: 11:30 PM</p>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <SelectWithOther
-              label="Type"
-              id="type"
-              value={formData.type}
-              options={[
-                { value: "EVENT", label: "EVENT" },
-                { value: "ANNOUNCEMENT", label: "ANNOUNCEMENT" },
-                { value: "WORKSHOP", label: "WORKSHOP" }
-              ]}
-              onChange={(value) => setFormData({ ...formData, type: value })}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedDate ? (
+                        format(selectedDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto p-0"
+                    align="start"
+                    side="bottom"
+                    sideOffset={8}>
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleDateSelect}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label htmlFor="time">Time</Label>
+                <Input
+                  id="time"
+                  type="text"
+                  value={timeInput}
+                  onChange={(e) => handleTimeChange(e.target.value)}
+                  placeholder="11:30 PM"
+                  pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
+                  title="Enter time in 12-hour format (e.g., 11:30 PM)"
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Format: 11:30 PM
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <SelectWithOther
+                label="Type"
+                id="type"
+                value={formData.type}
+                options={[
+                  { value: "EVENT", label: "EVENT" },
+                  { value: "ANNOUNCEMENT", label: "ANNOUNCEMENT" },
+                  { value: "WORKSHOP", label: "WORKSHOP" },
+                ]}
+                onChange={(value) => setFormData({ ...formData, type: value })}
+              />
+              <SelectWithOther
+                label="Status"
+                id="status"
+                value={formData.status}
+                options={[
+                  { value: "UPCOMING", label: "UPCOMING" },
+                  { value: "REGISTRATION", label: "REGISTRATION" },
+                  { value: "SCHEDULED", label: "SCHEDULED" },
+                ]}
+                onChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="rich-description">
+                Description (with formatting)
+              </Label>
+              <RichTextEditor
+                value={formData.rich_description || ""}
+                onChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    rich_description: value,
+                    description:
+                      value.replace(/<[^>]*>/g, "").substring(0, 200) ||
+                      "No description",
+                  })
+                }
+                placeholder="Add your notice content with bold, links, and lists..."
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Use bold text, add links, and create lists. This will show in
+                cards and full notice page.
+              </p>
+            </div>
+            <FileUploadField
+              label="Event Poster / Banner"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              value={formData.poster_url}
+              onChange={(url) => setFormData({ ...formData, poster_url: url })}
+              onClear={() => setFormData({ ...formData, poster_url: "" })}
+              description="Upload event poster (JPG/PNG/WEBP, max 5MB)"
+              preview={true}
             />
-            <SelectWithOther
-              label="Status"
-              id="status"
-              value={formData.status}
-              options={[
-                { value: "UPCOMING", label: "UPCOMING" },
-                { value: "REGISTRATION", label: "REGISTRATION" },
-                { value: "SCHEDULED", label: "SCHEDULED" }
-              ]}
-              onChange={(value) => setFormData({ ...formData, status: value })}
+            <MultipleFileUpload
+              label="Attachments"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+              value={formData.attachments}
+              onChange={(attachments) =>
+                setFormData({ ...formData, attachments })
+              }
+              description="Upload PDFs, registration forms, Excel sheets, etc. (max 5 files)"
+              maxFiles={5}
             />
-          </div>
-          <div>
-            <Label htmlFor="rich-description">Description (with formatting)</Label>
-            <RichTextEditor
-              value={formData.rich_description || ''}
-              onChange={(value) => setFormData({ 
-                ...formData, 
-                rich_description: value,
-                description: value.replace(/<[^>]*>/g, '').substring(0, 200) || 'No description'
-              })}
-              placeholder="Add your notice content with bold, links, and lists..."
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Use bold text, add links, and create lists. This will show in cards and full notice page.
-            </p>
-          </div>
-          <FileUploadField
-            label="Event Poster / Banner"
-            accept="image/jpeg,image/jpg,image/png,image/webp"
-            value={formData.poster_url}
-            onChange={(url) => setFormData({ ...formData, poster_url: url })}
-            onClear={() => setFormData({ ...formData, poster_url: "" })}
-            description="Upload event poster (JPG/PNG/WEBP, max 5MB)"
-            preview={true}
-          />
-          <MultipleFileUpload
-            label="Attachments"
-            accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
-            value={formData.attachments}
-            onChange={(attachments) => setFormData({ ...formData, attachments })}
-            description="Upload PDFs, registration forms, Excel sheets, etc. (max 5 files)"
-            maxFiles={5}
-          />
-          <DialogFooter>
-            <Button type="submit">Add Notice</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button type="submit">Add Notice</Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -2077,12 +2766,20 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: () => void }) {
+function EditNoticeDialog({
+  notice,
+  onSuccess,
+}: {
+  notice: Notice;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(notice);
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [timeInput, setTimeInput] = useState(convertTo12Hour(notice.time || ""));
-  
+  const [timeInput, setTimeInput] = useState(
+    convertTo12Hour(notice.time || "")
+  );
+
   // Initialize time input when dialog opens
   useEffect(() => {
     if (open) {
@@ -2093,7 +2790,11 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (date) {
-      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const dateStr = date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
       setFormData({ ...formData, date: dateStr });
     }
   };
@@ -2111,12 +2812,20 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
       // Auto-populate basic description from rich_description if empty
       const submitData = {
         ...formData,
-        description: formData.description || formData.rich_description?.replace(/<[^>]*>/g, '').substring(0, 200) || 'No description'
+        description:
+          formData.description ||
+          formData.rich_description
+            ?.replace(/<[^>]*>/g, "")
+            .substring(0, 200) ||
+          "No description",
       };
-      
-      const { error } = await supabase.from('notices').update(submitData).eq('id', notice.id);
+
+      const { error } = await supabase
+        .from("notices")
+        .update(submitData)
+        .eq("id", notice.id);
       if (error) throw error;
-      toast.success('Notice updated successfully');
+      toast.success("Notice updated successfully");
       setOpen(false);
       onSuccess();
     } catch (error: any) {
@@ -2127,7 +2836,9 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -2136,111 +2847,136 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="edit-title">Title</Label>
-            <Input id="edit-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Date (optional - leave blank to keep current)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={handleDateSelect}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <p className="text-sm text-muted-foreground mt-1">
-                Current: {formData.date}
-              </p>
-            </div>
-            <div>
-              <Label htmlFor="edit-time">Time (optional)</Label>
-              <Input 
-                id="edit-time" 
-                type="text"
-                value={timeInput} 
-                onChange={(e) => handleTimeChange(e.target.value)} 
-                placeholder="11:30 PM"
-                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
-                title="Enter time in 12-hour format (e.g., 11:30 PM)"
+              <Label htmlFor="edit-title">Title</Label>
+              <Input
+                id="edit-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                Format: 11:30 PM | Current: {formData.time}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Date (optional - leave blank to keep current)</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedDate ? (
+                        format(selectedDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto p-0"
+                    align="start"
+                    side="bottom"
+                    sideOffset={8}>
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleDateSelect}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Current: {formData.date}
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="edit-time">Time (optional)</Label>
+                <Input
+                  id="edit-time"
+                  type="text"
+                  value={timeInput}
+                  onChange={(e) => handleTimeChange(e.target.value)}
+                  placeholder="11:30 PM"
+                  pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
+                  title="Enter time in 12-hour format (e.g., 11:30 PM)"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Format: 11:30 PM | Current: {formData.time}
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <SelectWithOther
+                label="Type"
+                id="edit-type"
+                value={formData.type}
+                options={[
+                  { value: "EVENT", label: "EVENT" },
+                  { value: "ANNOUNCEMENT", label: "ANNOUNCEMENT" },
+                  { value: "WORKSHOP", label: "WORKSHOP" },
+                ]}
+                onChange={(value) => setFormData({ ...formData, type: value })}
+              />
+              <SelectWithOther
+                label="Status"
+                id="edit-status"
+                value={formData.status}
+                options={[
+                  { value: "UPCOMING", label: "UPCOMING" },
+                  { value: "REGISTRATION", label: "REGISTRATION" },
+                  { value: "SCHEDULED", label: "SCHEDULED" },
+                ]}
+                onChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-rich-description">
+                Description (with formatting)
+              </Label>
+              <RichTextEditor
+                value={formData.rich_description || ""}
+                onChange={(value) =>
+                  setFormData({
+                    ...formData,
+                    rich_description: value,
+                    description:
+                      value.replace(/<[^>]*>/g, "").substring(0, 200) ||
+                      "No description",
+                  })
+                }
+                placeholder="Add your notice content with bold, links, and lists..."
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Use bold text, add links, and create lists. This will show in
+                cards and full notice page.
               </p>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <SelectWithOther
-              label="Type"
-              id="edit-type"
-              value={formData.type}
-              options={[
-                { value: "EVENT", label: "EVENT" },
-                { value: "ANNOUNCEMENT", label: "ANNOUNCEMENT" },
-                { value: "WORKSHOP", label: "WORKSHOP" }
-              ]}
-              onChange={(value) => setFormData({ ...formData, type: value })}
+            <FileUploadField
+              label="Event Poster / Banner"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              value={formData.poster_url || ""}
+              onChange={(url) => setFormData({ ...formData, poster_url: url })}
+              onClear={() => setFormData({ ...formData, poster_url: "" })}
+              description="Upload event poster (JPG/PNG/WEBP, max 5MB)"
+              preview={true}
             />
-            <SelectWithOther
-              label="Status"
-              id="edit-status"
-              value={formData.status}
-              options={[
-                { value: "UPCOMING", label: "UPCOMING" },
-                { value: "REGISTRATION", label: "REGISTRATION" },
-                { value: "SCHEDULED", label: "SCHEDULED" }
-              ]}
-              onChange={(value) => setFormData({ ...formData, status: value })}
+            <MultipleFileUpload
+              label="Attachments"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+              value={formData.attachments || []}
+              onChange={(attachments) =>
+                setFormData({ ...formData, attachments })
+              }
+              description="Upload PDFs, registration forms, Excel sheets, etc. (max 5 files)"
+              maxFiles={5}
             />
-          </div>
-          <div>
-            <Label htmlFor="edit-rich-description">Description (with formatting)</Label>
-            <RichTextEditor
-              value={formData.rich_description || ''}
-              onChange={(value) => setFormData({ 
-                ...formData, 
-                rich_description: value,
-                description: value.replace(/<[^>]*>/g, '').substring(0, 200) || 'No description'
-              })}
-              placeholder="Add your notice content with bold, links, and lists..."
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Use bold text, add links, and create lists. This will show in cards and full notice page.
-            </p>
-          </div>
-          <FileUploadField
-            label="Event Poster / Banner"
-            accept="image/jpeg,image/jpg,image/png,image/webp"
-            value={formData.poster_url || ''}
-            onChange={(url) => setFormData({ ...formData, poster_url: url })}
-            onClear={() => setFormData({ ...formData, poster_url: "" })}
-            description="Upload event poster (JPG/PNG/WEBP, max 5MB)"
-            preview={true}
-          />
-          <MultipleFileUpload
-            label="Attachments"
-            accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
-            value={formData.attachments || []}
-            onChange={(attachments) => setFormData({ ...formData, attachments })}
-            description="Upload PDFs, registration forms, Excel sheets, etc. (max 5 files)"
-            maxFiles={5}
-          />
-          <DialogFooter>
-            <Button type="submit">Update Notice</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <Button type="submit">Update Notice</Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -2260,14 +2996,18 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
     capacity: "100",
     organizer: "ISTE GNDEC",
     details: "",
-    agenda: []
+    agenda: [],
   });
   const [selectedDate, setSelectedDate] = useState<Date>();
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (date) {
-      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const dateStr = date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
       setFormData({ ...formData, date: dateStr });
     }
   };
@@ -2278,19 +3018,32 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
 
     try {
       const { data: maxOrderData } = await supabase
-        .from('events')
-        .select('display_order')
-        .order('display_order', { ascending: false, nullsFirst: false })
+        .from("events")
+        .select("display_order")
+        .order("display_order", { ascending: false, nullsFirst: false })
         .limit(1)
         .single();
-      
+
       const newDisplayOrder = (maxOrderData?.display_order ?? 0) + 1;
-      
-      const { error } = await supabase.from('events').insert([{ ...formData, display_order: newDisplayOrder }]);
+
+      const { error } = await supabase
+        .from("events")
+        .insert([{ ...formData, display_order: newDisplayOrder }]);
       if (error) throw error;
-      toast.success('Event added successfully');
+      toast.success("Event added successfully");
       setOpen(false);
-      setFormData({ title: "", date: "", time: "", location: "", description: "", status: "UPCOMING", capacity: "100", organizer: "ISTE GNDEC", details: "", agenda: [] });
+      setFormData({
+        title: "",
+        date: "",
+        time: "",
+        location: "",
+        description: "",
+        status: "UPCOMING",
+        capacity: "100",
+        organizer: "ISTE GNDEC",
+        details: "",
+        agenda: [],
+      });
       setSelectedDate(undefined);
       onSuccess();
     } catch (error: any) {
@@ -2301,7 +3054,9 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Event</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Event
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -2310,114 +3065,161 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="event-title">Title</Label>
-            <Input id="event-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={handleDateSelect}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div>
-              <Label htmlFor="event-time">Time</Label>
-              <Input 
-                id="event-time" 
-                type="text"
-                value={formData.time} 
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })} 
-                placeholder="11:30 PM" 
-                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
-                title="Enter time in 12-hour format (e.g., 11:30 PM)"
-                required 
-              />
-              <p className="text-xs text-muted-foreground mt-1">Format: 11:30 PM</p>
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="event-location">Location</Label>
-            <Input id="event-location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="event-description">Description</Label>
-            <Textarea id="event-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <SelectWithOther
-              label="Status"
-              id="event-status"
-              value={formData.status}
-              options={[
-                { value: "UPCOMING", label: "UPCOMING" },
-                { value: "ONGOING", label: "ONGOING" },
-                { value: "COMPLETED", label: "COMPLETED" }
-              ]}
-              onChange={(value) => setFormData({ ...formData, status: value })}
-            />
-            <div>
-              <Label htmlFor="event-capacity">Capacity</Label>
-              <Input 
-                id="event-capacity" 
-                type="number"
-                value={formData.capacity} 
-                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} 
-                placeholder="100"
+              <Label htmlFor="event-title">Title</Label>
+              <Input
+                id="event-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
               />
             </div>
-          </div>
-          <div>
-            <Label htmlFor="event-organizer">Organizer</Label>
-            <Input 
-              id="event-organizer" 
-              value={formData.organizer} 
-              onChange={(e) => setFormData({ ...formData, organizer: e.target.value })} 
-              placeholder="ISTE GNDEC"
-            />
-          </div>
-          <div>
-            <Label htmlFor="event-details">Details</Label>
-            <Textarea 
-              id="event-details" 
-              value={formData.details} 
-              onChange={(e) => setFormData({ ...formData, details: e.target.value })} 
-              placeholder="Additional event details"
-              rows={3}
-            />
-          </div>
-          <div>
-            <Label htmlFor="event-agenda">Agenda (one item per line)</Label>
-            <Textarea 
-              id="event-agenda" 
-              value={formData.agenda.join('\n')} 
-              onChange={(e) => setFormData({ ...formData, agenda: e.target.value.split('\n').filter(line => line.trim()) })} 
-              placeholder="Registration&#10;Opening Ceremony&#10;Technical Talks"
-              rows={5}
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Enter each agenda item on a new line
-            </p>
-          </div>
-          <DialogFooter>
-            <Button type="submit">Add Event</Button>
-          </DialogFooter>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedDate ? (
+                        format(selectedDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto p-0"
+                    align="start"
+                    side="bottom"
+                    sideOffset={8}>
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleDateSelect}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label htmlFor="event-time">Time</Label>
+                <Input
+                  id="event-time"
+                  type="text"
+                  value={formData.time}
+                  onChange={(e) =>
+                    setFormData({ ...formData, time: e.target.value })
+                  }
+                  placeholder="11:30 PM"
+                  pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
+                  title="Enter time in 12-hour format (e.g., 11:30 PM)"
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Format: 11:30 PM
+                </p>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="event-location">Location</Label>
+              <Input
+                id="event-location"
+                value={formData.location}
+                onChange={(e) =>
+                  setFormData({ ...formData, location: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="event-description">Description</Label>
+              <Textarea
+                id="event-description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <SelectWithOther
+                label="Status"
+                id="event-status"
+                value={formData.status}
+                options={[
+                  { value: "UPCOMING", label: "UPCOMING" },
+                  { value: "ONGOING", label: "ONGOING" },
+                  { value: "COMPLETED", label: "COMPLETED" },
+                ]}
+                onChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+              />
+              <div>
+                <Label htmlFor="event-capacity">Capacity</Label>
+                <Input
+                  id="event-capacity"
+                  type="number"
+                  value={formData.capacity}
+                  onChange={(e) =>
+                    setFormData({ ...formData, capacity: e.target.value })
+                  }
+                  placeholder="100"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="event-organizer">Organizer</Label>
+              <Input
+                id="event-organizer"
+                value={formData.organizer}
+                onChange={(e) =>
+                  setFormData({ ...formData, organizer: e.target.value })
+                }
+                placeholder="ISTE GNDEC"
+              />
+            </div>
+            <div>
+              <Label htmlFor="event-details">Details</Label>
+              <Textarea
+                id="event-details"
+                value={formData.details}
+                onChange={(e) =>
+                  setFormData({ ...formData, details: e.target.value })
+                }
+                placeholder="Additional event details"
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label htmlFor="event-agenda">Agenda (one item per line)</Label>
+              <Textarea
+                id="event-agenda"
+                value={formData.agenda.join("\n")}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    agenda: e.target.value
+                      .split("\n")
+                      .filter((line) => line.trim()),
+                  })
+                }
+                placeholder="Registration&#10;Opening Ceremony&#10;Technical Talks"
+                rows={5}
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Enter each agenda item on a new line
+              </p>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Add Event</Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -2425,7 +3227,13 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => void }) {
+function EditEventDialog({
+  event,
+  onSuccess,
+}: {
+  event: Event;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(event);
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -2433,7 +3241,11 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (date) {
-      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const dateStr = date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
       setFormData({ ...formData, date: dateStr });
     }
   };
@@ -2451,9 +3263,12 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('events').update(formData).eq('id', event.id);
+      const { error } = await supabase
+        .from("events")
+        .update(formData)
+        .eq("id", event.id);
       if (error) throw error;
-      toast.success('Event updated successfully');
+      toast.success("Event updated successfully");
       setOpen(false);
       onSuccess();
     } catch (error: any) {
@@ -2464,7 +3279,9 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -2472,123 +3289,181 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
           <DialogDescription>Update event information</DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4">
-          <form id="edit-event-form" onSubmit={handleSubmit} className="space-y-4 pb-2">
-          <div>
-            <Label htmlFor="edit-event-title">Title</Label>
-            <Input id="edit-event-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+          <form
+            id="edit-event-form"
+            onSubmit={handleSubmit}
+            className="space-y-4 pb-2">
             <div>
-              <Label>Date (optional - leave blank to keep current)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left font-normal"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={handleDateSelect}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label htmlFor="edit-event-title">Title</Label>
+              <Input
+                id="edit-event-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Date (optional - leave blank to keep current)</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedDate ? (
+                        format(selectedDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto p-0"
+                    align="start"
+                    side="bottom"
+                    sideOffset={8}>
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleDateSelect}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Current: {formData.date}
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="edit-event-time">Time</Label>
+                <Input
+                  id="edit-event-time"
+                  type="text"
+                  value={formData.time}
+                  onChange={(e) =>
+                    setFormData({ ...formData, time: e.target.value })
+                  }
+                  placeholder="11:30 PM"
+                  pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
+                  title="Enter time in 12-hour format (e.g., 11:30 PM)"
+                  required
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Format: 11:30 PM
+                </p>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-event-location">Location</Label>
+              <Input
+                id="edit-event-location"
+                value={formData.location}
+                onChange={(e) =>
+                  setFormData({ ...formData, location: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-event-description">Description</Label>
+              <Textarea
+                id="edit-event-description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <SelectWithOther
+                label="Status"
+                id="edit-event-status"
+                value={formData.status}
+                options={[
+                  { value: "UPCOMING", label: "UPCOMING" },
+                  { value: "ONGOING", label: "ONGOING" },
+                  { value: "COMPLETED", label: "COMPLETED" },
+                ]}
+                onChange={(value) =>
+                  setFormData({ ...formData, status: value })
+                }
+              />
+              <div>
+                <Label htmlFor="edit-event-capacity">Capacity</Label>
+                <Input
+                  id="edit-event-capacity"
+                  type="number"
+                  value={formData.capacity || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, capacity: e.target.value })
+                  }
+                  placeholder="100"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-event-organizer">Organizer</Label>
+              <Input
+                id="edit-event-organizer"
+                value={formData.organizer || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, organizer: e.target.value })
+                }
+                placeholder="ISTE GNDEC"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-event-details">Details</Label>
+              <Textarea
+                id="edit-event-details"
+                value={formData.details || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, details: e.target.value })
+                }
+                placeholder="Additional event details"
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-event-agenda">
+                Agenda (one item per line)
+              </Label>
+              <Textarea
+                id="edit-event-agenda"
+                value={formData.agenda?.join("\n") || ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    agenda: e.target.value
+                      .split("\n")
+                      .filter((line) => line.trim()),
+                  })
+                }
+                placeholder="Registration&#10;Opening Ceremony&#10;Technical Talks"
+                rows={5}
+              />
               <p className="text-sm text-muted-foreground mt-1">
-                Current: {formData.date}
+                Enter each agenda item on a new line
               </p>
             </div>
-            <div>
-              <Label htmlFor="edit-event-time">Time</Label>
-              <Input 
-                id="edit-event-time" 
-                type="text"
-                value={formData.time} 
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })} 
-                placeholder="11:30 PM"
-                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
-                title="Enter time in 12-hour format (e.g., 11:30 PM)"
-                required 
-              />
-              <p className="text-xs text-muted-foreground mt-1">Format: 11:30 PM</p>
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="edit-event-location">Location</Label>
-            <Input id="edit-event-location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-event-description">Description</Label>
-            <Textarea id="edit-event-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <SelectWithOther
-              label="Status"
-              id="edit-event-status"
-              value={formData.status}
-              options={[
-                { value: "UPCOMING", label: "UPCOMING" },
-                { value: "ONGOING", label: "ONGOING" },
-                { value: "COMPLETED", label: "COMPLETED" }
-              ]}
-              onChange={(value) => setFormData({ ...formData, status: value })}
-            />
-            <div>
-              <Label htmlFor="edit-event-capacity">Capacity</Label>
-              <Input 
-                id="edit-event-capacity" 
-                type="number"
-                value={formData.capacity || ""} 
-                onChange={(e) => setFormData({ ...formData, capacity: e.target.value })} 
-                placeholder="100"
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="edit-event-organizer">Organizer</Label>
-            <Input 
-              id="edit-event-organizer" 
-              value={formData.organizer || ""} 
-              onChange={(e) => setFormData({ ...formData, organizer: e.target.value })} 
-              placeholder="ISTE GNDEC"
-            />
-          </div>
-          <div>
-            <Label htmlFor="edit-event-details">Details</Label>
-            <Textarea 
-              id="edit-event-details" 
-              value={formData.details || ""} 
-              onChange={(e) => setFormData({ ...formData, details: e.target.value })} 
-              placeholder="Additional event details"
-              rows={3}
-            />
-          </div>
-          <div>
-            <Label htmlFor="edit-event-agenda">Agenda (one item per line)</Label>
-            <Textarea 
-              id="edit-event-agenda" 
-              value={formData.agenda?.join('\n') || ""} 
-              onChange={(e) => setFormData({ ...formData, agenda: e.target.value.split('\n').filter(line => line.trim()) })} 
-              placeholder="Registration&#10;Opening Ceremony&#10;Technical Talks"
-              rows={5}
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Enter each agenda item on a new line
-            </p>
-          </div>
-        </form>
+          </form>
         </ScrollArea>
         <DialogFooter className="mt-4">
-          <Button type="submit" onClick={(e) => {
-            e.preventDefault();
-            const form = document.getElementById('edit-event-form') as HTMLFormElement;
-            if (form) form.requestSubmit();
-          }}>Update Event</Button>
+          <Button
+            type="submit"
+            onClick={(e) => {
+              e.preventDefault();
+              const form = document.getElementById(
+                "edit-event-form"
+              ) as HTMLFormElement;
+              if (form) form.requestSubmit();
+            }}>
+            Update Event
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -2602,7 +3477,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   const [formData, setFormData] = useState({
     title: "",
     category: "event",
-    description: ""
+    description: "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2610,24 +3485,27 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!files || files.length === 0) return;
 
     console.log(`Selected ${files.length} file(s)`);
-    
+
     setUploading(true);
     const fileArray = Array.from(files);
-    console.log('Files to upload:', fileArray.map(f => f.name));
-    
-    const { urls, errors } = await uploadMultipleImages(fileArray, 'gallery');
+    console.log(
+      "Files to upload:",
+      fileArray.map((f) => f.name)
+    );
+
+    const { urls, errors } = await uploadMultipleImages(fileArray, "gallery");
     setUploading(false);
 
     if (errors.length > 0) {
-      errors.forEach(error => toast.error(error));
+      errors.forEach((error) => toast.error(error));
     }
-    
+
     if (urls.length > 0) {
       setUploadedImages([...uploadedImages, ...urls]);
       toast.success(`${urls.length} image(s) uploaded successfully`);
     }
-    
-    e.target.value = '';
+
+    e.target.value = "";
   };
 
   const removeImage = (index: number) => {
@@ -2637,14 +3515,20 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   const moveImageUp = (index: number) => {
     if (index === 0) return;
     const newImages = [...uploadedImages];
-    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    [newImages[index - 1], newImages[index]] = [
+      newImages[index],
+      newImages[index - 1],
+    ];
     setUploadedImages(newImages);
   };
 
   const moveImageDown = (index: number) => {
     if (index === uploadedImages.length - 1) return;
     const newImages = [...uploadedImages];
-    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    [newImages[index], newImages[index + 1]] = [
+      newImages[index + 1],
+      newImages[index],
+    ];
     setUploadedImages(newImages);
   };
 
@@ -2657,13 +3541,15 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
         title: formData.title,
         images: uploadedImages,
         category: formData.category,
-        description: formData.description
+        description: formData.description,
       };
 
-      const { error } = await supabase.from('gallery').insert([galleryItem]);
+      const { error } = await supabase.from("gallery").insert([galleryItem]);
       if (error) throw error;
-      
-      toast.success(`Gallery item added with ${uploadedImages.length} image(s)`);
+
+      toast.success(
+        `Gallery item added with ${uploadedImages.length} image(s)`
+      );
       setOpen(false);
       setFormData({ title: "", category: "event", description: "" });
       setUploadedImages([]);
@@ -2676,46 +3562,65 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Gallery Item</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Gallery Item
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add Gallery Items</DialogTitle>
-          <DialogDescription>Add one or more images to the gallery</DialogDescription>
+          <DialogDescription>
+            Add one or more images to the gallery
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[50vh] sm:max-h-[60vh] pr-2 sm:pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="gallery-title">Title</Label>
-              <Input id="gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+              <Input
+                id="gallery-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
             </div>
             <div>
               <Label htmlFor="gallery-image">Upload Images (Multiple)</Label>
               <p className="text-xs text-muted-foreground mb-2">
-                💡 Tip: Hold Ctrl (Windows) or Cmd (Mac) to select multiple images at once
+                💡 Tip: Hold Ctrl (Windows) or Cmd (Mac) to select multiple
+                images at once
               </p>
-              <Input 
-                id="gallery-image" 
-                type="file" 
-                accept="image/*" 
-                multiple 
-                onChange={handleImageUpload} 
-                disabled={uploading} 
+              <Input
+                id="gallery-image"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageUpload}
+                disabled={uploading}
               />
-              {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
               {uploadedImages.length > 0 && (
                 <div className="mt-3 grid grid-cols-3 gap-2">
                   {uploadedImages.map((url, index) => (
                     <div key={index} className="relative group">
-                      <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                      <img
+                        src={url}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-24 object-cover rounded"
+                      />
                       <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         {index > 0 && (
                           <button
                             type="button"
                             onClick={() => moveImageUp(index)}
                             className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
-                            title="Move left"
-                          >
+                            title="Move left">
                             <ChevronUp className="h-3 w-3" />
                           </button>
                         )}
@@ -2724,8 +3629,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
                             type="button"
                             onClick={() => moveImageDown(index)}
                             className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
-                            title="Move right"
-                          >
+                            title="Move right">
                             <ChevronDown className="h-3 w-3" />
                           </button>
                         )}
@@ -2733,8 +3637,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
                           type="button"
                           onClick={() => removeImage(index)}
                           className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
-                          title="Remove"
-                        >
+                          title="Remove">
                           <X className="h-3 w-3" />
                         </button>
                       </div>
@@ -2755,19 +3658,31 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
               value={formData.category}
               options={[
                 { value: "event", label: "Event" },
-                { value: "workshop", label: "Workshop" }
+                { value: "workshop", label: "Workshop" },
               ]}
-              onChange={(value) => setFormData({ ...formData, category: value })}
+              onChange={(value) =>
+                setFormData({ ...formData, category: value })
+              }
             />
             <div>
               <Label htmlFor="gallery-description">Description</Label>
-              <Textarea id="gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+              <Textarea
+                id="gallery-description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+              />
             </div>
           </form>
         </ScrollArea>
         <DialogFooter>
-          <Button onClick={handleSubmit} disabled={uploading || uploadedImages.length === 0}>
-            Add {uploadedImages.length > 0 ? `${uploadedImages.length} ` : ''}Gallery Item{uploadedImages.length !== 1 ? 's' : ''}
+          <Button
+            onClick={handleSubmit}
+            disabled={uploading || uploadedImages.length === 0}>
+            Add {uploadedImages.length > 0 ? `${uploadedImages.length} ` : ""}
+            Gallery Item{uploadedImages.length !== 1 ? "s" : ""}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -2775,7 +3690,13 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: () => void }) {
+function EditGalleryDialog({
+  item,
+  onSuccess,
+}: {
+  item: GalleryItem;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState(item);
@@ -2793,24 +3714,27 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
     if (!files || files.length === 0) return;
 
     console.log(`Selected ${files.length} file(s) for edit`);
-    
+
     setUploading(true);
     const fileArray = Array.from(files);
-    console.log('Files to upload:', fileArray.map(f => f.name));
-    
-    const { urls, errors } = await uploadMultipleImages(fileArray, 'gallery');
+    console.log(
+      "Files to upload:",
+      fileArray.map((f) => f.name)
+    );
+
+    const { urls, errors } = await uploadMultipleImages(fileArray, "gallery");
     setUploading(false);
 
     if (errors.length > 0) {
-      errors.forEach(error => toast.error(error));
+      errors.forEach((error) => toast.error(error));
     }
-    
+
     if (urls.length > 0) {
       setUploadedImages([...uploadedImages, ...urls]);
       toast.success(`${urls.length} image(s) uploaded successfully`);
     }
-    
-    e.target.value = '';
+
+    e.target.value = "";
   };
 
   const removeImage = (index: number) => {
@@ -2820,14 +3744,20 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
   const moveImageUp = (index: number) => {
     if (index === 0) return;
     const newImages = [...uploadedImages];
-    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    [newImages[index - 1], newImages[index]] = [
+      newImages[index],
+      newImages[index - 1],
+    ];
     setUploadedImages(newImages);
   };
 
   const moveImageDown = (index: number) => {
     if (index === uploadedImages.length - 1) return;
     const newImages = [...uploadedImages];
-    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    [newImages[index], newImages[index + 1]] = [
+      newImages[index + 1],
+      newImages[index],
+    ];
     setUploadedImages(newImages);
   };
 
@@ -2839,13 +3769,18 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
       // Update the gallery item with all images
       const updatedData = {
         ...formData,
-        images: uploadedImages
+        images: uploadedImages,
       };
-      
-      const { error } = await supabase.from('gallery').update(updatedData).eq('id', item.id);
+
+      const { error } = await supabase
+        .from("gallery")
+        .update(updatedData)
+        .eq("id", item.id);
       if (error) throw error;
-      
-      toast.success(`Gallery item updated with ${uploadedImages.length} image(s)`);
+
+      toast.success(
+        `Gallery item updated with ${uploadedImages.length} image(s)`
+      );
       setOpen(false);
       setUploadedImages([]);
       onSuccess();
@@ -2857,7 +3792,9 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh]">
         <DialogHeader>
@@ -2868,22 +3805,34 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="edit-gallery-title">Title</Label>
-              <Input id="edit-gallery-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+              <Input
+                id="edit-gallery-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
             </div>
             <div>
               <Label htmlFor="edit-gallery-image">Images</Label>
               <p className="text-xs text-muted-foreground mb-2">
-                Upload new images or manage existing ones. You can reorder images by using the up/down arrows.
+                Upload new images or manage existing ones. You can reorder
+                images by using the up/down arrows.
               </p>
-              <Input 
-                id="edit-gallery-image" 
-                type="file" 
-                accept="image/*" 
+              <Input
+                id="edit-gallery-image"
+                type="file"
+                accept="image/*"
                 multiple
-                onChange={handleImageUpload} 
-                disabled={uploading} 
+                onChange={handleImageUpload}
+                disabled={uploading}
               />
-              {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
               {uploadedImages.length > 0 && (
                 <div className="mt-3">
                   <p className="text-xs text-muted-foreground mb-2">
@@ -2892,15 +3841,18 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                   <div className="grid grid-cols-3 gap-2">
                     {uploadedImages.map((url, index) => (
                       <div key={index} className="relative group">
-                        <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                        <img
+                          src={url}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-24 object-cover rounded"
+                        />
                         <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           {index > 0 && (
                             <button
                               type="button"
                               onClick={() => moveImageUp(index)}
                               className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
-                              title="Move left"
-                            >
+                              title="Move left">
                               <ChevronUp className="h-3 w-3" />
                             </button>
                           )}
@@ -2909,8 +3861,7 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                               type="button"
                               onClick={() => moveImageDown(index)}
                               className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
-                              title="Move right"
-                            >
+                              title="Move right">
                               <ChevronDown className="h-3 w-3" />
                             </button>
                           )}
@@ -2918,8 +3869,7 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                             type="button"
                             onClick={() => removeImage(index)}
                             className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
-                            title="Remove"
-                          >
+                            title="Remove">
                             <X className="h-3 w-3" />
                           </button>
                         </div>
@@ -2938,18 +3888,29 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
               value={formData.category}
               options={[
                 { value: "event", label: "Event" },
-                { value: "workshop", label: "Workshop" }
+                { value: "workshop", label: "Workshop" },
               ]}
-              onChange={(value) => setFormData({ ...formData, category: value })}
+              onChange={(value) =>
+                setFormData({ ...formData, category: value })
+              }
             />
             <div>
               <Label htmlFor="edit-gallery-description">Description</Label>
-              <Textarea id="edit-gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
+              <Textarea
+                id="edit-gallery-description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+              />
             </div>
           </form>
         </ScrollArea>
         <DialogFooter>
-          <Button onClick={handleSubmit} disabled={uploading}>Update Gallery Item</Button>
+          <Button onClick={handleSubmit} disabled={uploading}>
+            Update Gallery Item
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -2966,7 +3927,7 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
     description: "",
     linkedin: "",
     github: "",
-    instagram: ""
+    instagram: "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2974,14 +3935,14 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!file) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'faculty');
+    const { url, error } = await uploadImageToSupabase(file, "faculty");
     setUploading(false);
 
     if (error) {
       toast.error(error);
     } else if (url) {
       setFormData({ ...formData, image: url });
-      toast.success('Image uploaded successfully');
+      toast.success("Image uploaded successfully");
     }
   };
 
@@ -2997,13 +3958,25 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
         description: formData.description,
         ...(formData.linkedin && { linkedin: normalizeUrl(formData.linkedin) }),
         ...(formData.github && { github: normalizeUrl(formData.github) }),
-        ...(formData.instagram && { instagram: normalizeUrl(formData.instagram) })
+        ...(formData.instagram && {
+          instagram: normalizeUrl(formData.instagram),
+        }),
       };
-      const { error } = await supabase.from('members_faculty').insert([dataToInsert]);
+      const { error } = await supabase
+        .from("members_faculty")
+        .insert([dataToInsert]);
       if (error) throw error;
-      toast.success('Faculty member added successfully');
+      toast.success("Faculty member added successfully");
       setOpen(false);
-      setFormData({ name: "", title: "", image: "", description: "", linkedin: "", github: "", instagram: "" });
+      setFormData({
+        name: "",
+        title: "",
+        image: "",
+        description: "",
+        linkedin: "",
+        github: "",
+        instagram: "",
+      });
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add faculty: ${error.message}`);
@@ -3013,7 +3986,9 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Faculty</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Faculty
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -3022,39 +3997,104 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="faculty-name">Name</Label>
-            <Input id="faculty-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="faculty-title">Title</Label>
-            <Input id="faculty-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="faculty-image">Profile Image</Label>
-            <Input id="faculty-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
-            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
-          </div>
-          <div>
-            <Label htmlFor="faculty-description">Description</Label>
-            <Textarea id="faculty-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="faculty-linkedin">LinkedIn URL (optional)</Label>
-            <Input id="faculty-linkedin" type="text" value={formData.linkedin} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="linkedin.com/in/username" />
-          </div>
-          <div>
-            <Label htmlFor="faculty-github">GitHub URL (optional)</Label>
-            <Input id="faculty-github" type="text" value={formData.github} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="github.com/username" />
-          </div>
-          <div>
-            <Label htmlFor="faculty-instagram">Instagram URL (optional)</Label>
-            <Input id="faculty-instagram" type="text" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="instagram.com/username" />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={uploading || !formData.image}>Add Faculty</Button>
-          </DialogFooter>
+            <div>
+              <Label htmlFor="faculty-name">Name</Label>
+              <Input
+                id="faculty-name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="faculty-title">Title</Label>
+              <Input
+                id="faculty-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="faculty-image">Profile Image</Label>
+              <Input
+                id="faculty-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
+              {formData.image && (
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="mt-2 w-20 h-20 rounded-full object-cover"
+                />
+              )}
+            </div>
+            <div>
+              <Label htmlFor="faculty-description">Description</Label>
+              <Textarea
+                id="faculty-description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="faculty-linkedin">LinkedIn URL (optional)</Label>
+              <Input
+                id="faculty-linkedin"
+                type="text"
+                value={formData.linkedin}
+                onChange={(e) =>
+                  setFormData({ ...formData, linkedin: e.target.value })
+                }
+                placeholder="linkedin.com/in/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="faculty-github">GitHub URL (optional)</Label>
+              <Input
+                id="faculty-github"
+                type="text"
+                value={formData.github}
+                onChange={(e) =>
+                  setFormData({ ...formData, github: e.target.value })
+                }
+                placeholder="github.com/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="faculty-instagram">
+                Instagram URL (optional)
+              </Label>
+              <Input
+                id="faculty-instagram"
+                type="text"
+                value={formData.instagram}
+                onChange={(e) =>
+                  setFormData({ ...formData, instagram: e.target.value })
+                }
+                placeholder="instagram.com/username"
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading || !formData.image}>
+                Add Faculty
+              </Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -3062,7 +4102,13 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: () => void }) {
+function EditFacultyDialog({
+  member,
+  onSuccess,
+}: {
+  member: Faculty;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState(member);
@@ -3072,14 +4118,14 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
     if (!file) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'faculty');
+    const { url, error } = await uploadImageToSupabase(file, "faculty");
     setUploading(false);
 
     if (error) {
       toast.error(error);
     } else if (url) {
       setFormData({ ...formData, image: url });
-      toast.success('Image uploaded successfully');
+      toast.success("Image uploaded successfully");
     }
   };
 
@@ -3090,13 +4136,22 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
     try {
       const dataToUpdate = {
         ...formData,
-        linkedin: formData.linkedin ? normalizeUrl(formData.linkedin) : formData.linkedin,
-        github: formData.github ? normalizeUrl(formData.github) : formData.github,
-        instagram: formData.instagram ? normalizeUrl(formData.instagram) : formData.instagram
+        linkedin: formData.linkedin
+          ? normalizeUrl(formData.linkedin)
+          : formData.linkedin,
+        github: formData.github
+          ? normalizeUrl(formData.github)
+          : formData.github,
+        instagram: formData.instagram
+          ? normalizeUrl(formData.instagram)
+          : formData.instagram,
       };
-      const { error } = await supabase.from('members_faculty').update(dataToUpdate).eq('id', member.id);
+      const { error } = await supabase
+        .from("members_faculty")
+        .update(dataToUpdate)
+        .eq("id", member.id);
       if (error) throw error;
-      toast.success('Faculty member updated successfully');
+      toast.success("Faculty member updated successfully");
       setOpen(false);
       onSuccess();
     } catch (error: any) {
@@ -3107,7 +4162,9 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -3116,39 +4173,106 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="edit-faculty-name">Name</Label>
-            <Input id="edit-faculty-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-faculty-title">Title</Label>
-            <Input id="edit-faculty-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-faculty-image">Profile Image</Label>
-            <Input id="edit-faculty-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
-            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
-          </div>
-          <div>
-            <Label htmlFor="edit-faculty-description">Description</Label>
-            <Textarea id="edit-faculty-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-faculty-linkedin">LinkedIn URL (optional)</Label>
-            <Input id="edit-faculty-linkedin" type="text" value={formData.linkedin || ""} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="linkedin.com/in/username" />
-          </div>
-          <div>
-            <Label htmlFor="edit-faculty-github">GitHub URL (optional)</Label>
-            <Input id="edit-faculty-github" type="text" value={formData.github || ""} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="github.com/username" />
-          </div>
-          <div>
-            <Label htmlFor="edit-faculty-instagram">Instagram URL (optional)</Label>
-            <Input id="edit-faculty-instagram" type="text" value={formData.instagram || ""} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="instagram.com/username" />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={uploading}>Update Faculty</Button>
-          </DialogFooter>
+            <div>
+              <Label htmlFor="edit-faculty-name">Name</Label>
+              <Input
+                id="edit-faculty-name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-faculty-title">Title</Label>
+              <Input
+                id="edit-faculty-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-faculty-image">Profile Image</Label>
+              <Input
+                id="edit-faculty-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
+              {formData.image && (
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="mt-2 w-20 h-20 rounded-full object-cover"
+                />
+              )}
+            </div>
+            <div>
+              <Label htmlFor="edit-faculty-description">Description</Label>
+              <Textarea
+                id="edit-faculty-description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-faculty-linkedin">
+                LinkedIn URL (optional)
+              </Label>
+              <Input
+                id="edit-faculty-linkedin"
+                type="text"
+                value={formData.linkedin || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, linkedin: e.target.value })
+                }
+                placeholder="linkedin.com/in/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-faculty-github">GitHub URL (optional)</Label>
+              <Input
+                id="edit-faculty-github"
+                type="text"
+                value={formData.github || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, github: e.target.value })
+                }
+                placeholder="github.com/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-faculty-instagram">
+                Instagram URL (optional)
+              </Label>
+              <Input
+                id="edit-faculty-instagram"
+                type="text"
+                value={formData.instagram || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, instagram: e.target.value })
+                }
+                placeholder="instagram.com/username"
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>
+                Update Faculty
+              </Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -3156,7 +4280,15 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
   );
 }
 
-function AddMemberDialog({ table, title, onSuccess }: { table: string; title: string; onSuccess: () => void }) {
+function AddMemberDialog({
+  table,
+  title,
+  onSuccess,
+}: {
+  table: string;
+  title: string;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -3166,7 +4298,7 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
     email: "",
     linkedin: "",
     github: "",
-    instagram: ""
+    instagram: "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3174,14 +4306,14 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
     if (!file) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'members');
+    const { url, error } = await uploadImageToSupabase(file, "members");
     setUploading(false);
 
     if (error) {
       toast.error(error);
     } else if (url) {
       setFormData({ ...formData, image: url });
-      toast.success('Image uploaded successfully');
+      toast.success("Image uploaded successfully");
     }
   };
 
@@ -3193,17 +4325,27 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
       const dataToInsert = {
         name: formData.name,
         position: formData.position,
-        image: formData.image || '/default-avatar.png',
+        image: formData.image || "/default-avatar.png",
         ...(formData.email && { email: formData.email }),
         ...(formData.linkedin && { linkedin: normalizeUrl(formData.linkedin) }),
         ...(formData.github && { github: normalizeUrl(formData.github) }),
-        ...(formData.instagram && { instagram: normalizeUrl(formData.instagram) })
+        ...(formData.instagram && {
+          instagram: normalizeUrl(formData.instagram),
+        }),
       };
       const { error } = await supabase.from(table).insert([dataToInsert]);
       if (error) throw error;
-      toast.success('Member added successfully');
+      toast.success("Member added successfully");
       setOpen(false);
-      setFormData({ name: "", position: "", image: "", email: "", linkedin: "", github: "", instagram: "" });
+      setFormData({
+        name: "",
+        position: "",
+        image: "",
+        email: "",
+        linkedin: "",
+        github: "",
+        instagram: "",
+      });
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add member: ${error.message}`);
@@ -3213,7 +4355,9 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Member</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Member
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -3222,39 +4366,102 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="member-name">Name</Label>
-            <Input id="member-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="member-position">Position</Label>
-            <Input id="member-position" value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="member-email">Email (optional)</Label>
-            <Input id="member-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-          </div>
-          <div>
-            <Label htmlFor="member-linkedin">LinkedIn URL (optional)</Label>
-            <Input id="member-linkedin" type="text" value={formData.linkedin} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="linkedin.com/in/username" />
-          </div>
-          <div>
-            <Label htmlFor="member-github">GitHub URL (optional)</Label>
-            <Input id="member-github" type="text" value={formData.github} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="github.com/username" />
-          </div>
-          <div>
-            <Label htmlFor="member-instagram">Instagram URL (optional)</Label>
-            <Input id="member-instagram" type="text" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="instagram.com/username" />
-          </div>
-          <div>
-            <Label htmlFor="member-image">Profile Image (optional)</Label>
-            <Input id="member-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
-            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={uploading}>Add Member</Button>
-          </DialogFooter>
+            <div>
+              <Label htmlFor="member-name">Name</Label>
+              <Input
+                id="member-name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="member-position">Position</Label>
+              <Input
+                id="member-position"
+                value={formData.position}
+                onChange={(e) =>
+                  setFormData({ ...formData, position: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="member-email">Email (optional)</Label>
+              <Input
+                id="member-email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="member-linkedin">LinkedIn URL (optional)</Label>
+              <Input
+                id="member-linkedin"
+                type="text"
+                value={formData.linkedin}
+                onChange={(e) =>
+                  setFormData({ ...formData, linkedin: e.target.value })
+                }
+                placeholder="linkedin.com/in/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="member-github">GitHub URL (optional)</Label>
+              <Input
+                id="member-github"
+                type="text"
+                value={formData.github}
+                onChange={(e) =>
+                  setFormData({ ...formData, github: e.target.value })
+                }
+                placeholder="github.com/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="member-instagram">Instagram URL (optional)</Label>
+              <Input
+                id="member-instagram"
+                type="text"
+                value={formData.instagram}
+                onChange={(e) =>
+                  setFormData({ ...formData, instagram: e.target.value })
+                }
+                placeholder="instagram.com/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="member-image">Profile Image (optional)</Label>
+              <Input
+                id="member-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
+              {formData.image && (
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="mt-2 w-20 h-20 rounded-full object-cover"
+                />
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>
+                Add Member
+              </Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -3262,7 +4469,17 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
   );
 }
 
-function EditMemberDialog({ member, table, title, onSuccess }: { member: Member; table: string; title: string; onSuccess: () => void }) {
+function EditMemberDialog({
+  member,
+  table,
+  title,
+  onSuccess,
+}: {
+  member: Member;
+  table: string;
+  title: string;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState(member);
@@ -3272,14 +4489,14 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
     if (!file) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'members');
+    const { url, error } = await uploadImageToSupabase(file, "members");
     setUploading(false);
 
     if (error) {
       toast.error(error);
     } else if (url) {
       setFormData({ ...formData, image: url });
-      toast.success('Image uploaded successfully');
+      toast.success("Image uploaded successfully");
     }
   };
 
@@ -3290,13 +4507,22 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
     try {
       const dataToUpdate = {
         ...formData,
-        linkedin: formData.linkedin ? normalizeUrl(formData.linkedin) : formData.linkedin,
-        github: formData.github ? normalizeUrl(formData.github) : formData.github,
-        instagram: formData.instagram ? normalizeUrl(formData.instagram) : formData.instagram
+        linkedin: formData.linkedin
+          ? normalizeUrl(formData.linkedin)
+          : formData.linkedin,
+        github: formData.github
+          ? normalizeUrl(formData.github)
+          : formData.github,
+        instagram: formData.instagram
+          ? normalizeUrl(formData.instagram)
+          : formData.instagram,
       };
-      const { error } = await supabase.from(table).update(dataToUpdate).eq('id', member.id);
+      const { error } = await supabase
+        .from(table)
+        .update(dataToUpdate)
+        .eq("id", member.id);
       if (error) throw error;
-      toast.success('Member updated successfully');
+      toast.success("Member updated successfully");
       setOpen(false);
       onSuccess();
     } catch (error: any) {
@@ -3307,7 +4533,9 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -3316,39 +4544,106 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="edit-member-name">Name</Label>
-            <Input id="edit-member-name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-member-position">Position</Label>
-            <Input id="edit-member-position" value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-member-email">Email (optional)</Label>
-            <Input id="edit-member-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-          </div>
-          <div>
-            <Label htmlFor="edit-member-linkedin">LinkedIn URL (optional)</Label>
-            <Input id="edit-member-linkedin" type="text" value={formData.linkedin || ""} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="linkedin.com/in/username" />
-          </div>
-          <div>
-            <Label htmlFor="edit-member-github">GitHub URL (optional)</Label>
-            <Input id="edit-member-github" type="text" value={formData.github || ""} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="github.com/username" />
-          </div>
-          <div>
-            <Label htmlFor="edit-member-instagram">Instagram URL (optional)</Label>
-            <Input id="edit-member-instagram" type="text" value={formData.instagram || ""} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="instagram.com/username" />
-          </div>
-          <div>
-            <Label htmlFor="edit-member-image">Profile Image</Label>
-            <Input id="edit-member-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
-            {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={uploading}>Update Member</Button>
-          </DialogFooter>
+            <div>
+              <Label htmlFor="edit-member-name">Name</Label>
+              <Input
+                id="edit-member-name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-member-position">Position</Label>
+              <Input
+                id="edit-member-position"
+                value={formData.position}
+                onChange={(e) =>
+                  setFormData({ ...formData, position: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-member-email">Email (optional)</Label>
+              <Input
+                id="edit-member-email"
+                type="email"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-member-linkedin">
+                LinkedIn URL (optional)
+              </Label>
+              <Input
+                id="edit-member-linkedin"
+                type="text"
+                value={formData.linkedin || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, linkedin: e.target.value })
+                }
+                placeholder="linkedin.com/in/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-member-github">GitHub URL (optional)</Label>
+              <Input
+                id="edit-member-github"
+                type="text"
+                value={formData.github || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, github: e.target.value })
+                }
+                placeholder="github.com/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-member-instagram">
+                Instagram URL (optional)
+              </Label>
+              <Input
+                id="edit-member-instagram"
+                type="text"
+                value={formData.instagram || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, instagram: e.target.value })
+                }
+                placeholder="instagram.com/username"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-member-image">Profile Image</Label>
+              <Input
+                id="edit-member-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
+              {formData.image && (
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="mt-2 w-20 h-20 rounded-full object-cover"
+                />
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>
+                Update Member
+              </Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -3366,7 +4661,7 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
     description: "",
     poster: "",
     instagram_link: "",
-    highlights: ""
+    highlights: "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3374,14 +4669,17 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!file) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'event-highlights');
+    const { url, error } = await uploadImageToSupabase(
+      file,
+      "event-highlights"
+    );
     setUploading(false);
 
     if (error) {
       toast.error(error);
     } else if (url) {
       setFormData({ ...formData, poster: url });
-      toast.success('Poster uploaded successfully');
+      toast.success("Poster uploaded successfully");
     }
   };
 
@@ -3390,13 +4688,17 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!supabase) return;
 
     try {
-      const highlightsArray = formData.highlights.split('\n').filter(h => h.trim());
-      const { error } = await supabase.from('event_highlights').insert([{
-        ...formData,
-        highlights: highlightsArray
-      }]);
+      const highlightsArray = formData.highlights
+        .split("\n")
+        .filter((h) => h.trim());
+      const { error } = await supabase.from("event_highlights").insert([
+        {
+          ...formData,
+          highlights: highlightsArray,
+        },
+      ]);
       if (error) throw error;
-      toast.success('Event highlight added successfully');
+      toast.success("Event highlight added successfully");
       setOpen(false);
       setFormData({
         title: "",
@@ -3405,7 +4707,7 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
         description: "",
         poster: "",
         instagram_link: "",
-        highlights: ""
+        highlights: "",
       });
       onSuccess();
     } catch (error: any) {
@@ -3416,7 +4718,9 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Event Highlight</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Event Highlight
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -3425,33 +4729,70 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="highlight-title">Title *</Label>
-            <Input id="highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="highlight-date">Date *</Label>
-            <Input 
-              id="highlight-date" 
-              type="date" 
-              value={formData.date} 
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })} 
-              required 
-            />
-          </div>
-          <div>
-            <Label htmlFor="highlight-poster">Event Poster *</Label>
-            <Input id="highlight-poster" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
-            {formData.poster && <img src={formData.poster} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
-          </div>
-          <div>
-            <Label htmlFor="highlight-instagram">Instagram Link (optional)</Label>
-            <Input id="highlight-instagram" type="url" value={formData.instagram_link} onChange={(e) => setFormData({ ...formData, instagram_link: e.target.value })} placeholder="https://instagram.com/..." />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={uploading || !formData.poster}>Add Event Highlight</Button>
-          </DialogFooter>
+            <div>
+              <Label htmlFor="highlight-title">Title *</Label>
+              <Input
+                id="highlight-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="highlight-date">Date *</Label>
+              <Input
+                id="highlight-date"
+                type="date"
+                value={formData.date}
+                onChange={(e) =>
+                  setFormData({ ...formData, date: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="highlight-poster">Event Poster *</Label>
+              <Input
+                id="highlight-poster"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
+              {formData.poster && (
+                <img
+                  src={formData.poster}
+                  alt="Preview"
+                  className="mt-2 w-32 h-32 object-cover rounded"
+                />
+              )}
+            </div>
+            <div>
+              <Label htmlFor="highlight-instagram">
+                Instagram Link (optional)
+              </Label>
+              <Input
+                id="highlight-instagram"
+                type="url"
+                value={formData.instagram_link}
+                onChange={(e) =>
+                  setFormData({ ...formData, instagram_link: e.target.value })
+                }
+                placeholder="https://instagram.com/..."
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading || !formData.poster}>
+                Add Event Highlight
+              </Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -3459,12 +4800,18 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHighlight; onSuccess: () => void }) {
+function EditEventHighlightDialog({
+  highlight,
+  onSuccess,
+}: {
+  highlight: EventHighlight;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     ...highlight,
-    highlights: highlight.highlights.join('\n')
+    highlights: highlight.highlights.join("\n"),
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3472,14 +4819,17 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
     if (!file) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'event-highlights');
+    const { url, error } = await uploadImageToSupabase(
+      file,
+      "event-highlights"
+    );
     setUploading(false);
 
     if (error) {
       toast.error(error);
     } else if (url) {
       setFormData({ ...formData, poster: url });
-      toast.success('Poster uploaded successfully');
+      toast.success("Poster uploaded successfully");
     }
   };
 
@@ -3488,18 +4838,23 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
     if (!supabase) return;
 
     try {
-      const highlightsArray = formData.highlights.split('\n').filter((h: string) => h.trim());
-      const { error } = await supabase.from('event_highlights').update({
-        title: formData.title,
-        date: formData.date,
-        location: formData.location,
-        description: formData.description,
-        poster: formData.poster,
-        instagram_link: formData.instagram_link,
-        highlights: highlightsArray
-      }).eq('id', highlight.id);
+      const highlightsArray = formData.highlights
+        .split("\n")
+        .filter((h: string) => h.trim());
+      const { error } = await supabase
+        .from("event_highlights")
+        .update({
+          title: formData.title,
+          date: formData.date,
+          location: formData.location,
+          description: formData.description,
+          poster: formData.poster,
+          instagram_link: formData.instagram_link,
+          highlights: highlightsArray,
+        })
+        .eq("id", highlight.id);
       if (error) throw error;
-      toast.success('Event highlight updated successfully');
+      toast.success("Event highlight updated successfully");
       setOpen(false);
       onSuccess();
     } catch (error: any) {
@@ -3510,42 +4865,84 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit Event Highlight</DialogTitle>
-          <DialogDescription>Update event highlight information</DialogDescription>
+          <DialogDescription>
+            Update event highlight information
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="edit-highlight-title">Title *</Label>
-            <Input id="edit-highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
-          </div>
-          <div>
-            <Label htmlFor="edit-highlight-date">Date</Label>
-            <Input 
-              id="edit-highlight-date" 
-              type="date" 
-              value={formData.date} 
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })} 
-            />
-            <p className="text-sm text-muted-foreground mt-1">Leave blank to keep current</p>
-          </div>
-          <div>
-            <Label htmlFor="edit-highlight-poster">Event Poster *</Label>
-            <Input id="edit-highlight-poster" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
-            {formData.poster && <img src={formData.poster} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
-          </div>
-          <div>
-            <Label htmlFor="edit-highlight-instagram">Instagram Link (optional)</Label>
-            <Input id="edit-highlight-instagram" type="url" value={formData.instagram_link} onChange={(e) => setFormData({ ...formData, instagram_link: e.target.value })} />
-          </div>
-          <DialogFooter>
-            <Button type="submit" disabled={uploading}>Update Event Highlight</Button>
-          </DialogFooter>
+            <div>
+              <Label htmlFor="edit-highlight-title">Title *</Label>
+              <Input
+                id="edit-highlight-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-highlight-date">Date</Label>
+              <Input
+                id="edit-highlight-date"
+                type="date"
+                value={formData.date}
+                onChange={(e) =>
+                  setFormData({ ...formData, date: e.target.value })
+                }
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Leave blank to keep current
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="edit-highlight-poster">Event Poster *</Label>
+              <Input
+                id="edit-highlight-poster"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
+              {formData.poster && (
+                <img
+                  src={formData.poster}
+                  alt="Preview"
+                  className="mt-2 w-32 h-32 object-cover rounded"
+                />
+              )}
+            </div>
+            <div>
+              <Label htmlFor="edit-highlight-instagram">
+                Instagram Link (optional)
+              </Label>
+              <Input
+                id="edit-highlight-instagram"
+                type="url"
+                value={formData.instagram_link}
+                onChange={(e) =>
+                  setFormData({ ...formData, instagram_link: e.target.value })
+                }
+              />
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>
+                Update Event Highlight
+              </Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
@@ -3562,7 +4959,7 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
     image_url: "",
     technologies: "",
     github_link: "",
-    demo_link: ""
+    demo_link: "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3570,14 +4967,14 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!file) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'projects');
+    const { url, error } = await uploadImageToSupabase(file, "projects");
     setUploading(false);
 
     if (error) {
       toast.error(error);
     } else if (url) {
       setFormData({ ...formData, image_url: url });
-      toast.success('Image uploaded successfully');
+      toast.success("Image uploaded successfully");
     }
   };
 
@@ -3586,13 +4983,18 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!supabase) return;
 
     try {
-      const technologiesArray = formData.technologies.split(',').map(t => t.trim()).filter(t => t);
-      const { error } = await supabase.from('projects').insert([{
-        ...formData,
-        technologies: technologiesArray
-      }]);
+      const technologiesArray = formData.technologies
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t);
+      const { error } = await supabase.from("projects").insert([
+        {
+          ...formData,
+          technologies: technologiesArray,
+        },
+      ]);
       if (error) throw error;
-      toast.success('Project added successfully');
+      toast.success("Project added successfully");
       setOpen(false);
       setFormData({
         title: "",
@@ -3600,7 +5002,7 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
         image_url: "",
         technologies: "",
         github_link: "",
-        demo_link: ""
+        demo_link: "",
       });
       onSuccess();
     } catch (error: any) {
@@ -3611,43 +5013,107 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Project</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Project
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Add New Project</DialogTitle>
-          <DialogDescription>Add a new project to the projects page</DialogDescription>
+          <DialogDescription>
+            Add a new project to the projects page
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[65vh] pr-4">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="project-title">Title *</Label>
-              <Input id="project-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+              <Input
+                id="project-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
             </div>
             <div>
               <Label htmlFor="project-description">Description *</Label>
-              <Textarea id="project-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={4} />
+              <Textarea
+                id="project-description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+                rows={4}
+              />
             </div>
             <div>
               <Label htmlFor="project-image">Project Image *</Label>
-              <Input id="project-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} required={!formData.image_url} />
-              {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
-              {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
+              <Input
+                id="project-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                required={!formData.image_url}
+              />
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
+              {formData.image_url && (
+                <img
+                  src={formData.image_url}
+                  alt="Preview"
+                  className="mt-2 w-32 h-32 object-cover rounded"
+                />
+              )}
             </div>
             <div>
-              <Label htmlFor="project-technologies">Technologies (comma-separated) *</Label>
-              <Input id="project-technologies" value={formData.technologies} onChange={(e) => setFormData({ ...formData, technologies: e.target.value })} placeholder="React, TypeScript, Node.js" required />
+              <Label htmlFor="project-technologies">
+                Technologies (comma-separated) *
+              </Label>
+              <Input
+                id="project-technologies"
+                value={formData.technologies}
+                onChange={(e) =>
+                  setFormData({ ...formData, technologies: e.target.value })
+                }
+                placeholder="React, TypeScript, Node.js"
+                required
+              />
             </div>
             <div>
               <Label htmlFor="project-github">GitHub Link (optional)</Label>
-              <Input id="project-github" type="url" value={formData.github_link} onChange={(e) => setFormData({ ...formData, github_link: e.target.value })} placeholder="https://github.com/..." />
+              <Input
+                id="project-github"
+                type="url"
+                value={formData.github_link}
+                onChange={(e) =>
+                  setFormData({ ...formData, github_link: e.target.value })
+                }
+                placeholder="https://github.com/..."
+              />
             </div>
             <div>
               <Label htmlFor="project-demo">Demo Link (optional)</Label>
-              <Input id="project-demo" type="url" value={formData.demo_link} onChange={(e) => setFormData({ ...formData, demo_link: e.target.value })} placeholder="https://..." />
+              <Input
+                id="project-demo"
+                type="url"
+                value={formData.demo_link}
+                onChange={(e) =>
+                  setFormData({ ...formData, demo_link: e.target.value })
+                }
+                placeholder="https://..."
+              />
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={uploading}>Add Project</Button>
+              <Button type="submit" disabled={uploading}>
+                Add Project
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>
@@ -3656,16 +5122,22 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess: () => void }) {
+function EditProjectDialog({
+  project,
+  onSuccess,
+}: {
+  project: Project;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: project.title,
     description: project.description,
     image_url: project.image_url,
-    technologies: project.technologies.join(', '),
+    technologies: project.technologies.join(", "),
     github_link: project.github_link || "",
-    demo_link: project.demo_link || ""
+    demo_link: project.demo_link || "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3673,14 +5145,14 @@ function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess
     if (!file) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, 'projects');
+    const { url, error } = await uploadImageToSupabase(file, "projects");
     setUploading(false);
 
     if (error) {
       toast.error(error);
     } else if (url) {
       setFormData({ ...formData, image_url: url });
-      toast.success('Image uploaded successfully');
+      toast.success("Image uploaded successfully");
     }
   };
 
@@ -3689,13 +5161,19 @@ function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess
     if (!supabase) return;
 
     try {
-      const technologiesArray = formData.technologies.split(',').map(t => t.trim()).filter(t => t);
-      const { error } = await supabase.from('projects').update({
-        ...formData,
-        technologies: technologiesArray
-      }).eq('id', project.id);
+      const technologiesArray = formData.technologies
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t);
+      const { error } = await supabase
+        .from("projects")
+        .update({
+          ...formData,
+          technologies: technologiesArray,
+        })
+        .eq("id", project.id);
       if (error) throw error;
-      toast.success('Project updated successfully');
+      toast.success("Project updated successfully");
       setOpen(false);
       onSuccess();
     } catch (error: any) {
@@ -3706,7 +5184,9 @@ function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
         <DialogHeader>
@@ -3717,32 +5197,93 @@ function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="edit-project-title">Title *</Label>
-              <Input id="edit-project-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+              <Input
+                id="edit-project-title"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                required
+              />
             </div>
             <div>
               <Label htmlFor="edit-project-description">Description *</Label>
-              <Textarea id="edit-project-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={4} />
+              <Textarea
+                id="edit-project-description"
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                required
+                rows={4}
+              />
             </div>
             <div>
               <Label htmlFor="edit-project-image">Project Image</Label>
-              <Input id="edit-project-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-              {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
-              {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
+              <Input
+                id="edit-project-image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+              {uploading && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Uploading...
+                </p>
+              )}
+              {formData.image_url && (
+                <img
+                  src={formData.image_url}
+                  alt="Preview"
+                  className="mt-2 w-32 h-32 object-cover rounded"
+                />
+              )}
             </div>
             <div>
-              <Label htmlFor="edit-project-technologies">Technologies (comma-separated) *</Label>
-              <Input id="edit-project-technologies" value={formData.technologies} onChange={(e) => setFormData({ ...formData, technologies: e.target.value })} placeholder="React, TypeScript, Node.js" required />
+              <Label htmlFor="edit-project-technologies">
+                Technologies (comma-separated) *
+              </Label>
+              <Input
+                id="edit-project-technologies"
+                value={formData.technologies}
+                onChange={(e) =>
+                  setFormData({ ...formData, technologies: e.target.value })
+                }
+                placeholder="React, TypeScript, Node.js"
+                required
+              />
             </div>
             <div>
-              <Label htmlFor="edit-project-github">GitHub Link (optional)</Label>
-              <Input id="edit-project-github" type="url" value={formData.github_link} onChange={(e) => setFormData({ ...formData, github_link: e.target.value })} placeholder="https://github.com/..." />
+              <Label htmlFor="edit-project-github">
+                GitHub Link (optional)
+              </Label>
+              <Input
+                id="edit-project-github"
+                type="url"
+                value={formData.github_link}
+                onChange={(e) =>
+                  setFormData({ ...formData, github_link: e.target.value })
+                }
+                placeholder="https://github.com/..."
+              />
             </div>
             <div>
               <Label htmlFor="edit-project-demo">Demo Link (optional)</Label>
-              <Input id="edit-project-demo" type="url" value={formData.demo_link} onChange={(e) => setFormData({ ...formData, demo_link: e.target.value })} placeholder="https://..." />
+              <Input
+                id="edit-project-demo"
+                type="url"
+                value={formData.demo_link}
+                onChange={(e) =>
+                  setFormData({ ...formData, demo_link: e.target.value })
+                }
+                placeholder="https://..."
+              />
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={uploading}>Update Project</Button>
+              <Button type="submit" disabled={uploading}>
+                Update Project
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>
