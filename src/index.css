@@ -54,26 +54,26 @@ All colors MUST be HSL.
     --background: 220 20% 96%;
     --foreground: 222 47% 11%;
 
-    --card: 0 0% 100%;
+    --card: 215 25% 94%;
     --card-foreground: 222 47% 11%;
 
-    --popover: 0 0% 100%;
+    --popover: 215 25% 94%;
     --popover-foreground: 222 47% 11%;
 
     --primary: 210 70% 48%;
-    --primary-foreground: 0 0% 100%;
+    --primary-foreground: 210 15% 98%;
 
     --secondary: 195 65% 45%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary-foreground: 210 15% 98%;
 
     --muted: 214 20% 90%;
     --muted-foreground: 215 16% 47%;
 
     --accent: 200 60% 42%;
-    --accent-foreground: 0 0% 100%;
+    --accent-foreground: 210 15% 98%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 15% 98%;
 
     --border: 214 20% 88%;
     --input: 214 20% 92%;
@@ -111,7 +111,7 @@ All colors MUST be HSL.
   }
 
   html.light {
-    background: linear-gradient(135deg, #EBF5FF 0%, #F2F8FF 25%, #FAFCFF 50%, #F0F6FF 75%, #E8F3FF 100%);
+    background: linear-gradient(135deg, #E0EFFF 0%, #E8F3FF 25%, #EBF5FF 50%, #E5F1FF 75%, #DDF0FF 100%);
     min-height: 100vh;
   }
 
@@ -125,7 +125,7 @@ All colors MUST be HSL.
   }
 
   html.light body {
-    background: linear-gradient(135deg, #EBF5FF 0%, #F2F8FF 25%, #FAFCFF 50%, #F0F6FF 75%, #E8F3FF 100%) !important;
+    background: linear-gradient(135deg, #E0EFFF 0%, #E8F3FF 25%, #EBF5FF 50%, #E5F1FF 75%, #DDF0FF 100%) !important;
   }
 
   * {
@@ -405,7 +405,7 @@ All colors MUST be HSL.
     backdrop-filter: blur(12px);
     border: 1px solid hsl(var(--border) / 0.5);
     box-shadow: 0 8px 32px hsl(var(--shadow-lg)),
-                inset 0 1px 1px hsl(0 0% 100% / 0.8);
+                inset 0 1px 1px hsl(210 30% 90% / 0.8);
   }
 
   /* Hover effects for light theme */
