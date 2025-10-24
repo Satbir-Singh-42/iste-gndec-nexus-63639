@@ -430,36 +430,42 @@ const Admin = () => {
     }
   };
 
-  const updateEventOrder = async (id: number, newOrder: number) => {
+  const updateEventOrder = async (id: number, newOrder: number, skipRefresh: boolean = false) => {
     if (!supabase) return;
     try {
       const { error } = await supabase.from('events').update({ display_order: newOrder }).eq('id', id);
       if (error) throw error;
-      toast.success('Event order updated');
-      setRefreshTrigger(prev => prev + 1);
+      if (!skipRefresh) {
+        toast.success('Event order updated');
+        setRefreshTrigger(prev => prev + 1);
+      }
     } catch (error: any) {
       toast.error(`Failed to update order: ${error.message}`);
     }
   };
 
-  const moveEventUp = (items: Event[], index: number) => {
+  const moveEventUp = async (items: Event[], index: number) => {
     if (index === 0) return;
     const currentItem = items[index];
     const previousItem = items[index - 1];
     const currentOrder = currentItem.display_order ?? (items.length - index);
     const previousOrder = previousItem.display_order ?? (items.length - index + 1);
-    updateEventOrder(currentItem.id, previousOrder);
-    updateEventOrder(previousItem.id, currentOrder);
+    await updateEventOrder(currentItem.id, previousOrder, true);
+    await updateEventOrder(previousItem.id, currentOrder, true);
+    toast.success('Event order updated');
+    setRefreshTrigger(prev => prev + 1);
   };
 
-  const moveEventDown = (items: Event[], index: number) => {
+  const moveEventDown = async (items: Event[], index: number) => {
     if (index === items.length - 1) return;
     const currentItem = items[index];
     const nextItem = items[index + 1];
     const currentOrder = currentItem.display_order ?? (items.length - index);
     const nextOrder = nextItem.display_order ?? (items.length - index - 1);
-    updateEventOrder(currentItem.id, nextOrder);
-    updateEventOrder(nextItem.id, currentOrder);
+    await updateEventOrder(currentItem.id, nextOrder, true);
+    await updateEventOrder(nextItem.id, currentOrder, true);
+    toast.success('Event order updated');
+    setRefreshTrigger(prev => prev + 1);
   };
 
   const toggleHighlightVisibility = async (id: number, currentHidden: boolean) => {
@@ -474,36 +480,42 @@ const Admin = () => {
     }
   };
 
-  const updateHighlightOrder = async (id: number, newOrder: number) => {
+  const updateHighlightOrder = async (id: number, newOrder: number, skipRefresh: boolean = false) => {
     if (!supabase) return;
     try {
       const { error } = await supabase.from('event_highlights').update({ display_order: newOrder }).eq('id', id);
       if (error) throw error;
-      toast.success('Highlight order updated');
-      setRefreshTrigger(prev => prev + 1);
+      if (!skipRefresh) {
+        toast.success('Highlight order updated');
+        setRefreshTrigger(prev => prev + 1);
+      }
     } catch (error: any) {
       toast.error(`Failed to update order: ${error.message}`);
     }
   };
 
-  const moveHighlightUp = (items: EventHighlight[], index: number) => {
+  const moveHighlightUp = async (items: EventHighlight[], index: number) => {
     if (index === 0) return;
     const currentItem = items[index];
     const previousItem = items[index - 1];
     const currentOrder = currentItem.display_order ?? (items.length - index);
     const previousOrder = previousItem.display_order ?? (items.length - index + 1);
-    updateHighlightOrder(currentItem.id, previousOrder);
-    updateHighlightOrder(previousItem.id, currentOrder);
+    await updateHighlightOrder(currentItem.id, previousOrder, true);
+    await updateHighlightOrder(previousItem.id, currentOrder, true);
+    toast.success('Highlight order updated');
+    setRefreshTrigger(prev => prev + 1);
   };
 
-  const moveHighlightDown = (items: EventHighlight[], index: number) => {
+  const moveHighlightDown = async (items: EventHighlight[], index: number) => {
     if (index === items.length - 1) return;
     const currentItem = items[index];
     const nextItem = items[index + 1];
     const currentOrder = currentItem.display_order ?? (items.length - index);
     const nextOrder = nextItem.display_order ?? (items.length - index - 1);
-    updateHighlightOrder(currentItem.id, nextOrder);
-    updateHighlightOrder(nextItem.id, currentOrder);
+    await updateHighlightOrder(currentItem.id, nextOrder, true);
+    await updateHighlightOrder(nextItem.id, currentOrder, true);
+    toast.success('Highlight order updated');
+    setRefreshTrigger(prev => prev + 1);
   };
 
   if (checkingAuth) {
