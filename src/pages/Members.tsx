@@ -114,80 +114,123 @@ const Members = () => {
       <main className="pt-24 pb-16 px-4">
         {/* Faculty Advisor Section */}
         {faculty.length > 0 && (
-          <section className="mb-16 max-w-7xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-              {faculty.length === 1 ? 'Our Faculty Advisor' : 'Our Faculty Advisors'}
-            </h2>
+          <section className="mb-12 max-w-7xl mx-auto">
+            <div className="mb-10 text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 border border-primary/30 bg-primary/5">
+                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                <span className="text-xs font-mono text-primary tracking-wider">
+                  {faculty.length === 1 ? 'FACULTY ADVISOR' : 'FACULTY ADVISORS'}
+                </span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-black text-gradient">
+                {faculty.length === 1 ? 'Our Faculty Advisor' : 'Our Faculty Advisors'}
+              </h2>
+            </div>
             
-            <div className="space-y-12">
-              {faculty.map((facultyMember) => (
-                <div key={facultyMember.id} className="grid md:grid-cols-[300px,1fr] gap-8 items-start max-w-5xl mx-auto">
-                  {/* Circular Image */}
-                  <div className="mx-auto">
-                    <div className="w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden bg-muted border-4 border-border">
-                      <img 
-                        src={facultyMember.image || '/default-avatar.png'} 
-                        alt={facultyMember.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/default-avatar.png';
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Faculty Details Card */}
-                  <div className="bg-card border border-border p-8 rounded-sm">
-                    <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                      {facultyMember.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-6 font-medium">
-                      {facultyMember.title}
-                    </p>
-                    
-                    <p className="text-foreground/90 leading-relaxed mb-6">
-                      {facultyMember.description}
-                    </p>
-
-                    {/* Social Links */}
-                    {(facultyMember.linkedin || facultyMember.github || facultyMember.instagram) && (
-                      <div className="flex items-center gap-3 pt-4 border-t border-border">
-                        {facultyMember.linkedin && (
-                          <a 
-                            href={facultyMember.linkedin}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                            title="LinkedIn"
-                          >
-                            <Linkedin className="w-4 h-4" />
-                          </a>
-                        )}
-                        {facultyMember.github && (
-                          <a 
-                            href={facultyMember.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                            title="GitHub"
-                          >
-                            <Github className="w-4 h-4" />
-                          </a>
-                        )}
-                        {facultyMember.instagram && (
-                          <a 
-                            href={facultyMember.instagram}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                            title="Instagram"
-                          >
-                            <Instagram className="w-4 h-4" />
-                          </a>
-                        )}
+            <div className="space-y-10">
+              {faculty.map((facultyMember, index) => (
+                <div 
+                  key={facultyMember.id} 
+                  className={`group relative ${
+                    index % 2 === 0 ? '' : 'md:flex-row-reverse'
+                  }`}
+                >
+                  <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center max-w-5xl mx-auto">
+                    {/* Image Section with Decorative Elements */}
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                      <div className="relative aspect-square max-w-xs mx-auto">
+                        {/* Decorative corner accents */}
+                        <div className="absolute -top-3 -left-3 w-16 h-16 border-t-2 border-l-2 border-primary/50" />
+                        <div className="absolute -bottom-3 -right-3 w-16 h-16 border-b-2 border-r-2 border-primary/50" />
+                        
+                        {/* Main Image */}
+                        <div className="relative w-full h-full overflow-hidden border-4 border-border bg-muted group-hover:border-primary/50 transition-all duration-500">
+                          <img 
+                            src={facultyMember.image || '/default-avatar.png'} 
+                            alt={facultyMember.name}
+                            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = '/default-avatar.png';
+                            }}
+                          />
+                          
+                          {/* Gradient Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        </div>
                       </div>
-                    )}
+                    </div>
+
+                    {/* Details Section */}
+                    <div className="space-y-4">
+                      {/* Title Badge */}
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30">
+                        <div className="w-1.5 h-1.5 bg-primary animate-pulse" />
+                        <span className="text-xs font-mono text-primary tracking-wide uppercase">
+                          {facultyMember.title}
+                        </span>
+                      </div>
+                      
+                      {/* Name */}
+                      <h3 className="text-2xl md:text-3xl font-black text-foreground leading-tight">
+                        {facultyMember.name}
+                      </h3>
+                      
+                      {/* Decorative Line */}
+                      <div className="flex items-center gap-3">
+                        <div className="h-0.5 w-16 bg-primary" />
+                        <div className="h-0.5 w-8 bg-primary/50" />
+                        <div className="h-0.5 w-4 bg-primary/30" />
+                      </div>
+                      
+                      {/* Description */}
+                      <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                        {facultyMember.description}
+                      </p>
+
+                      {/* Social Links */}
+                      {(facultyMember.linkedin || facultyMember.github || facultyMember.instagram) && (
+                        <div className="flex items-center gap-3 pt-2">
+                          {facultyMember.linkedin && (
+                            <a 
+                              href={facultyMember.linkedin}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group/link flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary hover:bg-primary/5 transition-all"
+                              title="LinkedIn"
+                            >
+                              <Linkedin className="w-4 h-4 group-hover/link:text-primary transition-colors" />
+                              <span className="text-xs font-medium">LinkedIn</span>
+                            </a>
+                          )}
+                          {facultyMember.github && (
+                            <a 
+                              href={facultyMember.github}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group/link flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary hover:bg-primary/5 transition-all"
+                              title="GitHub"
+                            >
+                              <Github className="w-4 h-4 group-hover/link:text-primary transition-colors" />
+                              <span className="text-xs font-medium">GitHub</span>
+                            </a>
+                          )}
+                          {facultyMember.instagram && (
+                            <a 
+                              href={facultyMember.instagram}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="group/link flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary hover:bg-primary/5 transition-all"
+                              title="Instagram"
+                            >
+                              <Instagram className="w-4 h-4 group-hover/link:text-primary transition-colors" />
+                              <span className="text-xs font-medium">Instagram</span>
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
