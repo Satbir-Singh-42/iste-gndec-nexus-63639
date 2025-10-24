@@ -1985,7 +1985,7 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -2152,7 +2152,7 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -2326,7 +2326,7 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -2489,7 +2489,7 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={8}>
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -3346,7 +3346,6 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
 function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>();
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -3356,14 +3355,6 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
     instagram_link: "",
     highlights: ""
   });
-
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
-    if (date) {
-      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      setFormData({ ...formData, date: dateStr });
-    }
-  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -3403,7 +3394,6 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
         instagram_link: "",
         highlights: ""
       });
-      setSelectedDate(undefined);
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add event highlight: ${error.message}`);
@@ -3427,26 +3417,14 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
             <Input id="highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
           <div>
-            <Label>Date *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={handleDateSelect}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Label htmlFor="highlight-date">Date *</Label>
+            <Input 
+              id="highlight-date" 
+              type="date" 
+              value={formData.date} 
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })} 
+              required 
+            />
           </div>
           <div>
             <Label htmlFor="highlight-poster">Event Poster *</Label>
@@ -3471,19 +3449,10 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
 function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHighlight; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>();
   const [formData, setFormData] = useState({
     ...highlight,
     highlights: highlight.highlights.join('\n')
   });
-
-  const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date);
-    if (date) {
-      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      setFormData({ ...formData, date: dateStr });
-    }
-  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -3542,29 +3511,14 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
             <Input id="edit-highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
           <div>
-            <Label>Date (optional - leave blank to keep current)</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left font-normal"
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={handleDateSelect}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            <p className="text-sm text-muted-foreground mt-1">
-              Current: {formData.date}
-            </p>
+            <Label htmlFor="edit-highlight-date">Date</Label>
+            <Input 
+              id="edit-highlight-date" 
+              type="date" 
+              value={formData.date} 
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })} 
+            />
+            <p className="text-sm text-muted-foreground mt-1">Leave blank to keep current</p>
           </div>
           <div>
             <Label htmlFor="edit-highlight-poster">Event Poster *</Label>
