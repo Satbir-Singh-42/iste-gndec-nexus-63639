@@ -145,17 +145,6 @@ const Notices = () => {
                     onClick={() => navigate(`/notices/${notice.id}`)}
                     className="tech-card hover:border-primary/50 transition-all duration-300 group bg-card/50 hover:bg-card/80 cursor-pointer overflow-hidden"
                   >
-                    {/* Poster Image */}
-                    {notice.poster_url && (
-                      <div className="w-full h-48 overflow-hidden">
-                        <img 
-                          src={notice.poster_url} 
-                          alt={notice.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    
                     <div className="p-6">
                     {/* Header */}
                     <div className="flex items-start justify-between mb-4">
