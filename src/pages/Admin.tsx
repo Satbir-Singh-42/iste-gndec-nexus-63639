@@ -804,38 +804,40 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 pt-20 sm:pt-24 pb-8 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Admin Panel</h1>
           <div className="flex gap-2 sm:gap-4 w-full sm:w-auto">
-            <Button variant="outline" onClick={() => navigate("/")} className="flex-1 sm:flex-none">
+            <Button variant="outline" onClick={() => navigate("/")} className="flex-1 sm:flex-none text-xs sm:text-sm">
               Back to Home
             </Button>
-            <Button variant="destructive" onClick={handleLogout} className="flex-1 sm:flex-none">
+            <Button variant="destructive" onClick={handleLogout} className="flex-1 sm:flex-none text-xs sm:text-sm">
               Logout
             </Button>
           </div>
         </div>
 
         <Tabs defaultValue="notices" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1">
-            <TabsTrigger value="notices">Notices</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
-            <TabsTrigger value="gallery">Gallery</TabsTrigger>
-            <TabsTrigger value="highlights">Highlights</TabsTrigger>
-            <TabsTrigger value="projects">Projects</TabsTrigger>
-            <TabsTrigger value="members">Members</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <TabsList className="inline-flex w-auto min-w-full sm:w-full sm:grid sm:grid-cols-7 h-auto sm:h-10 gap-1 p-1">
+              <TabsTrigger value="notices" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Notices</TabsTrigger>
+              <TabsTrigger value="events" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Events</TabsTrigger>
+              <TabsTrigger value="gallery" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Gallery</TabsTrigger>
+              <TabsTrigger value="highlights" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Highlights</TabsTrigger>
+              <TabsTrigger value="projects" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Projects</TabsTrigger>
+              <TabsTrigger value="members" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Members</TabsTrigger>
+              <TabsTrigger value="settings" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Settings</TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="notices">
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle>Manage Notices</CardTitle>
-                    <CardDescription>Add, edit, or delete notices</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">Manage Notices</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete notices</CardDescription>
                   </div>
                   <AddNoticeDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
@@ -846,12 +848,12 @@ const Admin = () => {
                       placeholder="Search by title or type..."
                       value={noticesSearch}
                       onChange={(e) => setNoticesSearch(e.target.value)}
-                      className="pl-8"
+                      className="pl-8 text-sm"
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -895,10 +897,10 @@ const Admin = () => {
           <TabsContent value="events">
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle>Manage Events</CardTitle>
-                    <CardDescription>Add, edit, or delete events</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">Manage Events</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete events</CardDescription>
                   </div>
                   <AddEventDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
@@ -909,12 +911,12 @@ const Admin = () => {
                       placeholder="Search by title or location..."
                       value={eventsSearch}
                       onChange={(e) => setEventsSearch(e.target.value)}
-                      className="pl-8"
+                      className="pl-8 text-sm"
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <div className="max-h-96 overflow-y-auto">
                   <Table>
                     <TableHeader>
@@ -991,10 +993,10 @@ const Admin = () => {
           <TabsContent value="gallery">
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle>Manage Gallery</CardTitle>
-                    <CardDescription>Add, edit, or delete gallery items</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">Manage Gallery</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete gallery items</CardDescription>
                   </div>
                   <AddGalleryDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
@@ -1005,12 +1007,12 @@ const Admin = () => {
                       placeholder="Search by title or category..."
                       value={gallerySearch}
                       onChange={(e) => setGallerySearch(e.target.value)}
-                      className="pl-8"
+                      className="pl-8 text-sm"
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <div className="max-h-96 overflow-y-auto">
                   <Table>
                     <TableHeader>
@@ -1097,10 +1099,10 @@ const Admin = () => {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle>Faculty</CardTitle>
-                      <CardDescription>Manage faculty advisors</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">Faculty</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">Manage faculty advisors</CardDescription>
                     </div>
                     <AddFacultyDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                   </div>
@@ -1111,12 +1113,12 @@ const Admin = () => {
                         placeholder="Search by name or title..."
                         value={facultySearch}
                         onChange={(e) => setFacultySearch(e.target.value)}
-                        className="pl-8"
+                        className="pl-8 text-sm"
                       />
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="overflow-x-auto">
                   <div className="max-h-96 overflow-y-auto">
                     <Table>
                       <TableHeader>
@@ -1199,10 +1201,10 @@ const Admin = () => {
 
               <Card>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle>Core Team</CardTitle>
-                      <CardDescription>Manage core team members</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">Core Team</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">Manage core team members</CardDescription>
                     </div>
                     <AddMemberDialog table="members_core_team" title="Add Core Team Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                   </div>
@@ -1213,12 +1215,12 @@ const Admin = () => {
                         placeholder="Search by name or position..."
                         value={coreTeamSearch}
                         onChange={(e) => setCoreTeamSearch(e.target.value)}
-                        className="pl-8"
+                        className="pl-8 text-sm"
                       />
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="overflow-x-auto">
                   <div className="max-h-96 overflow-y-auto">
                     <Table>
                       <TableHeader>
@@ -1407,10 +1409,10 @@ const Admin = () => {
 
               <Card>
                 <CardHeader>
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle>Executive Team</CardTitle>
-                      <CardDescription>Manage executive team members</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">Executive Team</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">Manage executive team members</CardDescription>
                     </div>
                     <AddMemberDialog table="members_executive" title="Add Executive Member" onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                   </div>
@@ -1421,12 +1423,12 @@ const Admin = () => {
                         placeholder="Search by name or position..."
                         value={executiveSearch}
                         onChange={(e) => setExecutiveSearch(e.target.value)}
-                        className="pl-8"
+                        className="pl-8 text-sm"
                       />
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="overflow-x-auto">
                   <div className="max-h-96 overflow-y-auto">
                     <Table>
                       <TableHeader>
@@ -1514,10 +1516,10 @@ const Admin = () => {
           <TabsContent value="highlights">
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle>Manage Event Highlights</CardTitle>
-                    <CardDescription>Add, edit, or delete past event highlights</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">Manage Event Highlights</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete past event highlights</CardDescription>
                   </div>
                   <AddEventHighlightDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
@@ -1528,12 +1530,12 @@ const Admin = () => {
                       placeholder="Search by title or location..."
                       value={highlightsSearch}
                       onChange={(e) => setHighlightsSearch(e.target.value)}
-                      className="pl-8"
+                      className="pl-8 text-sm"
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <div className="max-h-96 overflow-y-auto">
                   <Table>
                     <TableHeader>
@@ -1608,10 +1610,10 @@ const Admin = () => {
           <TabsContent value="projects">
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                   <div>
-                    <CardTitle>Manage Projects</CardTitle>
-                    <CardDescription>Add, edit, or delete projects</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl">Manage Projects</CardTitle>
+                    <CardDescription className="text-xs sm:text-sm">Add, edit, or delete projects</CardDescription>
                   </div>
                   <AddProjectDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
                 </div>
@@ -1622,12 +1624,12 @@ const Admin = () => {
                       placeholder="Search by title or category..."
                       value={projectsSearch}
                       onChange={(e) => setProjectsSearch(e.target.value)}
-                      className="pl-8"
+                      className="pl-8 text-sm"
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="overflow-x-auto">
                 <div className="max-h-96 overflow-y-auto">
                   <Table>
                     <TableHeader>
@@ -1698,8 +1700,8 @@ const Admin = () => {
           <TabsContent value="settings">
             <Card>
               <CardHeader>
-                <CardTitle>Site Settings</CardTitle>
-                <CardDescription>Configure website appearance and functionality</CardDescription>
+                <CardTitle className="text-lg sm:text-xl">Site Settings</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">Configure website appearance and functionality</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between p-4 border rounded-lg">
