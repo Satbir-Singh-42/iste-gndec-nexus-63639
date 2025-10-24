@@ -46,7 +46,7 @@ export type Database = {
           name: string;
           position: string;
           image: string;
-          email: string;
+          email?: string;
           linkedin?: string;
           github?: string;
           instagram?: string;
@@ -63,7 +63,7 @@ export type Database = {
           name: string;
           position: string;
           image: string;
-          email: string;
+          email?: string;
           linkedin?: string;
           github?: string;
           instagram?: string;
@@ -80,7 +80,7 @@ export type Database = {
           name: string;
           position: string;
           image: string;
-          email: string;
+          email?: string;
           linkedin?: string;
           github?: string;
           instagram?: string;

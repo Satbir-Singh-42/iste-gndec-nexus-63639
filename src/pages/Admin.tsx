@@ -2621,7 +2621,7 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
         name: formData.name,
         position: formData.position,
         image: formData.image,
-        email: formData.email,
+        ...(formData.email && { email: formData.email }),
         ...(formData.linkedin && { linkedin: formData.linkedin }),
         ...(formData.github && { github: formData.github }),
         ...(formData.instagram && { instagram: formData.instagram })
@@ -2658,8 +2658,8 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
             <Input id="member-position" value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} required />
           </div>
           <div>
-            <Label htmlFor="member-email">Email</Label>
-            <Input id="member-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+            <Label htmlFor="member-email">Email (optional)</Label>
+            <Input id="member-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
           </div>
           <div>
             <Label htmlFor="member-linkedin">LinkedIn URL (optional)</Label>
@@ -2746,8 +2746,8 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
             <Input id="edit-member-position" value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} required />
           </div>
           <div>
-            <Label htmlFor="edit-member-email">Email</Label>
-            <Input id="edit-member-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+            <Label htmlFor="edit-member-email">Email (optional)</Label>
+            <Input id="edit-member-email" type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
           </div>
           <div>
             <Label htmlFor="edit-member-linkedin">LinkedIn URL (optional)</Label>
