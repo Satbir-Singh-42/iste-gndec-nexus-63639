@@ -27,6 +27,14 @@ interface Star {
   y: number;
 }
 
+interface TechNode {
+  x: number;
+  y: number;
+  pulse: number;
+  pulseSpeed: number;
+  connections: number[];
+}
+
 const ParticleBackground = () => {
   const location = useLocation();
   const { theme } = useTheme();
@@ -35,6 +43,7 @@ const ParticleBackground = () => {
   const streamsRef = useRef<BinaryStream[]>([]);
   const trailParticlesRef = useRef<TrailParticle[]>([]);
   const starsRef = useRef<Star[]>([]);
+  const techNodesRef = useRef<TechNode[]>([]);
   const animationFrameRef = useRef<number | null>(null);
   const mouseRef = useRef({ x: -1000, y: -1000, prevX: -1000, prevY: -1000 });
   const lastSpawnTime = useRef(0);
@@ -123,6 +132,37 @@ const ParticleBackground = () => {
 
     streamsRef.current = streams;
 
+    // Create technical nodes and connections for light mode
+    const techNodes: TechNode[] = [];
+    
+    if (isLightMode) {
+      const nodeCount = 15;
+      for (let i = 0; i < nodeCount; i++) {
+        const node: TechNode = {
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          pulse: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.02 + Math.random() * 0.03,
+          connections: []
+        };
+        
+        // Connect to nearby nodes
+        if (i > 0) {
+          const connectCount = Math.min(2, i);
+          for (let j = 0; j < connectCount; j++) {
+            const targetIndex = Math.floor(Math.random() * i);
+            if (!node.connections.includes(targetIndex)) {
+              node.connections.push(targetIndex);
+            }
+          }
+        }
+        
+        techNodes.push(node);
+      }
+    }
+    
+    techNodesRef.current = techNodes;
+
     // Mouse tracking for cleaner trail
     const handleMouseMove = (event: MouseEvent) => {
       const rect = container.getBoundingClientRect();
@@ -131,24 +171,29 @@ const ParticleBackground = () => {
       mouseRef.current.x = event.clientX - rect.left;
       mouseRef.current.y = event.clientY - rect.top;
       
-      // Spawn cleaner trail particles
+      // Spawn cleaner trail particles - MORE particles for light mode
       const now = Date.now();
-      if (now - lastSpawnTime.current > 40) { // Less frequent spawning
+      const spawnInterval = isLightMode ? 25 : 40;
+      const particleCount = isLightMode ? 2 : 1;
+      
+      if (now - lastSpawnTime.current > spawnInterval) {
         const dx = mouseRef.current.x - mouseRef.current.prevX;
         const dy = mouseRef.current.y - mouseRef.current.prevY;
         const speed = Math.sqrt(dx * dx + dy * dy);
         
         if (speed > 2) { // Only spawn when moving faster
-          // Spawn just 1 particle for clean look
-          trailParticlesRef.current.push({
-            x: mouseRef.current.x,
-            y: mouseRef.current.y,
-            vx: (Math.random() - 0.5) * 0.5,
-            vy: (Math.random() - 0.5) * 0.5,
-            life: 1,
-            maxLife: Math.random() * 30 + 20, // Shorter life (20-50 frames)
-            size: Math.random() * 2 + 2
-          });
+          // Spawn more particles for better visibility in light mode
+          for (let i = 0; i < particleCount; i++) {
+            trailParticlesRef.current.push({
+              x: mouseRef.current.x + (Math.random() - 0.5) * 3,
+              y: mouseRef.current.y + (Math.random() - 0.5) * 3,
+              vx: (Math.random() - 0.5) * 0.8,
+              vy: (Math.random() - 0.5) * 0.8,
+              life: 1,
+              maxLife: isLightMode ? Math.random() * 40 + 30 : Math.random() * 30 + 20,
+              size: isLightMode ? Math.random() * 3 + 2 : Math.random() * 2 + 2
+            });
+          }
           
           lastSpawnTime.current = now;
         }
@@ -217,6 +262,74 @@ const ParticleBackground = () => {
         });
       }
 
+      // Draw technical nodes and circuit connections for light mode
+      if (isLightMode) {
+        const techNodes = techNodesRef.current;
+        
+        // Draw connection lines between nodes
+        techNodes.forEach((node, index) => {
+          node.pulse += node.pulseSpeed;
+          
+          node.connections.forEach((targetIndex) => {
+            const target = techNodes[targetIndex];
+            if (!target) return;
+            
+            const distToMouse = Math.sqrt(
+              Math.pow(mouseRef.current.x - (node.x + target.x) / 2, 2) +
+              Math.pow(mouseRef.current.y - (node.y + target.y) / 2, 2)
+            );
+            const mouseInfluence = Math.max(0, 1 - distToMouse / 200);
+            
+            // Draw circuit trace line
+            ctx.strokeStyle = `rgba(91, 144, 247, ${0.08 + mouseInfluence * 0.15})`;
+            ctx.lineWidth = 1 + mouseInfluence;
+            ctx.beginPath();
+            ctx.moveTo(node.x, node.y);
+            ctx.lineTo(target.x, target.y);
+            ctx.stroke();
+            
+            // Draw data pulse traveling along the line
+            const pulseProgress = (Math.sin(node.pulse) + 1) / 2;
+            const pulseX = node.x + (target.x - node.x) * pulseProgress;
+            const pulseY = node.y + (target.y - node.y) * pulseProgress;
+            
+            ctx.fillStyle = `rgba(52, 211, 253, ${0.3 + mouseInfluence * 0.3})`;
+            ctx.beginPath();
+            ctx.arc(pulseX, pulseY, 2 + mouseInfluence * 2, 0, Math.PI * 2);
+            ctx.fill();
+          });
+          
+          // Draw hexagonal node
+          const distToMouse = Math.sqrt(
+            Math.pow(mouseRef.current.x - node.x, 2) +
+            Math.pow(mouseRef.current.y - node.y, 2)
+          );
+          const mouseInfluence = Math.max(0, 1 - distToMouse / 150);
+          const nodeSize = 4 + mouseInfluence * 4;
+          const pulseSize = Math.sin(node.pulse) * 2;
+          
+          // Outer hexagon glow
+          ctx.strokeStyle = `rgba(91, 144, 247, ${0.2 + mouseInfluence * 0.3})`;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i;
+            const x = node.x + Math.cos(angle) * (nodeSize + pulseSize);
+            const y = node.y + Math.sin(angle) * (nodeSize + pulseSize);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.closePath();
+          ctx.stroke();
+          
+          // Inner node core
+          ctx.fillStyle = `rgba(52, 211, 253, ${0.4 + mouseInfluence * 0.4})`;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, nodeSize / 2, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
       // Draw clean mouse trail particles
       const trailParticles = trailParticlesRef.current;
       
@@ -236,8 +349,8 @@ const ParticleBackground = () => {
           continue;
         }
         
-        // Cleaner, sharper particles
-        const opacity = p.life * 0.5;
+        // Cleaner, sharper particles with better visibility in light mode
+        const opacity = isLightMode ? p.life * 0.8 : p.life * 0.5;
         const size = p.size * p.life;
         
         ctx.beginPath();
@@ -245,8 +358,8 @@ const ParticleBackground = () => {
         
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
         if (isLightMode) {
-          gradient.addColorStop(0, `rgba(91, 144, 247, ${opacity * 0.7})`);
-          gradient.addColorStop(0.5, `rgba(52, 211, 253, ${opacity * 0.4})`);
+          gradient.addColorStop(0, `rgba(91, 144, 247, ${opacity * 0.9})`);
+          gradient.addColorStop(0.5, `rgba(52, 211, 253, ${opacity * 0.6})`);
           gradient.addColorStop(1, `rgba(147, 51, 234, 0)`);
         } else {
           gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
@@ -257,10 +370,10 @@ const ParticleBackground = () => {
         ctx.fillStyle = gradient;
         ctx.fill();
         
-        // Minimal glow for clean effect
-        ctx.shadowBlur = size * 1.5;
+        // Enhanced glow for better visibility in light mode
+        ctx.shadowBlur = isLightMode ? size * 2.5 : size * 1.5;
         ctx.shadowColor = isLightMode 
-          ? `rgba(91, 144, 247, ${opacity * 0.4})` 
+          ? `rgba(91, 144, 247, ${opacity * 0.6})` 
           : `rgba(100, 180, 255, ${opacity * 0.3})`;
         ctx.fill();
         ctx.shadowBlur = 0;
