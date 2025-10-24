@@ -2360,7 +2360,6 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: "",
-    category: "Events",
     description: ""
   });
 
@@ -2415,7 +2414,8 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
       const galleryItem = {
         title: formData.title,
         images: uploadedImages,
-        category: formData.category,
+        category: "site",
+        status: "completed",
         description: formData.description
       };
 
@@ -2424,7 +2424,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
       
       toast.success(`Gallery item added with ${uploadedImages.length} image(s)`);
       setOpen(false);
-      setFormData({ title: "", category: "Events", description: "" });
+      setFormData({ title: "", description: "" });
       setUploadedImages([]);
       onSuccess();
     } catch (error: any) {
@@ -2509,17 +2509,6 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
               </p>
             </div>
             <div>
-              <Label htmlFor="gallery-category">Category</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Events">Events</SelectItem>
-                  <SelectItem value="Workshops">Workshops</SelectItem>
-                  <SelectItem value="Team">Team</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
               <Label htmlFor="gallery-description">Description</Label>
               <Textarea id="gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
             </div>
@@ -2599,7 +2588,9 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
       // Update the gallery item with all images
       const updatedData = {
         ...formData,
-        images: uploadedImages
+        images: uploadedImages,
+        category: "site",
+        status: "completed"
       };
       
       const { error } = await supabase.from('gallery').update(updatedData).eq('id', item.id);
@@ -2691,17 +2682,6 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                   </div>
                 </div>
               )}
-            </div>
-            <div>
-              <Label htmlFor="edit-gallery-category">Category</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Events">Events</SelectItem>
-                  <SelectItem value="Workshops">Workshops</SelectItem>
-                  <SelectItem value="Team">Team</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
             <div>
               <Label htmlFor="edit-gallery-description">Description</Label>
