@@ -119,11 +119,11 @@ const Members = () => {
               <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 border border-primary/30 bg-primary/5">
                 <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                 <span className="text-xs font-mono text-primary tracking-wider">
-                  OUR MENTORS
+                  OUR TEAM
                 </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-black text-gradient">
-                Meet Our Mentors
+                Meet Our Team
               </h2>
             </div>
             
