@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import TechFooter from '@/components/TechFooter';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -328,6 +328,49 @@ const Contact = () => {
                 </Button>
               </div>
             </form>
+
+            {/* Quick Links for Documents */}
+            <div className="mt-8 pt-8 border-t border-border">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                Quick Links
+              </h3>
+              <div className="space-y-3">
+                <a 
+                  href="/ISTE_Recruitment_Form.pdf" 
+                  download
+                  className="flex items-center justify-between p-4 bg-background border border-border hover:border-primary/50 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 border border-primary/30 bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                      <FileText className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-mono text-sm text-foreground">ISTE Recruitment Form</p>
+                      <p className="text-xs text-muted-foreground">Application form for student membership</p>
+                    </div>
+                  </div>
+                  <Download className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+
+                <a 
+                  href="/ISTE_Dossier.pdf" 
+                  download
+                  className="flex items-center justify-between p-4 bg-background border border-border hover:border-primary/50 transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 border border-primary/30 bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                      <FileText className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-mono text-sm text-foreground">ISTE Activity Dossier</p>
+                      <p className="text-xs text-muted-foreground">Activity tracking document for members</p>
+                    </div>
+                  </div>
+                  <Download className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </main>
