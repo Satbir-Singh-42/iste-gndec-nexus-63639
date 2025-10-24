@@ -20,6 +20,7 @@ const TechNoticeBoard = () => {
   const navigate = useNavigate();
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedNotices, setExpandedNotices] = useState<Set<number>>(new Set());
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -121,6 +122,19 @@ const TechNoticeBoard = () => {
     }
   };
 
+  const toggleNoticeExpansion = (noticeId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedNotices(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(noticeId)) {
+        newSet.delete(noticeId);
+      } else {
+        newSet.add(noticeId);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <section 
       id="notices" 
@@ -173,6 +187,7 @@ const TechNoticeBoard = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {notices.map((notice, index) => {
               const url = extractUrl(notice.description);
+              const isExpanded = expandedNotices.has(notice.id);
               
               return (
                 <div
@@ -213,26 +228,34 @@ const TechNoticeBoard = () => {
                     </div>
                   </div>
 
-                  {/* Description */}
-                  <p className="text-sm text-foreground/70 leading-relaxed mb-4">
-                    {renderDescriptionWithLinks(notice.description)}
-                  </p>
+                  {/* Description - Fixed height with expand/collapse */}
+                  <div className="relative mb-4">
+                    <p className={`text-sm text-foreground/70 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}>
+                      {renderDescriptionWithLinks(notice.description)}
+                    </p>
+                    {notice.description.length > 120 && (
+                      <button
+                        onClick={(e) => toggleNoticeExpansion(notice.id, e)}
+                        className="text-xs text-primary hover:underline mt-1 font-mono"
+                      >
+                        {isExpanded ? 'show less' : '...more'}
+                      </button>
+                    )}
+                  </div>
 
                   {/* Footer */}
                   <div className="flex items-center justify-end pt-4 border-t border-border/50">
-                    {url && (
-                      <div className="flex items-center gap-2 text-primary text-sm font-mono">
-                        <svg 
-                          className="w-4 h-4" 
-                          fill="none" 
-                          viewBox="0 0 24 24" 
-                          stroke="currentColor"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                        <span className="text-xs">View Notice</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 text-primary text-sm font-mono hover:underline cursor-pointer">
+                      <svg 
+                        className="w-4 h-4" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                      <span className="text-xs">View Notice</span>
+                    </div>
                   </div>
                 </div>
               );
