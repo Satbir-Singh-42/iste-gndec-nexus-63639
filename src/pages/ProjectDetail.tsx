@@ -135,19 +135,6 @@ const ProjectDetail = () => {
               alt={project.title}
               className="w-full h-full object-cover"
             />
-            <div className="absolute top-4 left-4 flex gap-2">
-              <Badge 
-                className="text-sm"
-                variant={project.status === 'completed' ? 'default' : 'secondary'}
-              >
-                {project.status}
-              </Badge>
-              {project.featured && (
-                <Badge className="text-sm bg-primary">
-                  Featured
-                </Badge>
-              )}
-            </div>
           </div>
 
           {/* Project Header */}
@@ -157,12 +144,6 @@ const ProjectDetail = () => {
                 <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                   {project.title}
                 </h1>
-                <div className="flex items-center gap-3 text-muted-foreground">
-                  <Badge variant="outline" className="capitalize">
-                    <Tag className="h-3 w-3 mr-1" />
-                    {project.category}
-                  </Badge>
-                </div>
               </div>
             </div>
 
