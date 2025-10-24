@@ -133,7 +133,7 @@ const Projects = () => {
               {filteredProjects.map((project) => (
                 <Card 
                   key={project.id} 
-                  className="group hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm"
+                  className="group hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm flex flex-col h-full"
                   onClick={() => navigate(`/projects/${project.id}`)}
                 >
                   {/* Project Image */}
@@ -154,7 +154,7 @@ const Projects = () => {
                     </CardDescription>
                   </CardHeader>
 
-                  <CardContent>
+                  <CardContent className="flex flex-col flex-1">
                     {/* Technologies */}
                     <div className="flex flex-wrap gap-2 mb-4">
                       {project.technologies.slice(0, 4).map((tech, idx) => (
@@ -170,7 +170,7 @@ const Projects = () => {
                     </div>
 
                     {/* Links */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-auto">
                       {project.github_link && (
                         <Button
                           size="sm"
