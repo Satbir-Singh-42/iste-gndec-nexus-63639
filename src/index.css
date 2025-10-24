@@ -211,11 +211,6 @@ All colors MUST be HSL.
     clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
   }
 
-  .light .tech-card {
-    box-shadow: 0 2px 8px hsl(var(--shadow-sm)),
-                0 4px 16px hsl(var(--shadow-md));
-  }
-
   .tech-card::before {
     content: '';
     position: absolute;
