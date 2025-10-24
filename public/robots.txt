@@ -9,7 +9,7 @@ Disallow: /api/
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://yourwebsite.com/sitemap.xml
+Sitemap: https://iste-gndec.vercel.app/sitemap.xml
 
 # Specific bot agents (optional, already covered by *)
 User-agent: Googlebot

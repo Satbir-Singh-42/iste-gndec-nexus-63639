@@ -6,48 +6,48 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://yourwebsite.com/</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>daily</changefreq>
+    <loc>https://iste-gndec.vercel.app/</loc>
+    <lastmod>2025-10-24</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+
+  <!-- About Page -->
+  <url>
+    <loc>https://iste-gndec.vercel.app/about</loc>
+    <lastmod>2025-10-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
   <!-- Events Page -->
   <url>
-    <loc>https://yourwebsite.com/events</loc>
-    <lastmod>2025-01-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Notices Page -->
-  <url>
-    <loc>https://yourwebsite.com/notices</loc>
-    <lastmod>2025-01-01</lastmod>
+    <loc>https://iste-gndec.vercel.app/events</loc>
+    <lastmod>2025-10-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Members Page -->
   <url>
-    <loc>https://yourwebsite.com/members</loc>
-    <lastmod>2025-01-01</lastmod>
+    <loc>https://iste-gndec.vercel.app/members</loc>
+    <lastmod>2025-10-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Gallery Page -->
   <url>
-    <loc>https://yourwebsite.com/gallery</loc>
-    <lastmod>2025-01-01</lastmod>
+    <loc>https://iste-gndec.vercel.app/gallery</loc>
+    <lastmod>2025-10-24</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
 
-  <!-- Contact Page -->
+  <!-- Highlights Page -->
   <url>
-    <loc>https://yourwebsite.com/contact</loc>
-    <lastmod>2025-01-01</lastmod>
+    <loc>https://iste-gndec.vercel.app/highlights</loc>
+    <lastmod>2025-10-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
