@@ -286,25 +286,29 @@ const Members = () => {
         {/* Member Cards */}
         <section className="px-4 md:px-8 lg:px-12">
           {members.length === 0 ? (
-            <div className="tech-card p-8 text-center">
+            <div className="tech-card p-8 text-center animate-in fade-in duration-500">
               <p className="text-muted-foreground">No members found in this category.</p>
             </div>
           ) : (
-            <div className={`grid gap-6 ${
-              activeTab === 'executive' 
-                ? 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5' 
-                : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-            }`}>
-              {members.map((member) => (
+            <div 
+              key={activeTab}
+              className={`grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ${
+                activeTab === 'executive' 
+                  ? 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5' 
+                  : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+              }`}
+            >
+              {members.map((member, index) => (
                 <div 
                   key={member.id} 
-                  className="bg-card border border-border p-6 hover:border-primary/50 transition-all group"
+                  className="bg-card border border-border p-6 hover:border-primary/50 transition-all group animate-in fade-in slide-in-from-bottom-4 duration-500"
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="aspect-square mb-4 overflow-hidden bg-muted">
                     <img 
                       src={member.image || '/default-avatar.png'} 
                       alt={member.name}
-                      className="w-full h-full object-cover object-top transition-all duration-300"
+                      className="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-110"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/default-avatar.png';
