@@ -178,8 +178,8 @@ const ParticleBackground = () => {
 
     // Animation loop
     const animate = () => {
-      // Clear canvas with lighter fade for better particle visibility in light mode
-      ctx.fillStyle = isLightMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(4, 6, 15, 0.2)';
+      // Clear canvas with slower fade for better particle visibility
+      ctx.fillStyle = isLightMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(4, 6, 15, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const fontSize = 11;
@@ -256,19 +256,19 @@ const ParticleBackground = () => {
           continue;
         }
         
-        // Cleaner, sharper particles with enhanced visibility
-        const opacity = isLightMode ? p.life * 0.95 : p.life * 0.75;
-        const size = p.size * p.life;
+        // Cleaner, sharper particles with MAXIMUM visibility in light mode
+        const opacity = isLightMode ? p.life : p.life * 0.75;
+        const size = isLightMode ? p.size * p.life * 1.5 : p.size * p.life;
         
         ctx.beginPath();
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
         
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
         if (isLightMode) {
-          // Darker, more vibrant colors for light mode visibility
-          gradient.addColorStop(0, `rgba(33, 96, 207, ${opacity})`);
-          gradient.addColorStop(0.5, `rgba(14, 165, 233, ${opacity * 0.8})`);
-          gradient.addColorStop(1, `rgba(99, 102, 241, 0)`);
+          // MUCH darker, more vibrant colors for light mode visibility
+          gradient.addColorStop(0, `rgba(20, 60, 160, ${opacity})`);
+          gradient.addColorStop(0.4, `rgba(10, 120, 200, ${opacity * 0.9})`);
+          gradient.addColorStop(1, `rgba(30, 80, 180, 0)`);
         } else {
           gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
           gradient.addColorStop(0.6, `rgba(100, 180, 255, ${opacity * 0.4})`);
@@ -278,10 +278,10 @@ const ParticleBackground = () => {
         ctx.fillStyle = gradient;
         ctx.fill();
         
-        // Enhanced glow for better visibility in light mode
-        ctx.shadowBlur = isLightMode ? size * 3.5 : size * 1.5;
+        // MASSIVE glow for better visibility in light mode
+        ctx.shadowBlur = isLightMode ? size * 6 : size * 1.5;
         ctx.shadowColor = isLightMode 
-          ? `rgba(33, 96, 207, ${opacity * 0.8})` 
+          ? `rgba(20, 60, 160, ${opacity})` 
           : `rgba(100, 180, 255, ${opacity * 0.3})`;
         ctx.fill();
         ctx.shadowBlur = 0;
