@@ -98,7 +98,7 @@ const ParticleBackground = () => {
         box-shadow: 0 0 ${size * (isDark ? 3 : 4)}px ${shadowColor};
         animation: twinkle ${3 + Math.random() * 4}s ease-in-out infinite;
         animation-delay: ${Math.random() * 3}s;
-        z-index: 2;
+        z-index: 4;
         transition: all 0.5s ease;
       `;
       
@@ -306,7 +306,7 @@ const ParticleBackground = () => {
       ref={containerRef} 
       className="absolute inset-0 overflow-hidden transition-all duration-500"
       style={{ 
-        zIndex: -10,
+        zIndex: 1,
         background: isDark 
           ? 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
           : 'radial-gradient(ellipse at center, rgba(224, 239, 255, 0.3) 0%, rgba(235, 245, 255, 0.2) 50%, transparent 100%)'
@@ -317,7 +317,7 @@ const ParticleBackground = () => {
         className="absolute inset-0 w-full h-full transition-all duration-500"
         style={{ 
           pointerEvents: 'none',
-          zIndex: 1,
+          zIndex: 3,
           background: isDark 
             ? 'linear-gradient(to bottom, rgba(4, 6, 15, 1) 0%, rgba(6, 10, 20, 1) 50%, rgba(4, 6, 15, 1) 100%)'
             : 'transparent'

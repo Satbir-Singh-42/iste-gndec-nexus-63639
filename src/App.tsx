@@ -44,7 +44,7 @@ const AppContent = () => {
     <>
       <ScrollToTop />
       {/* Global background - persists across all pages */}
-      <div className="fixed inset-0 -z-10">
+      <div className="fixed inset-0 z-0">
         <ParticleBackground />
       </div>
       {/* Global navbar - hidden on 404 and admin pages */}

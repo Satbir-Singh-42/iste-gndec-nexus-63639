@@ -80,7 +80,7 @@ const ProjectDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background relative z-10">
         <div className="container mx-auto px-4 py-20">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -94,7 +94,7 @@ const ProjectDetail = () => {
 
   if (!project) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen relative z-10">
         <div className="container mx-auto px-4 py-20">
           <div className="text-center">
             <Code className="h-24 w-24 mx-auto mb-6 text-muted-foreground/50" />
@@ -114,7 +114,7 @@ const ProjectDetail = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative z-10">
       
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">

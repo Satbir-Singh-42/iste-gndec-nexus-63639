@@ -116,7 +116,7 @@ const NoticeDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full relative flex items-center justify-center">
+      <div className="min-h-screen w-full relative z-10 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-muted-foreground text-lg">Loading notice...</p>
@@ -127,7 +127,7 @@ const NoticeDetail = () => {
 
   if (!notice) {
     return (
-      <div className="min-h-screen w-full relative">
+      <div className="min-h-screen w-full relative z-10">
         <main className="relative pt-32 pb-20 px-4 md:px-8 lg:px-16">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-black mb-6">Notice Not Found</h1>
@@ -149,7 +149,7 @@ const NoticeDetail = () => {
   const url = extractUrl(notice.description);
 
   return (
-    <div className="min-h-screen w-full relative">
+    <div className="min-h-screen w-full relative z-10">
 
       <main className="relative pt-24 pb-20 px-4 md:px-8 lg:px-16">
         <div className="max-w-4xl mx-auto">

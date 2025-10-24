@@ -10,7 +10,7 @@ const Index = () => {
   }, []);
 
   return (
-    <main className="min-h-screen w-full overflow-hidden relative">
+    <main className="min-h-screen w-full overflow-hidden relative z-10">
       <TechHero />
       <TechAbout />
       <TechNoticeBoard />

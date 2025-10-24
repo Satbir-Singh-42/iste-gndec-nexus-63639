@@ -156,7 +156,7 @@ All colors MUST be HSL.
       linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
     background-size: 60px 60px;
     pointer-events: none;
-    z-index: -20;
+    z-index: 2;
     opacity: 0.5;
   }
   
@@ -184,7 +184,7 @@ All colors MUST be HSL.
     border-radius: 50%;
     animation: float-1 20s ease-in-out infinite;
     pointer-events: none;
-    z-index: -20;
+    z-index: 2;
   }
 
   * {

@@ -191,7 +191,7 @@ const Contact = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full relative z-10">
       
       <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
         {/* Hero Section */}
