@@ -132,36 +132,8 @@ const ParticleBackground = () => {
 
     streamsRef.current = streams;
 
-    // Create technical nodes and connections for light mode
-    const techNodes: TechNode[] = [];
-    
-    if (isLightMode) {
-      const nodeCount = 15;
-      for (let i = 0; i < nodeCount; i++) {
-        const node: TechNode = {
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          pulse: Math.random() * Math.PI * 2,
-          pulseSpeed: 0.02 + Math.random() * 0.03,
-          connections: []
-        };
-        
-        // Connect to nearby nodes
-        if (i > 0) {
-          const connectCount = Math.min(2, i);
-          for (let j = 0; j < connectCount; j++) {
-            const targetIndex = Math.floor(Math.random() * i);
-            if (!node.connections.includes(targetIndex)) {
-              node.connections.push(targetIndex);
-            }
-          }
-        }
-        
-        techNodes.push(node);
-      }
-    }
-    
-    techNodesRef.current = techNodes;
+    // No technical nodes in light mode - keep it clean
+    techNodesRef.current = [];
 
     // Mouse tracking for cleaner trail
     const handleMouseMove = (event: MouseEvent) => {
@@ -262,73 +234,6 @@ const ParticleBackground = () => {
         });
       }
 
-      // Draw technical nodes and circuit connections for light mode
-      if (isLightMode) {
-        const techNodes = techNodesRef.current;
-        
-        // Draw connection lines between nodes
-        techNodes.forEach((node, index) => {
-          node.pulse += node.pulseSpeed;
-          
-          node.connections.forEach((targetIndex) => {
-            const target = techNodes[targetIndex];
-            if (!target) return;
-            
-            const distToMouse = Math.sqrt(
-              Math.pow(mouseRef.current.x - (node.x + target.x) / 2, 2) +
-              Math.pow(mouseRef.current.y - (node.y + target.y) / 2, 2)
-            );
-            const mouseInfluence = Math.max(0, 1 - distToMouse / 200);
-            
-            // Draw circuit trace line
-            ctx.strokeStyle = `rgba(91, 144, 247, ${0.08 + mouseInfluence * 0.15})`;
-            ctx.lineWidth = 1 + mouseInfluence;
-            ctx.beginPath();
-            ctx.moveTo(node.x, node.y);
-            ctx.lineTo(target.x, target.y);
-            ctx.stroke();
-            
-            // Draw data pulse traveling along the line
-            const pulseProgress = (Math.sin(node.pulse) + 1) / 2;
-            const pulseX = node.x + (target.x - node.x) * pulseProgress;
-            const pulseY = node.y + (target.y - node.y) * pulseProgress;
-            
-            ctx.fillStyle = `rgba(52, 211, 253, ${0.3 + mouseInfluence * 0.3})`;
-            ctx.beginPath();
-            ctx.arc(pulseX, pulseY, 2 + mouseInfluence * 2, 0, Math.PI * 2);
-            ctx.fill();
-          });
-          
-          // Draw hexagonal node
-          const distToMouse = Math.sqrt(
-            Math.pow(mouseRef.current.x - node.x, 2) +
-            Math.pow(mouseRef.current.y - node.y, 2)
-          );
-          const mouseInfluence = Math.max(0, 1 - distToMouse / 150);
-          const nodeSize = 4 + mouseInfluence * 4;
-          const pulseSize = Math.sin(node.pulse) * 2;
-          
-          // Outer hexagon glow
-          ctx.strokeStyle = `rgba(91, 144, 247, ${0.2 + mouseInfluence * 0.3})`;
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          for (let i = 0; i < 6; i++) {
-            const angle = (Math.PI / 3) * i;
-            const x = node.x + Math.cos(angle) * (nodeSize + pulseSize);
-            const y = node.y + Math.sin(angle) * (nodeSize + pulseSize);
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
-          ctx.closePath();
-          ctx.stroke();
-          
-          // Inner node core
-          ctx.fillStyle = `rgba(52, 211, 253, ${0.4 + mouseInfluence * 0.4})`;
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, nodeSize / 2, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
 
       // Draw clean mouse trail particles
       const trailParticles = trailParticlesRef.current;
