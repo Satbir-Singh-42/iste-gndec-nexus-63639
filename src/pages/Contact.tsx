@@ -330,9 +330,9 @@ const Contact = () => {
             </form>
 
             {/* Attachment links for Documents */}
-            <div className="mt-8 pt-8 border-t-2 border-primary/30 bg-primary/5 p-6 -mx-6">
-              <h3 className="text-xl md:text-2xl font-bold mb-6 flex items-center gap-3 text-primary">
-                <FileText className="w-7 h-7" />
+            <div className="mt-8 pt-8 border-t border-border">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
                 Attachment links
               </h3>
               <div className="space-y-3">
