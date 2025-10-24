@@ -260,8 +260,8 @@ const NoticeDetail = () => {
             {notice.attachments && notice.attachments.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <Download className="w-5 h-5 text-primary" />
-                  Downloads
+                  <FileText className="w-5 h-5 text-primary" />
+                  Attachments
                 </h3>
                 <div className="grid gap-3">
                   {notice.attachments.map((attachment, index) => (
