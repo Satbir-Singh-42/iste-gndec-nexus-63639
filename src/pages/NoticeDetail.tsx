@@ -47,7 +47,7 @@ const NoticeDetail = () => {
             href={part}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline inline-flex items-center gap-1"
+            className="text-blue-500 hover:text-blue-400 underline inline-flex items-center gap-1"
           >
             {part}
             <ExternalLink className="w-4 h-4" />
@@ -241,7 +241,7 @@ const NoticeDetail = () => {
                 className="prose prose-lg prose-invert max-w-none mb-8
                   prose-headings:text-foreground prose-headings:font-bold
                   prose-p:text-foreground/90 prose-p:leading-relaxed
-                  prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                  prose-a:text-blue-500 hover:prose-a:text-blue-400 prose-a:underline
                   prose-strong:text-foreground prose-strong:font-bold
                   prose-ul:text-foreground/90 prose-ol:text-foreground/90
                   prose-li:marker:text-primary
