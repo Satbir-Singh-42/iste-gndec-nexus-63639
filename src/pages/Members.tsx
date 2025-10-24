@@ -348,7 +348,7 @@ const Members = () => {
                   <h3 className="font-bold text-foreground mb-1 text-sm md:text-base">
                     {member.name}
                   </h3>
-                  <p className="text-xs text-muted-foreground mb-4">
+                  <p className="text-sm md:text-base font-semibold text-primary mb-4">
                     {member.position}
                   </p>
                   
