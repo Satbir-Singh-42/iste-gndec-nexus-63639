@@ -446,8 +446,8 @@ const Admin = () => {
     if (index === 0) return;
     const currentItem = items[index];
     const previousItem = items[index - 1];
-    const currentOrder = currentItem.display_order || index;
-    const previousOrder = previousItem.display_order || index - 1;
+    const currentOrder = currentItem.display_order ?? (items.length - index);
+    const previousOrder = previousItem.display_order ?? (items.length - index + 1);
     updateEventOrder(currentItem.id, previousOrder);
     updateEventOrder(previousItem.id, currentOrder);
   };
@@ -456,8 +456,8 @@ const Admin = () => {
     if (index === items.length - 1) return;
     const currentItem = items[index];
     const nextItem = items[index + 1];
-    const currentOrder = currentItem.display_order || index;
-    const nextOrder = nextItem.display_order || index + 1;
+    const currentOrder = currentItem.display_order ?? (items.length - index);
+    const nextOrder = nextItem.display_order ?? (items.length - index - 1);
     updateEventOrder(currentItem.id, nextOrder);
     updateEventOrder(nextItem.id, currentOrder);
   };
@@ -490,8 +490,8 @@ const Admin = () => {
     if (index === 0) return;
     const currentItem = items[index];
     const previousItem = items[index - 1];
-    const currentOrder = currentItem.display_order || index;
-    const previousOrder = previousItem.display_order || index - 1;
+    const currentOrder = currentItem.display_order ?? (items.length - index);
+    const previousOrder = previousItem.display_order ?? (items.length - index + 1);
     updateHighlightOrder(currentItem.id, previousOrder);
     updateHighlightOrder(previousItem.id, currentOrder);
   };
@@ -500,8 +500,8 @@ const Admin = () => {
     if (index === items.length - 1) return;
     const currentItem = items[index];
     const nextItem = items[index + 1];
-    const currentOrder = currentItem.display_order || index;
-    const nextOrder = nextItem.display_order || index + 1;
+    const currentOrder = currentItem.display_order ?? (items.length - index);
+    const nextOrder = nextItem.display_order ?? (items.length - index - 1);
     updateHighlightOrder(currentItem.id, nextOrder);
     updateHighlightOrder(nextItem.id, currentOrder);
   };
