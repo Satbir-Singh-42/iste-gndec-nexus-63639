@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { ThemeToggle } from './ThemeToggle';
 
 const staticNavItems = [
   { name: 'Home', path: '/' },
@@ -154,6 +155,7 @@ const TechNavbar = () => {
                 )}
               </NavLink>
             ))}
+            <ThemeToggle isScrolled={isScrolled} isHomePage={isHomePage} />
           </div>
 
           <button
@@ -187,6 +189,10 @@ const TechNavbar = () => {
                 {item.name}
               </NavLink>
             ))}
+            <div className="flex items-center justify-between px-4 py-3 tech-border bg-muted/50">
+              <span className="font-mono text-sm tracking-wider text-muted-foreground">Theme</span>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       )}
