@@ -2656,7 +2656,6 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
         title: formData.title,
         images: uploadedImages,
         category: formData.category,
-        status: "completed",
         description: formData.description
       };
 
@@ -2839,8 +2838,7 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
       // Update the gallery item with all images
       const updatedData = {
         ...formData,
-        images: uploadedImages,
-        status: "completed"
+        images: uploadedImages
       };
       
       const { error } = await supabase.from('gallery').update(updatedData).eq('id', item.id);
