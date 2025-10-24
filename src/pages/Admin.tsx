@@ -707,7 +707,7 @@ const Admin = () => {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 relative z-10">
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
           <p className="text-white">Checking authentication...</p>
@@ -718,7 +718,7 @@ const Admin = () => {
 
   if (!supabase) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-8 relative z-10">
         <Card className="w-full max-w-2xl">
           <CardHeader>
             <CardTitle className="text-red-500">Configuration Error</CardTitle>
@@ -746,7 +746,7 @@ const Admin = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 relative z-10">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Admin Login</CardTitle>
@@ -791,7 +791,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 pt-20 sm:pt-24 pb-8 px-4 sm:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 pt-20 sm:pt-24 pb-8 px-4 sm:px-8 relative z-10">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Admin Panel</h1>
