@@ -95,10 +95,10 @@ const ParticleBackground = () => {
 
     starsRef.current = stars;
 
-    // Create binary streams (very subtle) - only on home page
+    // Create binary streams (very subtle) - only on home page and only in dark mode
     const streams: BinaryStream[] = [];
     
-    if (isHomePage) {
+    if (isHomePage && !isLightMode) {
       const streamCount = Math.floor(window.innerWidth / 60);
 
       for (let i = 0; i < streamCount; i++) {
@@ -167,8 +167,8 @@ const ParticleBackground = () => {
       ctx.font = `${fontSize}px "Courier New", monospace`;
       ctx.textAlign = 'center';
 
-      // Draw binary streams (extremely translucent) - only on home page
-      if (isHomePage) {
+      // Draw binary streams (extremely translucent) - only on home page and only in dark mode
+      if (isHomePage && !isLightMode) {
         streams.forEach((stream) => {
         stream.y += stream.speed;
 

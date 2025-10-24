@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import ThemeToggle from './ThemeToggle';
 
@@ -13,11 +14,13 @@ const navItems = [
 ];
 
 const TechNavbar = () => {
+  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const isAdminPage = location.pathname === '/admin';
+  const isLightMode = theme === 'light';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,12 +35,26 @@ const TechNavbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const getTextShadow = () => {
+    if (isScrolled || !isHomePage) return undefined;
+    return isLightMode 
+      ? { textShadow: '0 2px 8px rgba(255,255,255,0.9), 0 0 20px rgba(255,255,255,0.7)' }
+      : { textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' };
+  };
+
+  const getTextColor = () => {
+    if (isScrolled || !isHomePage) return "text-foreground";
+    return isLightMode ? "text-gray-900 drop-shadow-sm" : "text-white";
+  };
+
   return (
     <nav className={cn(
       'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
       isScrolled || !isHomePage
         ? 'bg-background/80 backdrop-blur-lg border-border' 
-        : 'bg-transparent border-transparent'
+        : isLightMode 
+          ? 'bg-gradient-to-b from-background/40 to-transparent border-transparent'
+          : 'bg-transparent border-transparent'
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -52,9 +69,9 @@ const TechNavbar = () => {
             </div>
             <span className={cn(
               "font-black text-xl tracking-tight group-hover:text-primary transition-colors",
-              isScrolled || !isHomePage ? "text-foreground" : "text-white"
+              getTextColor()
             )}
-            style={!isScrolled && isHomePage ? { textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' } : undefined}
+            style={getTextShadow()}
             >
               ISTE GNDEC
             </span>
@@ -74,10 +91,12 @@ const TechNavbar = () => {
                       ? 'text-primary'
                       : isScrolled || !isHomePage
                         ? 'text-muted-foreground hover:text-foreground'
-                        : 'text-white/95 hover:text-white'
+                        : isLightMode
+                          ? 'text-gray-800 hover:text-gray-900 drop-shadow-sm'
+                          : 'text-white/95 hover:text-white'
                   )
                 }
-                style={!isScrolled && isHomePage ? { textShadow: '0 2px 6px rgba(0,0,0,0.8)' } : undefined}
+                style={!isScrolled && isHomePage && !isLightMode ? { textShadow: '0 2px 6px rgba(0,0,0,0.8)' } : undefined}
               >
                 {({ isActive }) => (
                   <>
@@ -101,9 +120,13 @@ const TechNavbar = () => {
             onClick={() => setIsOpen(!isOpen)}
             className={cn(
               "md:hidden p-2 hover:text-primary transition-colors",
-              isScrolled || !isHomePage ? "text-foreground" : "text-white"
+              isScrolled || !isHomePage 
+                ? "text-foreground" 
+                : isLightMode 
+                  ? "text-gray-900 drop-shadow-sm" 
+                  : "text-white"
             )}
-            style={!isScrolled && isHomePage ? { filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.8))' } : undefined}
+            style={!isScrolled && isHomePage && !isLightMode ? { filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.8))' } : undefined}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
