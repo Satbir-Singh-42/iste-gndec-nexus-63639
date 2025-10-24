@@ -975,7 +975,15 @@ const Admin = () => {
                             <TableCell>{member.name}</TableCell>
                             <TableCell>{member.title}</TableCell>
                             <TableCell>
-                              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                              <img 
+                                src={member.image || '/default-avatar.png'} 
+                                alt={member.name} 
+                                className="w-10 h-10 rounded-full object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = '/default-avatar.png';
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">
@@ -1071,7 +1079,15 @@ const Admin = () => {
                             <TableCell>{member.position}</TableCell>
                             <TableCell>{member.email}</TableCell>
                             <TableCell>
-                              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                              <img 
+                                src={member.image || '/default-avatar.png'} 
+                                alt={member.name} 
+                                className="w-10 h-10 rounded-full object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = '/default-avatar.png';
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">
@@ -1167,7 +1183,15 @@ const Admin = () => {
                             <TableCell>{member.position}</TableCell>
                             <TableCell>{member.email}</TableCell>
                             <TableCell>
-                              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                              <img 
+                                src={member.image || '/default-avatar.png'} 
+                                alt={member.name} 
+                                className="w-10 h-10 rounded-full object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = '/default-avatar.png';
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">
@@ -1263,7 +1287,15 @@ const Admin = () => {
                             <TableCell>{member.position}</TableCell>
                             <TableCell>{member.email}</TableCell>
                             <TableCell>
-                              <img src={member.image} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                              <img 
+                                src={member.image || '/default-avatar.png'} 
+                                alt={member.name} 
+                                className="w-10 h-10 rounded-full object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.src = '/default-avatar.png';
+                                }}
+                              />
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">

@@ -124,9 +124,13 @@ const Members = () => {
               <div className="mx-auto">
                 <div className="w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden bg-muted border-4 border-border">
                   <img 
-                    src={faculty.image} 
+                    src={faculty.image || '/default-avatar.png'} 
                     alt={faculty.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = '/default-avatar.png';
+                    }}
                   />
                 </div>
               </div>
@@ -251,9 +255,13 @@ const Members = () => {
                 >
                   <div className="aspect-square mb-4 overflow-hidden bg-muted">
                     <img 
-                      src={member.image} 
+                      src={member.image || '/default-avatar.png'} 
                       alt={member.name}
                       className="w-full h-full object-cover object-top transition-all duration-300"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/default-avatar.png';
+                      }}
                     />
                   </div>
                   
