@@ -32,26 +32,22 @@ const ScrollToTop = () => {
   return null;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider 
-      attribute="class" 
-      defaultTheme="dark" 
-      enableSystem={false}
-      storageKey="iste-theme"
-    >
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          {/* Global background - persists across all pages */}
-          <div className="fixed inset-0 -z-10">
-            <ParticleBackground />
-          </div>
-          {/* Global navbar - persists across all pages */}
-          <TechNavbar />
-          <Routes>
+const AppContent = () => {
+  const location = useLocation();
+  const isNotFoundPage = !['/', '/events', '/members', '/gallery', '/contact', '/notices', '/projects', '/admin'].some(path => 
+    location.pathname === path || location.pathname.startsWith(path + '/')
+  );
+
+  return (
+    <>
+      <ScrollToTop />
+      {/* Global background - persists across all pages */}
+      <div className="fixed inset-0 -z-10">
+        <ParticleBackground />
+      </div>
+      {/* Global navbar - hidden on 404 page */}
+      {!isNotFoundPage && <TechNavbar />}
+      <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<Events />} />
             <Route path="/events/:id" element={<EventDetail />} />
@@ -66,6 +62,23 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+    </>
+  );
+};
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider 
+      attribute="class" 
+      defaultTheme="dark" 
+      enableSystem={false}
+      storageKey="iste-theme"
+    >
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AppContent />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
