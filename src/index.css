@@ -111,19 +111,21 @@ All colors MUST be HSL.
   }
 
   html.light {
-    background: linear-gradient(135deg, #F0F5FF 0%, #FCF5FF 25%, #FFFAFA 50%, #F5FAFF 75%, #FAF5FF 100%);
+    background: linear-gradient(135deg, #E8F4FF 0%, #F0F8FF 25%, #FFFFFF 50%, #EFF6FF 75%, #E0F0FF 100%);
+    min-height: 100vh;
   }
 
   body {
     @apply text-foreground overflow-x-hidden;
     position: relative;
     background: hsl(var(--background));
-    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+    min-height: 100vh;
+    transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   html.light body {
-    background: transparent !important;
+    background: linear-gradient(135deg, #E8F4FF 0%, #F0F8FF 25%, #FFFFFF 50%, #EFF6FF 75%, #E0F0FF 100%) !important;
   }
 
   * {
