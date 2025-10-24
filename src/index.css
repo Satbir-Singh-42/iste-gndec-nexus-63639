@@ -50,51 +50,51 @@ All colors MUST be HSL.
   }
 
   .light {
-    /* Enhanced Technical Light Theme - Cool Blue Dominant */
-    --background: 210 80% 94%;
-    --foreground: 220 60% 15%;
+    /* Enhanced Technical Light Theme - Calm & Cool */
+    --background: 220 20% 96%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 60% 15%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 60% 15%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 210 75% 50%;
+    --primary: 210 55% 58%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 200 70% 55%;
+    --secondary: 195 50% 55%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 88%;
-    --muted-foreground: 215 25% 35%;
+    --muted: 214 20% 90%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 200 65% 52%;
+    --accent: 200 48% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 50% 80%;
-    --input: 210 60% 92%;
-    --ring: 210 75% 50%;
+    --border: 214 20% 88%;
+    --input: 214 20% 92%;
+    --ring: 210 55% 58%;
 
     /* Enhanced Technical Colors - Light Mode */
-    --tech-blue: 210 75% 50%;
-    --tech-cyan: 200 70% 55%;
-    --tech-sky: 200 65% 52%;
-    --tech-purple: 235 55% 60%;
-    --tech-grid: 210 40% 75%;
+    --tech-blue: 210 55% 58%;
+    --tech-cyan: 195 50% 55%;
+    --tech-sky: 200 48% 52%;
+    --tech-purple: 235 45% 60%;
+    --tech-grid: 220 25% 78%;
     
     /* Gradient colors for enhanced visuals */
-    --gradient-start: 210 75% 50%;
-    --gradient-mid: 200 70% 55%;
-    --gradient-end: 235 55% 60%;
+    --gradient-start: 210 55% 58%;
+    --gradient-mid: 195 50% 55%;
+    --gradient-end: 235 45% 60%;
     
     /* Shadow colors */
-    --shadow-sm: 210 40% 40% / 0.08;
-    --shadow-md: 210 40% 40% / 0.12;
-    --shadow-lg: 210 40% 40% / 0.16;
+    --shadow-sm: 210 25% 55% / 0.04;
+    --shadow-md: 210 25% 55% / 0.06;
+    --shadow-lg: 210 25% 55% / 0.10;
     
     /* Technical Effects */
     --scanline-opacity: 0.01;
@@ -111,6 +111,7 @@ All colors MUST be HSL.
   }
 
   html.light {
+    background: linear-gradient(135deg, #EBF5FF 0%, #F2F8FF 25%, #FAFCFF 50%, #F0F6FF 75%, #E8F3FF 100%);
     min-height: 100vh;
   }
 
@@ -124,25 +125,7 @@ All colors MUST be HSL.
   }
 
   html.light body {
-    background: linear-gradient(-45deg, 
-      hsl(210 100% 94%), 
-      hsl(210 90% 92%), 
-      hsl(215 85% 95%), 
-      hsl(210 95% 93%)) !important;
-    background-size: 400% 400%;
-    animation: gradientFlow 12s ease infinite;
-  }
-  
-  @keyframes gradientFlow {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
+    background: linear-gradient(135deg, #EBF5FF 0%, #F2F8FF 25%, #FAFCFF 50%, #F0F6FF 75%, #E8F3FF 100%) !important;
   }
 
   * {
@@ -174,37 +157,6 @@ All colors MUST be HSL.
     pointer-events: none;
     z-index: 9999;
     animation: scanline 8s linear infinite;
-  }
-  
-  html.light body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-      radial-gradient(circle at 20% 50%, hsl(210 100% 85% / 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, hsl(210 95% 87% / 0.25) 0%, transparent 50%),
-      radial-gradient(circle at 40% 20%, hsl(215 90% 88% / 0.2) 0%, transparent 40%);
-    pointer-events: none;
-    z-index: 0;
-    animation: floatingOrbs 20s ease-in-out infinite;
-  }
-  
-  @keyframes floatingOrbs {
-    0%, 100% {
-      transform: translate(0, 0) scale(1);
-      opacity: 0.6;
-    }
-    33% {
-      transform: translate(30px, -30px) scale(1.1);
-      opacity: 0.8;
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-      opacity: 0.7;
-    }
   }
 
   @keyframes scanline {
