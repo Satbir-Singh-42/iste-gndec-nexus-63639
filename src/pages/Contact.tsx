@@ -329,11 +329,11 @@ const Contact = () => {
               </div>
             </form>
 
-            {/* Quick Links for Documents */}
+            {/* Attachment links for Documents */}
             <div className="mt-8 pt-8 border-t border-border">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
-                Quick Links
+                Attachment links
               </h3>
               <div className="space-y-3">
                 <a 
