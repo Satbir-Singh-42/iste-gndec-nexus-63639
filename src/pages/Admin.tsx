@@ -21,6 +21,7 @@ import { RichTextEditor } from "@/components/RichTextEditor";
 import { FileUploadField } from "@/components/FileUploadField";
 import { MultipleFileUpload } from "@/components/MultipleFileUpload";
 import "@/styles/quill-custom.css";
+import { normalizeUrl } from "@/lib/utils";
 
 // Helper function to convert time to 12-hour format (handles both 24-hour and 12-hour input)
 const convertTo12Hour = (time: string): string => {
@@ -2994,9 +2995,9 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
         title: formData.title,
         image: formData.image,
         description: formData.description,
-        ...(formData.linkedin && { linkedin: formData.linkedin }),
-        ...(formData.github && { github: formData.github }),
-        ...(formData.instagram && { instagram: formData.instagram })
+        ...(formData.linkedin && { linkedin: normalizeUrl(formData.linkedin) }),
+        ...(formData.github && { github: normalizeUrl(formData.github) }),
+        ...(formData.instagram && { instagram: normalizeUrl(formData.instagram) })
       };
       const { error } = await supabase.from('members_faculty').insert([dataToInsert]);
       if (error) throw error;
@@ -3041,15 +3042,15 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
           </div>
           <div>
             <Label htmlFor="faculty-linkedin">LinkedIn URL (optional)</Label>
-            <Input id="faculty-linkedin" type="url" value={formData.linkedin} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="https://linkedin.com/in/username" />
+            <Input id="faculty-linkedin" type="text" value={formData.linkedin} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="linkedin.com/in/username" />
           </div>
           <div>
             <Label htmlFor="faculty-github">GitHub URL (optional)</Label>
-            <Input id="faculty-github" type="url" value={formData.github} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="https://github.com/username" />
+            <Input id="faculty-github" type="text" value={formData.github} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="github.com/username" />
           </div>
           <div>
             <Label htmlFor="faculty-instagram">Instagram URL (optional)</Label>
-            <Input id="faculty-instagram" type="url" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="https://instagram.com/username" />
+            <Input id="faculty-instagram" type="text" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="instagram.com/username" />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={uploading || !formData.image}>Add Faculty</Button>
@@ -3087,7 +3088,13 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('members_faculty').update(formData).eq('id', member.id);
+      const dataToUpdate = {
+        ...formData,
+        linkedin: formData.linkedin ? normalizeUrl(formData.linkedin) : formData.linkedin,
+        github: formData.github ? normalizeUrl(formData.github) : formData.github,
+        instagram: formData.instagram ? normalizeUrl(formData.instagram) : formData.instagram
+      };
+      const { error } = await supabase.from('members_faculty').update(dataToUpdate).eq('id', member.id);
       if (error) throw error;
       toast.success('Faculty member updated successfully');
       setOpen(false);
@@ -3129,15 +3136,15 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
           </div>
           <div>
             <Label htmlFor="edit-faculty-linkedin">LinkedIn URL (optional)</Label>
-            <Input id="edit-faculty-linkedin" type="url" value={formData.linkedin || ""} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="https://linkedin.com/in/username" />
+            <Input id="edit-faculty-linkedin" type="text" value={formData.linkedin || ""} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="linkedin.com/in/username" />
           </div>
           <div>
             <Label htmlFor="edit-faculty-github">GitHub URL (optional)</Label>
-            <Input id="edit-faculty-github" type="url" value={formData.github || ""} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="https://github.com/username" />
+            <Input id="edit-faculty-github" type="text" value={formData.github || ""} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="github.com/username" />
           </div>
           <div>
             <Label htmlFor="edit-faculty-instagram">Instagram URL (optional)</Label>
-            <Input id="edit-faculty-instagram" type="url" value={formData.instagram || ""} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="https://instagram.com/username" />
+            <Input id="edit-faculty-instagram" type="text" value={formData.instagram || ""} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="instagram.com/username" />
           </div>
           <DialogFooter>
             <Button type="submit" disabled={uploading}>Update Faculty</Button>
@@ -3188,9 +3195,9 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
         position: formData.position,
         image: formData.image || '/default-avatar.png',
         ...(formData.email && { email: formData.email }),
-        ...(formData.linkedin && { linkedin: formData.linkedin }),
-        ...(formData.github && { github: formData.github }),
-        ...(formData.instagram && { instagram: formData.instagram })
+        ...(formData.linkedin && { linkedin: normalizeUrl(formData.linkedin) }),
+        ...(formData.github && { github: normalizeUrl(formData.github) }),
+        ...(formData.instagram && { instagram: normalizeUrl(formData.instagram) })
       };
       const { error } = await supabase.from(table).insert([dataToInsert]);
       if (error) throw error;
@@ -3229,15 +3236,15 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
           </div>
           <div>
             <Label htmlFor="member-linkedin">LinkedIn URL (optional)</Label>
-            <Input id="member-linkedin" type="url" value={formData.linkedin} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="https://linkedin.com/in/username" />
+            <Input id="member-linkedin" type="text" value={formData.linkedin} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="linkedin.com/in/username" />
           </div>
           <div>
             <Label htmlFor="member-github">GitHub URL (optional)</Label>
-            <Input id="member-github" type="url" value={formData.github} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="https://github.com/username" />
+            <Input id="member-github" type="text" value={formData.github} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="github.com/username" />
           </div>
           <div>
             <Label htmlFor="member-instagram">Instagram URL (optional)</Label>
-            <Input id="member-instagram" type="url" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="https://instagram.com/username" />
+            <Input id="member-instagram" type="text" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="instagram.com/username" />
           </div>
           <div>
             <Label htmlFor="member-image">Profile Image (optional)</Label>
@@ -3281,7 +3288,13 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from(table).update(formData).eq('id', member.id);
+      const dataToUpdate = {
+        ...formData,
+        linkedin: formData.linkedin ? normalizeUrl(formData.linkedin) : formData.linkedin,
+        github: formData.github ? normalizeUrl(formData.github) : formData.github,
+        instagram: formData.instagram ? normalizeUrl(formData.instagram) : formData.instagram
+      };
+      const { error } = await supabase.from(table).update(dataToUpdate).eq('id', member.id);
       if (error) throw error;
       toast.success('Member updated successfully');
       setOpen(false);
@@ -3317,15 +3330,15 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
           </div>
           <div>
             <Label htmlFor="edit-member-linkedin">LinkedIn URL (optional)</Label>
-            <Input id="edit-member-linkedin" type="url" value={formData.linkedin || ""} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="https://linkedin.com/in/username" />
+            <Input id="edit-member-linkedin" type="text" value={formData.linkedin || ""} onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })} placeholder="linkedin.com/in/username" />
           </div>
           <div>
             <Label htmlFor="edit-member-github">GitHub URL (optional)</Label>
-            <Input id="edit-member-github" type="url" value={formData.github || ""} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="https://github.com/username" />
+            <Input id="edit-member-github" type="text" value={formData.github || ""} onChange={(e) => setFormData({ ...formData, github: e.target.value })} placeholder="github.com/username" />
           </div>
           <div>
             <Label htmlFor="edit-member-instagram">Instagram URL (optional)</Label>
-            <Input id="edit-member-instagram" type="url" value={formData.instagram || ""} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="https://instagram.com/username" />
+            <Input id="edit-member-instagram" type="text" value={formData.instagram || ""} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="instagram.com/username" />
           </div>
           <div>
             <Label htmlFor="edit-member-image">Profile Image</Label>
