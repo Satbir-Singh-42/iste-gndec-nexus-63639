@@ -1394,16 +1394,20 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
     status: "UPCOMING",
     description: ""
   });
-  const [datetime, setDatetime] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [timeInput, setTimeInput] = useState("");
 
-  const handleDateTimeChange = (value: string) => {
-    setDatetime(value);
-    if (value) {
-      const dt = new Date(value);
-      const dateStr = dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-      setFormData({ ...formData, date: dateStr, time: timeStr });
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      setFormData({ ...formData, date: dateStr });
     }
+  };
+
+  const handleTimeChange = (value: string) => {
+    setTimeInput(value);
+    setFormData({ ...formData, time: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1416,7 +1420,8 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
       toast.success('Notice added successfully');
       setOpen(false);
       setFormData({ title: "", date: "", time: "", type: "EVENT", status: "UPCOMING", description: "" });
-      setDatetime("");
+      setSelectedDate(undefined);
+      setTimeInput("");
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add notice: ${error.message}`);
@@ -1439,20 +1444,41 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             <Label htmlFor="title">Title</Label>
             <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
-          <div>
-            <Label htmlFor="datetime">Date and Time</Label>
-            <Input 
-              id="datetime" 
-              type="datetime-local" 
-              value={datetime} 
-              onChange={(e) => handleDateTimeChange(e.target.value)} 
-              required 
-            />
-            {formData.date && formData.time && (
-              <p className="text-sm text-muted-foreground mt-1">
-                Will display as: {formData.date} at {formData.time}
-              </p>
-            )}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal text-white"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-popover text-white">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                    className="text-white"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <Label htmlFor="time">Time</Label>
+              <Input 
+                id="time" 
+                type="time"
+                value={timeInput} 
+                onChange={(e) => handleTimeChange(e.target.value)} 
+                required
+                className="text-white"
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -1505,16 +1531,20 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
 function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(notice);
-  const [datetime, setDatetime] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [timeInput, setTimeInput] = useState("");
 
-  const handleDateTimeChange = (value: string) => {
-    setDatetime(value);
-    if (value) {
-      const dt = new Date(value);
-      const dateStr = dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-      setFormData({ ...formData, date: dateStr, time: timeStr });
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      setFormData({ ...formData, date: dateStr });
     }
+  };
+
+  const handleTimeChange = (value: string) => {
+    setTimeInput(value);
+    setFormData({ ...formData, time: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1548,17 +1578,46 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
             <Label htmlFor="edit-title">Title</Label>
             <Input id="edit-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
-          <div>
-            <Label htmlFor="edit-datetime">Date and Time</Label>
-            <Input 
-              id="edit-datetime" 
-              type="datetime-local" 
-              value={datetime} 
-              onChange={(e) => handleDateTimeChange(e.target.value)} 
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Current: {formData.date} at {formData.time}
-            </p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Date (optional - leave blank to keep current)</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal text-white"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-popover text-white">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                    className="text-white"
+                  />
+                </PopoverContent>
+              </Popover>
+              <p className="text-sm text-muted-foreground mt-1">
+                Current: {formData.date}
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="edit-time">Time (optional)</Label>
+              <Input 
+                id="edit-time" 
+                type="time"
+                value={timeInput} 
+                onChange={(e) => handleTimeChange(e.target.value)} 
+                className="text-white"
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Current: {formData.time}
+              </p>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -1622,13 +1681,12 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
     details: "",
     agenda: []
   });
-  const [dateInput, setDateInput] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>();
 
-  const handleDateChange = (value: string) => {
-    setDateInput(value);
-    if (value) {
-      const dt = new Date(value);
-      const dateStr = dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
       setFormData({ ...formData, date: dateStr });
     }
   };
@@ -1652,7 +1710,7 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
       toast.success('Event added successfully');
       setOpen(false);
       setFormData({ title: "", date: "", time: "", location: "", description: "", status: "UPCOMING", capacity: "100", organizer: "ISTE GNDEC", details: "", agenda: [] });
-      setDateInput("");
+      setSelectedDate(undefined);
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add event: ${error.message}`);
@@ -1677,23 +1735,31 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="event-date">Date</Label>
-              <Input 
-                id="event-date" 
-                type="date"
-                value={dateInput} 
-                onChange={(e) => handleDateChange(e.target.value)} 
-                required 
-              />
-              {formData.date && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  Will display as: {formData.date}
-                </p>
-              )}
+              <Label>Date</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal text-white"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-popover text-white">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                    className="text-white"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div>
               <Label htmlFor="event-time">Time</Label>
-              <Input id="event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} placeholder="10:00 AM" required />
+              <Input id="event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} placeholder="10:00 AM" required className="text-white" />
             </div>
           </div>
           <div>
@@ -1772,13 +1838,12 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
 function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(event);
-  const [dateInput, setDateInput] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>();
 
-  const handleDateChange = (value: string) => {
-    setDateInput(value);
-    if (value) {
-      const dt = new Date(value);
-      const dateStr = dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
       setFormData({ ...formData, date: dateStr });
     }
   };
@@ -1787,7 +1852,7 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
     setOpen(newOpen);
     if (newOpen) {
       setFormData(event);
-      setDateInput("");
+      setSelectedDate(undefined);
     }
   };
 
@@ -1824,20 +1889,34 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="edit-event-date">Date (optional - leave blank to keep current)</Label>
-              <Input 
-                id="edit-event-date" 
-                type="date"
-                value={dateInput} 
-                onChange={(e) => handleDateChange(e.target.value)} 
-              />
+              <Label>Date (optional - leave blank to keep current)</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal text-white"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-popover text-white">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                    className="text-white"
+                  />
+                </PopoverContent>
+              </Popover>
               <p className="text-sm text-muted-foreground mt-1">
                 Current: {formData.date}
               </p>
             </div>
             <div>
               <Label htmlFor="edit-event-time">Time</Label>
-              <Input id="edit-event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} required />
+              <Input id="edit-event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} required className="text-white" />
             </div>
           </div>
           <div>
@@ -2671,6 +2750,7 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
 function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -2680,6 +2760,14 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
     instagram_link: "",
     highlights: ""
   });
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      setFormData({ ...formData, date: dateStr });
+    }
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -2719,6 +2807,7 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
         instagram_link: "",
         highlights: ""
       });
+      setSelectedDate(undefined);
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add event highlight: ${error.message}`);
@@ -2742,8 +2831,27 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
             <Input id="highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
           <div>
-            <Label htmlFor="highlight-date">Date *</Label>
-            <Input id="highlight-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} placeholder="March 15, 2024" required />
+            <Label>Date *</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal text-white"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-popover text-white">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  initialFocus
+                  className="text-white"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
           <div>
             <Label htmlFor="highlight-poster">Event Poster *</Label>
@@ -2768,10 +2876,19 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
 function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHighlight; onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const [formData, setFormData] = useState({
     ...highlight,
     highlights: highlight.highlights.join('\n')
   });
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      setFormData({ ...formData, date: dateStr });
+    }
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -2830,8 +2947,30 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
             <Input id="edit-highlight-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
           </div>
           <div>
-            <Label htmlFor="edit-highlight-date">Date *</Label>
-            <Input id="edit-highlight-date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} required />
+            <Label>Date (optional - leave blank to keep current)</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal text-white"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-popover text-white">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  initialFocus
+                  className="text-white"
+                />
+              </PopoverContent>
+            </Popover>
+            <p className="text-sm text-muted-foreground mt-1">
+              Current: {formData.date}
+            </p>
           </div>
           <div>
             <Label htmlFor="edit-highlight-poster">Event Poster *</Label>
