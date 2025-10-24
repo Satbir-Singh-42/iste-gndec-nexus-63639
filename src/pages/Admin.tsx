@@ -1985,7 +1985,7 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -2152,7 +2152,7 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -2326,7 +2326,7 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -2489,7 +2489,7 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
@@ -3438,7 +3438,7 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
                   {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
@@ -3553,7 +3553,7 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
                   {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
