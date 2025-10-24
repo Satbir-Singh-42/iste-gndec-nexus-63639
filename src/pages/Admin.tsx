@@ -2620,7 +2620,7 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
       const dataToInsert = {
         name: formData.name,
         position: formData.position,
-        image: formData.image,
+        image: formData.image || '/default-avatar.png',
         ...(formData.email && { email: formData.email }),
         ...(formData.linkedin && { linkedin: formData.linkedin }),
         ...(formData.github && { github: formData.github }),
