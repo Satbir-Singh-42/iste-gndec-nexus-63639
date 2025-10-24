@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -19,22 +19,27 @@ const TechNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
-  const [navItems, setNavItems] = useState(staticNavItems);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const isAdminPage = location.pathname === '/admin';
   const isLightMode = theme === 'light';
 
+  // Memoize navItems to prevent unnecessary recalculations
+  const navItems = useMemo(() => {
+    return showProjects 
+      ? [...staticNavItems.slice(0, 2), { name: 'Projects', path: '/projects' }, ...staticNavItems.slice(2)]
+      : staticNavItems;
+  }, [showProjects]);
+
+  // Reset scroll state when navigating to a new page
+  useEffect(() => {
+    setIsScrolled(window.scrollY > 80);
+    setIsOpen(false);
+  }, [location.pathname]);
+
   useEffect(() => {
     fetchNavbarSettings();
   }, []);
-
-  useEffect(() => {
-    const updatedNavItems = showProjects 
-      ? [...staticNavItems.slice(0, 2), { name: 'Projects', path: '/projects' }, ...staticNavItems.slice(2)]
-      : staticNavItems;
-    setNavItems(updatedNavItems);
-  }, [showProjects]);
 
   const fetchNavbarSettings = async () => {
     if (!supabase) return;
@@ -55,38 +60,47 @@ const TechNavbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 80) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      const scrolled = window.scrollY > 80;
+      setIsScrolled(scrolled);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const getTextShadow = () => {
+  // Memoize style calculations
+  const textShadow = useMemo(() => {
     if (isScrolled || !isHomePage) return undefined;
     return isLightMode 
       ? { textShadow: '0 2px 8px rgba(255,255,255,0.9), 0 0 20px rgba(255,255,255,0.7)' }
       : { textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' };
-  };
+  }, [isScrolled, isHomePage, isLightMode]);
 
-  const getTextColor = () => {
+  const textColor = useMemo(() => {
     if (isScrolled || !isHomePage) return "text-foreground";
     return isLightMode ? "text-gray-900 drop-shadow-sm" : "text-white";
-  };
+  }, [isScrolled, isHomePage, isLightMode]);
 
-  return (
-    <nav className={cn(
+  const navbarClassName = useMemo(() => {
+    return cn(
       'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
       isScrolled || !isHomePage
         ? 'bg-background/80 backdrop-blur-lg border-border' 
         : isLightMode 
           ? 'bg-gradient-to-b from-background/40 to-transparent border-transparent'
           : 'bg-transparent border-transparent'
-    )}>
+    );
+  }, [isScrolled, isHomePage, isLightMode]);
+
+  const mobileButtonClassName = useMemo(() => {
+    return cn(
+      "md:hidden p-2 hover:text-primary transition-colors",
+      textColor
+    );
+  }, [textColor]);
+
+  return (
+    <nav className={navbarClassName}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -100,9 +114,9 @@ const TechNavbar = () => {
             </div>
             <span className={cn(
               "font-black text-xl tracking-tight group-hover:text-primary transition-colors",
-              getTextColor()
+              textColor
             )}
-            style={getTextShadow()}
+            style={textShadow}
             >
               ISTE GNDEC
             </span>
@@ -149,14 +163,7 @@ const TechNavbar = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={cn(
-              "md:hidden p-2 hover:text-primary transition-colors",
-              isScrolled || !isHomePage 
-                ? "text-foreground" 
-                : isLightMode 
-                  ? "text-gray-900 drop-shadow-sm" 
-                  : "text-white"
-            )}
+            className={mobileButtonClassName}
             style={!isScrolled && isHomePage && !isLightMode ? { filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.8))' } : undefined}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
