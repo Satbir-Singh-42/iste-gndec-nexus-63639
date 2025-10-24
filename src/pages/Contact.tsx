@@ -244,11 +244,58 @@ const Contact = () => {
                   </div>
                 </div>
               ))}
+
+              {/* Quick Links Card */}
+              <div 
+                ref={(el) => (contactCardsRef.current[contactInfo.length] = el)}
+                className="tech-card p-6 hover:border-primary/50 transition-all"
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 border-2 border-primary flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1">Quick Links</h3>
+                    <p className="text-muted-foreground text-sm">Download important documents</p>
+                  </div>
+                </div>
+                <div className="space-y-3 ml-16">
+                  <a 
+                    href="/ISTE_Recruitment_Form.pdf" 
+                    download
+                    className="flex items-center justify-between p-3 bg-background border border-border hover:border-primary/50 transition-all group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">ISTE Recruitment Form</p>
+                        <p className="text-xs text-muted-foreground">Student membership application</p>
+                      </div>
+                    </div>
+                    <Download className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+
+                  <a 
+                    href="/ISTE_Dossier.pdf" 
+                    download
+                    className="flex items-center justify-between p-3 bg-background border border-border hover:border-primary/50 transition-all group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">ISTE Activity Dossier</p>
+                        <p className="text-xs text-muted-foreground">Activity tracking document</p>
+                      </div>
+                    </div>
+                    <Download className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                </div>
+              </div>
             </div>
 
             {/* Google Map */}
             <div 
-              ref={(el) => (contactCardsRef.current[contactInfo.length] = el)}
+              ref={(el) => (contactCardsRef.current[contactInfo.length + 1] = el)}
               className="tech-card p-6"
             >
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -328,49 +375,6 @@ const Contact = () => {
                 </Button>
               </div>
             </form>
-
-            {/* Quick Links for Documents */}
-            <div className="mt-8 pt-8 border-t border-border">
-              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-primary" />
-                Quick Links
-              </h3>
-              <div className="space-y-3">
-                <a 
-                  href="/ISTE_Recruitment_Form.pdf" 
-                  download
-                  className="flex items-center justify-between p-4 bg-background border border-border hover:border-primary/50 transition-all group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 border border-primary/30 bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                      <FileText className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-mono text-sm text-foreground">ISTE Recruitment Form</p>
-                      <p className="text-xs text-muted-foreground">Application form for student membership</p>
-                    </div>
-                  </div>
-                  <Download className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-
-                <a 
-                  href="/ISTE_Dossier.pdf" 
-                  download
-                  className="flex items-center justify-between p-4 bg-background border border-border hover:border-primary/50 transition-all group"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 border border-primary/30 bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                      <FileText className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-mono text-sm text-foreground">ISTE Activity Dossier</p>
-                      <p className="text-xs text-muted-foreground">Activity tracking document for members</p>
-                    </div>
-                  </div>
-                  <Download className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                </a>
-              </div>
-            </div>
           </div>
         </div>
       </main>
