@@ -46,11 +46,27 @@ const Contact = () => {
       return;
     }
 
+    // Check if we're in development (localhost or Replit)
+    const isDevelopment = window.location.hostname === 'localhost' || 
+                         window.location.hostname.includes('replit');
+
+    if (isDevelopment) {
+      toast.info('📧 Development Mode: Email functionality works when deployed to Vercel. For now, you can email us directly at istegndec.original@gmail.com', {
+        duration: 6000,
+      });
+      // Still reset the form to show it "worked"
+      setFormData({
+        name: '',
+        email: '',
+        message: '',
+      });
+      return;
+    }
+
     // Show loading toast
     const loadingToast = toast.loading('Sending your message...');
 
     try {
-      // Use relative URL - Vite proxy will forward to email server
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
@@ -79,8 +95,9 @@ const Contact = () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Failed to send message. Please try again.', {
+      toast.error('Failed to send message. Please email us directly at istegndec.original@gmail.com', {
         id: loadingToast,
+        duration: 6000,
       });
     }
   };
