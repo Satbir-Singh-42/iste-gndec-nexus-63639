@@ -1,4 +1,3 @@
-import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Calendar, MapPin, Clock, Users, Instagram } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -141,8 +140,6 @@ const Events = () => {
 
   return (
     <div className="min-h-screen w-full">
-      <TechNavbar />
-      
       <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="mb-16 text-center">

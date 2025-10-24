@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { supabase } from '@/lib/supabase';
 
@@ -108,7 +107,6 @@ const Notices = () => {
 
   return (
     <div className="min-h-screen w-full relative">
-      <TechNavbar />
 
       <main className="relative pt-24 pb-20 px-4 md:px-8 lg:px-16">
         <div className="max-w-7xl mx-auto">

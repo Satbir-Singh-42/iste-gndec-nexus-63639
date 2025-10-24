@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Mail, Linkedin, Github, Instagram } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -109,8 +108,6 @@ const Members = () => {
 
   return (
     <div className="min-h-screen w-full">
-      <TechNavbar />
-      
       <main className="pt-24 pb-16 px-4">
         {/* Faculty Advisor Section */}
         {faculty.length > 0 && (

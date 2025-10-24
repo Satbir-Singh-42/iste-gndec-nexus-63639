@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { supabase } from '@/lib/supabase';
 import { ArrowLeft, Github, ExternalLink, Tag, Code } from 'lucide-react';
@@ -82,7 +81,6 @@ const ProjectDetail = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <TechNavbar />
         <div className="container mx-auto px-4 py-20">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -97,7 +95,6 @@ const ProjectDetail = () => {
   if (!project) {
     return (
       <div className="min-h-screen bg-background">
-        <TechNavbar />
         <div className="container mx-auto px-4 py-20">
           <div className="text-center">
             <Code className="h-24 w-24 mx-auto mb-6 text-muted-foreground/50" />
@@ -118,7 +115,6 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <TechNavbar />
       
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">

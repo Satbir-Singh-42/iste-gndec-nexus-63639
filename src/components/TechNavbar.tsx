@@ -31,9 +31,8 @@ const TechNavbar = () => {
       : staticNavItems;
   }, [showProjects]);
 
-  // Reset scroll state when navigating to a new page
+  // Close mobile menu when navigating to a new page
   useEffect(() => {
-    setIsScrolled(window.scrollY > 80);
     setIsOpen(false);
   }, [location.pathname]);
 
@@ -43,6 +42,7 @@ const TechNavbar = () => {
 
   const fetchNavbarSettings = async () => {
     if (!supabase) return;
+    
     try {
       const { data, error } = await supabase
         .from('site_settings')

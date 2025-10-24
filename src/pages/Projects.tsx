@@ -1,4 +1,3 @@
-import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Github, ExternalLink, Code, Tag } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -75,7 +74,6 @@ const Projects = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <TechNavbar />
         <div className="container mx-auto px-4 py-20">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -89,7 +87,6 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <TechNavbar />
       
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-7xl mx-auto">

@@ -18,6 +18,7 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import NotFound from "./pages/NotFound";
 import ParticleBackground from "./components/ParticleBackground";
+import TechNavbar from "./components/TechNavbar";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,8 @@ const App = () => (
           <div className="fixed inset-0 -z-10">
             <ParticleBackground />
           </div>
+          {/* Global navbar - persists across all pages */}
+          <TechNavbar />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<Events />} />

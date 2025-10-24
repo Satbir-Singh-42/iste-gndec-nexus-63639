@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -176,7 +175,6 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen w-full">
-      <TechNavbar />
       
       <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
         {/* Hero Section */}

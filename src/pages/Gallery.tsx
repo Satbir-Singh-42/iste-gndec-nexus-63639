@@ -1,4 +1,3 @@
-import TechNavbar from '@/components/TechNavbar';
 import TechFooter from '@/components/TechFooter';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useState, useEffect } from 'react';
@@ -65,7 +64,6 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen w-full">
-      <TechNavbar />
       
       <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
         {/* Hero Section */}

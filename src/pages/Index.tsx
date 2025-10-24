@@ -1,4 +1,3 @@
-import TechNavbar from '@/components/TechNavbar';
 import TechHero from '@/components/TechHero';
 import TechAbout from '@/components/TechAbout';
 import TechNoticeBoard from '@/components/TechNoticeBoard';
@@ -12,7 +11,6 @@ const Index = () => {
 
   return (
     <main className="min-h-screen w-full overflow-hidden relative">
-      <TechNavbar />
       <TechHero />
       <TechAbout />
       <TechNoticeBoard />
