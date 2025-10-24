@@ -108,6 +108,12 @@ All colors MUST be HSL.
 
   html {
     transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar {
+    display: none;
   }
 
   html.light {
@@ -122,6 +128,12 @@ All colors MUST be HSL.
     min-height: 100vh;
     transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  body::-webkit-scrollbar {
+    display: none;
   }
 
   html.light body {

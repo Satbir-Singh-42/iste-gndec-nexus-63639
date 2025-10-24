@@ -1,9 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import ThemeToggle from './ThemeToggle';
 import { supabase } from '@/lib/supabase';
 
 const staticNavItems = [
@@ -15,29 +13,23 @@ const staticNavItems = [
 ];
 
 const TechNavbar = () => {
-  const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
-  const isAdminPage = location.pathname === '/admin';
-  const isLightMode = theme === 'light';
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Memoize navItems to prevent unnecessary recalculations
   const navItems = useMemo(() => {
     return showProjects 
       ? [...staticNavItems.slice(0, 2), { name: 'Projects', path: '/projects' }, ...staticNavItems.slice(2)]
       : staticNavItems;
   }, [showProjects]);
 
-  // Close mobile menu when navigating to a new page
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
 
-  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
@@ -86,29 +78,24 @@ const TechNavbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Memoize style calculations
   const textShadow = useMemo(() => {
     if (isScrolled || !isHomePage) return undefined;
-    return isLightMode 
-      ? { textShadow: '0 2px 8px rgba(255,255,255,0.9), 0 0 20px rgba(255,255,255,0.7)' }
-      : { textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' };
-  }, [isScrolled, isHomePage, isLightMode]);
+    return { textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' };
+  }, [isScrolled, isHomePage]);
 
   const textColor = useMemo(() => {
     if (isScrolled || !isHomePage) return "text-foreground";
-    return isLightMode ? "text-gray-900 drop-shadow-sm" : "text-white";
-  }, [isScrolled, isHomePage, isLightMode]);
+    return "text-white";
+  }, [isScrolled, isHomePage]);
 
   const navbarClassName = useMemo(() => {
     return cn(
       'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
       isScrolled || !isHomePage
         ? 'bg-background/80 backdrop-blur-lg border-border' 
-        : isLightMode 
-          ? 'bg-gradient-to-b from-background/40 to-transparent border-transparent'
-          : 'bg-transparent border-transparent'
+        : 'bg-transparent border-transparent'
     );
-  }, [isScrolled, isHomePage, isLightMode]);
+  }, [isScrolled, isHomePage]);
 
   const mobileButtonClassName = useMemo(() => {
     return cn(
@@ -121,7 +108,6 @@ const TechNavbar = () => {
     <nav className={navbarClassName} ref={mobileMenuRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <NavLink to="/" className="flex items-center gap-3 group">
             <div className="relative">
               <img 
@@ -140,7 +126,6 @@ const TechNavbar = () => {
             </span>
           </NavLink>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <NavLink
@@ -154,12 +139,10 @@ const TechNavbar = () => {
                       ? 'text-primary'
                       : isScrolled || !isHomePage
                         ? 'text-muted-foreground hover:text-foreground'
-                        : isLightMode
-                          ? 'text-gray-800 hover:text-gray-900 drop-shadow-sm'
-                          : 'text-white/95 hover:text-white'
+                        : 'text-white/95 hover:text-white'
                   )
                 }
-                style={!isScrolled && isHomePage && !isLightMode ? { textShadow: '0 2px 6px rgba(0,0,0,0.8)' } : undefined}
+                style={!isScrolled && isHomePage ? { textShadow: '0 2px 6px rgba(0,0,0,0.8)' } : undefined}
               >
                 {({ isActive }) => (
                   <>
@@ -171,25 +154,18 @@ const TechNavbar = () => {
                 )}
               </NavLink>
             ))}
-            {!isAdminPage && (
-              <div className="ml-2">
-                <ThemeToggle />
-              </div>
-            )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className={mobileButtonClassName}
-            style={!isScrolled && isHomePage && !isLightMode ? { filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.8))' } : undefined}
+            style={!isScrolled && isHomePage ? { filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.8))' } : undefined}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
       {isOpen && (
         <div className="md:hidden border-t border-border bg-card/95 backdrop-blur-lg animate-slideDown">
           <div className="px-4 py-4 space-y-2">
@@ -211,11 +187,6 @@ const TechNavbar = () => {
                 {item.name}
               </NavLink>
             ))}
-            {!isAdminPage && (
-              <div className="flex items-center justify-center pt-2 border-t border-border mt-2">
-                <ThemeToggle />
-              </div>
-            )}
           </div>
         </div>
       )}
