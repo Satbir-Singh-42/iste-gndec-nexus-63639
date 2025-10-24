@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { Helmet } from 'react-helmet-async';
 
 interface Event {
   id: number;
@@ -139,21 +140,32 @@ const Events = () => {
   }
 
   return (
-    <div className="min-h-screen w-full relative z-10">
-      <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="mb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 border border-primary/30 bg-primary/5">
-            <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-            <span className="text-xs font-mono text-primary tracking-wider">EVENTS PORTAL</span>
+    <>
+      <Helmet>
+        <title>Events & Workshops | ISTE GNDEC Student Chapter</title>
+        <meta name="description" content="Explore upcoming and past technical events, workshops, hackathons, seminars, and competitions organized by ISTE GNDEC. Register for exciting tech events in Ludhiana, Punjab." />
+        <meta property="og:title" content="Events & Workshops | ISTE GNDEC Student Chapter" />
+        <meta property="og:description" content="Explore upcoming and past technical events, workshops, hackathons, seminars, and competitions organized by ISTE GNDEC." />
+        <meta property="og:url" content="https://iste-gndec.vercel.app/events" />
+        <meta name="twitter:title" content="Events & Workshops | ISTE GNDEC Student Chapter" />
+        <meta name="twitter:description" content="Explore upcoming and past technical events, workshops, hackathons, seminars, and competitions organized by ISTE GNDEC." />
+        <link rel="canonical" href="https://iste-gndec.vercel.app/events" />
+      </Helmet>
+      <div className="min-h-screen w-full relative z-10">
+        <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
+          {/* Hero Section */}
+          <div className="mb-16 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 border border-primary/30 bg-primary/5">
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+              <span className="text-xs font-mono text-primary tracking-wider">EVENTS PORTAL</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
+              Our Events
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Stay updated with upcoming workshops, competitions, and technical sessions
+            </p>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
-            Our Events
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Stay updated with upcoming workshops, competitions, and technical sessions
-          </p>
-        </div>
 
         {/* Ongoing Events */}
         {ongoingEvents.length > 0 && (
@@ -388,10 +400,11 @@ const Events = () => {
             </div>
           )}
         </section>
-      </main>
+        </main>
 
-      <TechFooter />
-    </div>
+        <TechFooter />
+      </div>
+    </>
   );
 };
 

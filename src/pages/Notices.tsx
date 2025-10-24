@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TechFooter from '@/components/TechFooter';
 import { supabase } from '@/lib/supabase';
+import { Helmet } from 'react-helmet-async';
 
 interface Notice {
   id: number;

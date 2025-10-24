@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { Helmet } from 'react-helmet-async';
 
 interface GalleryImage {
   id: number;
@@ -95,22 +96,33 @@ const Gallery = () => {
   }
 
   return (
-    <div className="min-h-screen w-full relative z-10">
-      
-      <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="mb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 border border-primary/30 bg-primary/5">
-            <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-            <span className="text-xs font-mono text-primary tracking-wider">GALLERY PORTAL</span>
+    <>
+      <Helmet>
+        <title>Event Gallery | ISTE GNDEC Student Chapter</title>
+        <meta name="description" content="Browse through photos from ISTE GNDEC events, workshops, hackathons, and technical activities. Capturing moments of innovation, collaboration, and student achievements." />
+        <meta property="og:title" content="Event Gallery | ISTE GNDEC Student Chapter" />
+        <meta property="og:description" content="Browse through photos from ISTE GNDEC events, workshops, hackathons, and technical activities." />
+        <meta property="og:url" content="https://iste-gndec.vercel.app/gallery" />
+        <meta name="twitter:title" content="Event Gallery | ISTE GNDEC Student Chapter" />
+        <meta name="twitter:description" content="Browse through photos from ISTE GNDEC events, workshops, hackathons, and technical activities." />
+        <link rel="canonical" href="https://iste-gndec.vercel.app/gallery" />
+      </Helmet>
+      <div className="min-h-screen w-full relative z-10">
+        
+        <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
+          {/* Hero Section */}
+          <div className="mb-16 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 border border-primary/30 bg-primary/5">
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+              <span className="text-xs font-mono text-primary tracking-wider">GALLERY PORTAL</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
+              Gallery
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Capturing moments of innovation, collaboration, and achievement
+            </p>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
-            Gallery
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Capturing moments of innovation, collaboration, and achievement
-          </p>
-        </div>
 
         {/* Gallery Highlights */}
         {galleryImages.length === 0 ? (

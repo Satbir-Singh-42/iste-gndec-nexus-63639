@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Helmet } from 'react-helmet-async';
 
 interface Project {
   id: number;
@@ -88,19 +89,30 @@ const Projects = () => {
   }
 
   return (
-    <div className="min-h-screen relative z-10">
-      
-      <div className="container mx-auto px-4 py-20">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Our Projects
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Explore innovative projects developed by our talented members
-            </p>
-          </div>
+    <>
+      <Helmet>
+        <title>Student Projects & Innovations | ISTE GNDEC</title>
+        <meta name="description" content="Explore innovative projects developed by ISTE GNDEC members. Browse web applications, mobile apps, machine learning projects, and technical innovations from our talented students." />
+        <meta property="og:title" content="Student Projects & Innovations | ISTE GNDEC" />
+        <meta property="og:description" content="Explore innovative projects developed by ISTE GNDEC members. Browse web applications, mobile apps, machine learning projects, and technical innovations." />
+        <meta property="og:url" content="https://iste-gndec.vercel.app/projects" />
+        <meta name="twitter:title" content="Student Projects & Innovations | ISTE GNDEC" />
+        <meta name="twitter:description" content="Explore innovative projects developed by ISTE GNDEC members." />
+        <link rel="canonical" href="https://iste-gndec.vercel.app/projects" />
+      </Helmet>
+      <div className="min-h-screen relative z-10">
+        
+        <div className="container mx-auto px-4 py-20">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Our Projects
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Explore innovative projects developed by our talented members
+              </p>
+            </div>
 
           {/* Category Filter */}
           <div className="flex flex-wrap gap-2 justify-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: '100ms' }}>
