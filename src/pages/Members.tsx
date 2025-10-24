@@ -154,11 +154,11 @@ const Members = () => {
                   {faculty.length === 1 ? (
                     <>
                       {/* Single Mentor Layout - Horizontal */}
-                      <div className="relative">
-                        <div className="relative aspect-square">
-                          <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-primary/50 z-10" />
-                          <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-primary/50 z-10" />
-                          <div className="relative w-full h-full overflow-hidden bg-muted">
+                      <div className="relative md:block p-6 md:p-0">
+                        <div className="relative w-full aspect-square md:w-full">
+                          <div className="absolute top-0 left-0 w-10 h-10 sm:w-12 sm:h-12 border-t-2 border-l-2 border-primary/50 z-10" />
+                          <div className="absolute bottom-0 right-0 w-10 h-10 sm:w-12 sm:h-12 border-b-2 border-r-2 border-primary/50 z-10" />
+                          <div className="absolute inset-3 sm:inset-4 overflow-hidden bg-muted">
                             <img 
                               src={facultyMember.image || '/default-avatar.png'} 
                               alt={facultyMember.name}
@@ -211,7 +211,7 @@ const Members = () => {
                       {/* Multiple Mentors Layout - Vertical Cards */}
                       <div className="bg-card border border-border hover:border-primary/50 transition-all duration-500 flex flex-col h-full">
                         <div className="relative flex-shrink-0">
-                          <div className="w-64 h-64 mx-auto mt-6 rounded-full overflow-hidden border-4 border-border bg-muted group-hover:border-primary/50 transition-all duration-500">
+                          <div className="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto mt-6 rounded-full overflow-hidden border-4 border-border bg-muted group-hover:border-primary/50 transition-all duration-500">
                             <img 
                               src={facultyMember.image || '/default-avatar.png'} 
                               alt={facultyMember.name}
