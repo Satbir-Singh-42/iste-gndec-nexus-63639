@@ -129,6 +129,14 @@ export type Database = {
           type: string;
           status: string;
           description: string;
+          rich_description?: string;
+          poster_url?: string;
+          attachments?: {
+            name: string;
+            url: string;
+            type: string;
+          }[];
+          external_link?: string;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['notices']['Row'], 'id' | 'created_at'>;

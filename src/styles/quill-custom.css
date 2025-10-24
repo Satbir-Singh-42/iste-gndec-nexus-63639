@@ -1,0 +1,64 @@
+/* Custom styles for Quill editor to match our theme */
+.ql-toolbar {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+  background: hsl(var(--muted) / 0.5) !important;
+}
+
+.ql-container {
+  border: 1px solid hsl(var(--border)) !important;
+  border-top: none !important;
+  border-radius: 0 0 0.5rem 0.5rem !important;
+  background: hsl(var(--background)) !important;
+  font-family: inherit !important;
+}
+
+.ql-editor {
+  min-height: 150px;
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.875rem !important;
+}
+
+.ql-editor.ql-blank::before {
+  color: hsl(var(--muted-foreground)) !important;
+  font-style: normal !important;
+}
+
+.ql-snow .ql-stroke {
+  stroke: hsl(var(--foreground)) !important;
+}
+
+.ql-snow .ql-fill {
+  fill: hsl(var(--foreground)) !important;
+}
+
+.ql-snow .ql-picker-label {
+  color: hsl(var(--foreground)) !important;
+}
+
+.ql-toolbar button:hover,
+.ql-toolbar button:focus,
+.ql-toolbar button.ql-active {
+  color: hsl(var(--primary)) !important;
+}
+
+.ql-toolbar button:hover .ql-stroke,
+.ql-toolbar button:focus .ql-stroke,
+.ql-toolbar button.ql-active .ql-stroke {
+  stroke: hsl(var(--primary)) !important;
+}
+
+.ql-toolbar button:hover .ql-fill,
+.ql-toolbar button:focus .ql-fill,
+.ql-toolbar button.ql-active .ql-fill {
+  fill: hsl(var(--primary)) !important;
+}
+
+.ql-snow a {
+  color: hsl(var(--primary)) !important;
+}
+
+.ql-editor ul,
+.ql-editor ol {
+  padding-left: 1.5rem !important;
+}

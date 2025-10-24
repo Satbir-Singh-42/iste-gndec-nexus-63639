@@ -14,6 +14,14 @@ interface Notice {
   type: string;
   status: string;
   description: string;
+  rich_description?: string;
+  poster_url?: string;
+  attachments?: {
+    name: string;
+    url: string;
+    type: string;
+  }[];
+  external_link?: string;
 }
 
 const TechNoticeBoard = () => {
@@ -194,8 +202,20 @@ const TechNoticeBoard = () => {
                   key={notice.id}
                   ref={(el) => (cardsRef.current[index] = el)}
                   onClick={() => navigate(`/notices/${notice.id}`)}
-                  className="tech-card p-6 hover:border-primary/50 transition-all duration-300 group bg-card/50 hover:bg-card/80 cursor-pointer"
+                  className="tech-card hover:border-primary/50 transition-all duration-300 group bg-card/50 hover:bg-card/80 cursor-pointer overflow-hidden"
                 >
+                  {/* Poster Image */}
+                  {notice.poster_url && (
+                    <div className="w-full h-48 overflow-hidden">
+                      <img 
+                        src={notice.poster_url} 
+                        alt={notice.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -243,6 +263,34 @@ const TechNoticeBoard = () => {
                     )}
                   </div>
 
+                  {/* Attachments indicator */}
+                  {notice.attachments && notice.attachments.length > 0 && (
+                    <div className="flex items-center gap-2 mb-4 text-xs font-mono text-muted-foreground">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                      </svg>
+                      <span>{notice.attachments.length} attachment{notice.attachments.length > 1 ? 's' : ''}</span>
+                    </div>
+                  )}
+
+                  {/* External Link indicator */}
+                  {notice.external_link && (
+                    <div className="flex items-center gap-2 mb-4">
+                      <a
+                        href={notice.external_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-xs font-mono text-primary hover:underline flex items-center gap-1"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                        Register / View Link
+                      </a>
+                    </div>
+                  )}
+
                   {/* Footer */}
                   <div className="flex items-center justify-end pt-4 border-t border-border/50">
                     <div className="flex items-center gap-2 text-primary text-sm font-mono hover:underline cursor-pointer">
@@ -258,6 +306,7 @@ const TechNoticeBoard = () => {
                     </div>
                   </div>
                 </div>
+              </div>
               );
             })}
           </div>

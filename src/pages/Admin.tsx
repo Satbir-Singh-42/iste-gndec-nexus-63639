@@ -17,6 +17,10 @@ import { uploadImageToSupabase, uploadMultipleImages } from "@/lib/imageUpload";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import { RichTextEditor } from "@/components/RichTextEditor";
+import { FileUploadField } from "@/components/FileUploadField";
+import { MultipleFileUpload } from "@/components/MultipleFileUpload";
+import "@/styles/quill-custom.css";
 
 interface Notice {
   id: number;
@@ -26,6 +30,14 @@ interface Notice {
   type: string;
   status: string;
   description: string;
+  rich_description?: string;
+  poster_url?: string;
+  attachments?: {
+    name: string;
+    url: string;
+    type: string;
+  }[];
+  external_link?: string;
 }
 
 interface Event {
@@ -1812,7 +1824,11 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
     time: "",
     type: "EVENT",
     status: "UPCOMING",
-    description: ""
+    description: "",
+    rich_description: "",
+    poster_url: "",
+    attachments: [] as { name: string; url: string; type: string }[],
+    external_link: ""
   });
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [timeInput, setTimeInput] = useState("");
@@ -1839,7 +1855,18 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
       if (error) throw error;
       toast.success('Notice added successfully');
       setOpen(false);
-      setFormData({ title: "", date: "", time: "", type: "EVENT", status: "UPCOMING", description: "" });
+      setFormData({ 
+        title: "", 
+        date: "", 
+        time: "", 
+        type: "EVENT", 
+        status: "UPCOMING", 
+        description: "",
+        rich_description: "",
+        poster_url: "",
+        attachments: [],
+        external_link: ""
+      });
       setSelectedDate(undefined);
       setTimeInput("");
       onSuccess();
@@ -1923,17 +1950,55 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             />
           </div>
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Basic Description</Label>
             <Textarea 
               id="description" 
               value={formData.description} 
               onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-              placeholder="Add your notice description. Include links like: Visit - https://example.com" 
-              rows={5}
+              placeholder="Add a brief plain text description (required)" 
+              rows={3}
               required 
             />
+          </div>
+          <div>
+            <Label htmlFor="rich-description">Rich Text Description (Optional)</Label>
+            <RichTextEditor
+              value={formData.rich_description || ''}
+              onChange={(value) => setFormData({ ...formData, rich_description: value })}
+              placeholder="Add formatted content with bold, links, and lists..."
+            />
             <p className="text-sm text-muted-foreground mt-1">
-              Add URLs in the description (e.g., https://example.com) to make the notice clickable
+              Use this editor for rich formatting including bold text, links, and lists
+            </p>
+          </div>
+          <FileUploadField
+            label="Event Poster / Banner"
+            accept="image/jpeg,image/jpg,image/png,image/webp"
+            value={formData.poster_url}
+            onChange={(url) => setFormData({ ...formData, poster_url: url })}
+            onClear={() => setFormData({ ...formData, poster_url: "" })}
+            description="Upload event poster (JPG/PNG/WEBP, max 5MB)"
+            preview={true}
+          />
+          <MultipleFileUpload
+            label="Attachments"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+            value={formData.attachments}
+            onChange={(attachments) => setFormData({ ...formData, attachments })}
+            description="Upload PDFs, registration forms, Excel sheets, etc. (max 5 files)"
+            maxFiles={5}
+          />
+          <div>
+            <Label htmlFor="external-link">Registration / External Link</Label>
+            <Input
+              id="external-link"
+              type="url"
+              value={formData.external_link}
+              onChange={(e) => setFormData({ ...formData, external_link: e.target.value })}
+              placeholder="https://forms.google.com/..."
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Add link to Google Forms, Drive folders, or external registration pages
             </p>
           </div>
           <DialogFooter>
@@ -2060,17 +2125,55 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
             />
           </div>
           <div>
-            <Label htmlFor="edit-description">Description</Label>
+            <Label htmlFor="edit-description">Basic Description</Label>
             <Textarea 
               id="edit-description" 
               value={formData.description} 
               onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-              placeholder="Add your notice description. Include links like: Visit - https://example.com" 
-              rows={5}
+              placeholder="Add a brief plain text description (required)" 
+              rows={3}
               required 
             />
+          </div>
+          <div>
+            <Label htmlFor="edit-rich-description">Rich Text Description (Optional)</Label>
+            <RichTextEditor
+              value={formData.rich_description || ''}
+              onChange={(value) => setFormData({ ...formData, rich_description: value })}
+              placeholder="Add formatted content with bold, links, and lists..."
+            />
             <p className="text-sm text-muted-foreground mt-1">
-              Add URLs in the description (e.g., https://example.com) to make the notice clickable
+              Use this editor for rich formatting including bold text, links, and lists
+            </p>
+          </div>
+          <FileUploadField
+            label="Event Poster / Banner"
+            accept="image/jpeg,image/jpg,image/png,image/webp"
+            value={formData.poster_url || ''}
+            onChange={(url) => setFormData({ ...formData, poster_url: url })}
+            onClear={() => setFormData({ ...formData, poster_url: "" })}
+            description="Upload event poster (JPG/PNG/WEBP, max 5MB)"
+            preview={true}
+          />
+          <MultipleFileUpload
+            label="Attachments"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+            value={formData.attachments || []}
+            onChange={(attachments) => setFormData({ ...formData, attachments })}
+            description="Upload PDFs, registration forms, Excel sheets, etc. (max 5 files)"
+            maxFiles={5}
+          />
+          <div>
+            <Label htmlFor="edit-external-link">Registration / External Link</Label>
+            <Input
+              id="edit-external-link"
+              type="url"
+              value={formData.external_link || ''}
+              onChange={(e) => setFormData({ ...formData, external_link: e.target.value })}
+              placeholder="https://forms.google.com/..."
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Add link to Google Forms, Drive folders, or external registration pages
             </p>
           </div>
           <DialogFooter>
