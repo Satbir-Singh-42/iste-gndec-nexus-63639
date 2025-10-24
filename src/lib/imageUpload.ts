@@ -66,3 +66,114 @@ export async function uploadMultipleImages(
 
   return { urls, errors };
 }
+
+/**
+ * Extract the file path from a Supabase Storage public URL
+ * Example: https://abc.supabase.co/storage/v1/object/public/images/gallery/123.jpg
+ * Returns: gallery/123.jpg
+ */
+export function extractStoragePath(url: string): string | null {
+  try {
+    if (!url) return null;
+    
+    // Handle base64 data URLs (not in storage)
+    if (url.startsWith('data:')) {
+      return null;
+    }
+    
+    // Extract path after '/images/'
+    const match = url.match(/\/images\/(.+)$/);
+    if (match && match[1]) {
+      return match[1];
+    }
+    
+    // Alternative pattern for different URL formats
+    const altMatch = url.match(/\/object\/public\/images\/(.+)$/);
+    if (altMatch && altMatch[1]) {
+      return altMatch[1];
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("Error extracting storage path:", error);
+    return null;
+  }
+}
+
+/**
+ * Delete a single image from Supabase Storage
+ */
+export async function deleteImageFromSupabase(
+  imageUrl: string
+): Promise<{ success: boolean; error: string | null }> {
+  try {
+    if (!supabase) {
+      return { success: false, error: "Supabase not initialized" };
+    }
+
+    if (!imageUrl) {
+      return { success: true, error: null }; // Nothing to delete
+    }
+
+    const filePath = extractStoragePath(imageUrl);
+    
+    if (!filePath) {
+      // Image is not in storage (could be base64 or external URL)
+      return { success: true, error: null };
+    }
+
+    const { error } = await supabase.storage
+      .from("images")
+      .remove([filePath]);
+
+    if (error) {
+      console.error("Error deleting image from storage:", error);
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error("Error in deleteImageFromSupabase:", error);
+    return { success: false, error: error.message || "Delete failed" };
+  }
+}
+
+/**
+ * Delete multiple images from Supabase Storage
+ */
+export async function deleteMultipleImagesFromSupabase(
+  imageUrls: string[]
+): Promise<{ success: boolean; error: string | null; deletedCount: number }> {
+  try {
+    if (!supabase) {
+      return { success: false, error: "Supabase not initialized", deletedCount: 0 };
+    }
+
+    if (!imageUrls || imageUrls.length === 0) {
+      return { success: true, error: null, deletedCount: 0 };
+    }
+
+    const filePaths = imageUrls
+      .map(url => extractStoragePath(url))
+      .filter((path): path is string => path !== null);
+
+    if (filePaths.length === 0) {
+      // No images in storage to delete
+      return { success: true, error: null, deletedCount: 0 };
+    }
+
+    const { error } = await supabase.storage
+      .from("images")
+      .remove(filePaths);
+
+    if (error) {
+      console.error("Error deleting images from storage:", error);
+      return { success: false, error: error.message, deletedCount: 0 };
+    }
+
+    return { success: true, error: null, deletedCount: filePaths.length };
+  } catch (error: any) {
+    console.error("Error in deleteMultipleImagesFromSupabase:", error);
+    return { success: false, error: error.message || "Delete failed", deletedCount: 0 };
+  }
+}

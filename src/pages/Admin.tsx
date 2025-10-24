@@ -51,7 +51,12 @@ import {
   X,
   CalendarIcon,
 } from "lucide-react";
-import { uploadImageToSupabase, uploadMultipleImages } from "@/lib/imageUpload";
+import { 
+  uploadImageToSupabase, 
+  uploadMultipleImages, 
+  deleteImageFromSupabase, 
+  deleteMultipleImagesFromSupabase 
+} from "@/lib/imageUpload";
 import {
   Popover,
   PopoverContent,
@@ -397,8 +402,23 @@ const Admin = () => {
     )
       return;
     try {
+      // First, get the gallery item to retrieve image URLs
+      const { data: item } = await supabase
+        .from("gallery")
+        .select("images")
+        .eq("id", id)
+        .single();
+
+      // Delete from database
       const { error } = await supabase.from("gallery").delete().eq("id", id);
       if (error) throw error;
+
+      // Delete images from storage
+      if (item?.images && item.images.length > 0) {
+        const { deletedCount } = await deleteMultipleImagesFromSupabase(item.images);
+        console.log(`Deleted ${deletedCount} image(s) from storage`);
+      }
+
       toast.success("Gallery item deleted successfully");
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
@@ -525,8 +545,23 @@ const Admin = () => {
     if (!supabase || !confirm(`Are you sure you want to delete this ${type}?`))
       return;
     try {
+      // First, get the member to retrieve image URL
+      const { data: member } = await supabase
+        .from(table)
+        .select("image")
+        .eq("id", id)
+        .single();
+
+      // Delete from database
       const { error } = await supabase.from(table).delete().eq("id", id);
       if (error) throw error;
+
+      // Delete image from storage
+      if (member?.image) {
+        await deleteImageFromSupabase(member.image);
+        console.log("Deleted image from storage");
+      }
+
       toast.success(`${type} deleted successfully`);
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
@@ -628,11 +663,32 @@ const Admin = () => {
     )
       return;
     try {
+      // First, get the highlight to retrieve image URLs
+      const { data: highlight } = await supabase
+        .from("event_highlights")
+        .select("poster, highlights")
+        .eq("id", id)
+        .single();
+
+      // Delete from database
       const { error } = await supabase
         .from("event_highlights")
         .delete()
         .eq("id", id);
       if (error) throw error;
+
+      // Delete poster from storage
+      if (highlight?.poster) {
+        await deleteImageFromSupabase(highlight.poster);
+        console.log("Deleted poster from storage");
+      }
+
+      // Delete highlight images from storage
+      if (highlight?.highlights && highlight.highlights.length > 0) {
+        const { deletedCount } = await deleteMultipleImagesFromSupabase(highlight.highlights);
+        console.log(`Deleted ${deletedCount} highlight image(s) from storage`);
+      }
+
       toast.success("Event highlight deleted successfully");
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
@@ -788,8 +844,23 @@ const Admin = () => {
     if (!supabase || !confirm("Are you sure you want to delete this project?"))
       return;
     try {
+      // First, get the project to retrieve image URL
+      const { data: project } = await supabase
+        .from("projects")
+        .select("image_url")
+        .eq("id", id)
+        .single();
+
+      // Delete from database
       const { error } = await supabase.from("projects").delete().eq("id", id);
       if (error) throw error;
+
+      // Delete image from storage
+      if (project?.image_url) {
+        await deleteImageFromSupabase(project.image_url);
+        console.log("Deleted project image from storage");
+      }
+
       toast.success("Project deleted successfully");
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
@@ -3508,7 +3579,15 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
     e.target.value = "";
   };
 
-  const removeImage = (index: number) => {
+  const removeImage = async (index: number) => {
+    const imageUrl = uploadedImages[index];
+    
+    // Delete from storage
+    if (imageUrl) {
+      await deleteImageFromSupabase(imageUrl);
+      console.log("Deleted image from storage");
+    }
+    
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
@@ -3737,7 +3816,15 @@ function EditGalleryDialog({
     e.target.value = "";
   };
 
-  const removeImage = (index: number) => {
+  const removeImage = async (index: number) => {
+    const imageUrl = uploadedImages[index];
+    
+    // Delete from storage
+    if (imageUrl) {
+      await deleteImageFromSupabase(imageUrl);
+      console.log("Deleted image from storage");
+    }
+    
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
@@ -4117,6 +4204,8 @@ function EditFacultyDialog({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const oldImage = formData.image;
+    
     setUploading(true);
     const { url, error } = await uploadImageToSupabase(file, "faculty");
     setUploading(false);
@@ -4124,6 +4213,12 @@ function EditFacultyDialog({
     if (error) {
       toast.error(error);
     } else if (url) {
+      // Delete old image from storage
+      if (oldImage) {
+        await deleteImageFromSupabase(oldImage);
+        console.log("Deleted old faculty image from storage");
+      }
+      
       setFormData({ ...formData, image: url });
       toast.success("Image uploaded successfully");
     }
@@ -4488,6 +4583,8 @@ function EditMemberDialog({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const oldImage = formData.image;
+    
     setUploading(true);
     const { url, error } = await uploadImageToSupabase(file, "members");
     setUploading(false);
@@ -4495,6 +4592,12 @@ function EditMemberDialog({
     if (error) {
       toast.error(error);
     } else if (url) {
+      // Delete old image from storage
+      if (oldImage) {
+        await deleteImageFromSupabase(oldImage);
+        console.log("Deleted old member image from storage");
+      }
+      
       setFormData({ ...formData, image: url });
       toast.success("Image uploaded successfully");
     }
@@ -4818,6 +4921,8 @@ function EditEventHighlightDialog({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const oldPoster = formData.poster;
+    
     setUploading(true);
     const { url, error } = await uploadImageToSupabase(
       file,
@@ -4828,6 +4933,12 @@ function EditEventHighlightDialog({
     if (error) {
       toast.error(error);
     } else if (url) {
+      // Delete old poster from storage
+      if (oldPoster) {
+        await deleteImageFromSupabase(oldPoster);
+        console.log("Deleted old event poster from storage");
+      }
+      
       setFormData({ ...formData, poster: url });
       toast.success("Poster uploaded successfully");
     }
@@ -5144,6 +5255,8 @@ function EditProjectDialog({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const oldImage = formData.image_url;
+    
     setUploading(true);
     const { url, error } = await uploadImageToSupabase(file, "projects");
     setUploading(false);
@@ -5151,6 +5264,12 @@ function EditProjectDialog({
     if (error) {
       toast.error(error);
     } else if (url) {
+      // Delete old image from storage
+      if (oldImage) {
+        await deleteImageFromSupabase(oldImage);
+        console.log("Deleted old project image from storage");
+      }
+      
       setFormData({ ...formData, image_url: url });
       toast.success("Image uploaded successfully");
     }
