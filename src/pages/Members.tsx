@@ -127,111 +127,120 @@ const Members = () => {
               </h2>
             </div>
             
-            <div className="space-y-10">
+            <div className={`${faculty.length === 1 ? 'max-w-5xl mx-auto' : 'grid sm:grid-cols-2 gap-6 max-w-5xl mx-auto'}`}>
               {faculty.map((facultyMember, index) => (
                 <div 
                   key={facultyMember.id} 
-                  className={`group relative ${
-                    index % 2 === 0 ? '' : 'md:flex-row-reverse'
+                  className={`group relative overflow-hidden ${
+                    faculty.length === 1 ? 'grid md:grid-cols-[300px,1fr] gap-6 items-center bg-card border border-border hover:border-primary/50 transition-all duration-500' : ''
                   }`}
                 >
-                  <div className="grid md:grid-cols-2 gap-6 md:gap-8 items-center max-w-5xl mx-auto">
-                    {/* Image Section with Decorative Elements */}
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
-                      <div className="relative aspect-square max-w-xs mx-auto">
-                        {/* Decorative corner accents */}
-                        <div className="absolute -top-3 -left-3 w-16 h-16 border-t-2 border-l-2 border-primary/50" />
-                        <div className="absolute -bottom-3 -right-3 w-16 h-16 border-b-2 border-r-2 border-primary/50" />
-                        
-                        {/* Main Image */}
-                        <div className="relative w-full h-full overflow-hidden border-4 border-border bg-muted group-hover:border-primary/50 transition-all duration-500">
-                          <img 
-                            src={facultyMember.image || '/default-avatar.png'} 
-                            alt={facultyMember.name}
-                            className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.src = '/default-avatar.png';
-                            }}
-                          />
-                          
-                          {/* Gradient Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  {faculty.length === 1 ? (
+                    <>
+                      {/* Single Mentor Layout - Horizontal */}
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                        <div className="relative aspect-square">
+                          <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-primary/50 z-10" />
+                          <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-primary/50 z-10" />
+                          <div className="relative w-full h-full overflow-hidden bg-muted">
+                            <img 
+                              src={facultyMember.image || '/default-avatar.png'} 
+                              alt={facultyMember.name}
+                              className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = '/default-avatar.png';
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                          </div>
                         </div>
                       </div>
-                    </div>
-
-                    {/* Details Section */}
-                    <div className="space-y-4">
-                      {/* Title Badge */}
-                      <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30">
-                        <div className="w-1.5 h-1.5 bg-primary animate-pulse" />
-                        <span className="text-xs font-mono text-primary tracking-wide uppercase">
-                          {facultyMember.title}
-                        </span>
+                      <div className="p-6 space-y-3">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30">
+                          <div className="w-1.5 h-1.5 bg-primary animate-pulse" />
+                          <span className="text-xs font-mono text-primary tracking-wide uppercase">{facultyMember.title}</span>
+                        </div>
+                        <h3 className="text-2xl md:text-3xl font-black text-foreground leading-tight">{facultyMember.name}</h3>
+                        <div className="flex items-center gap-3">
+                          <div className="h-0.5 w-16 bg-primary" />
+                          <div className="h-0.5 w-8 bg-primary/50" />
+                          <div className="h-0.5 w-4 bg-primary/30" />
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{facultyMember.description}</p>
+                        {(facultyMember.linkedin || facultyMember.github || facultyMember.instagram) && (
+                          <div className="flex items-center gap-2 pt-2">
+                            {facultyMember.linkedin && (
+                              <a href={facultyMember.linkedin} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="LinkedIn">
+                                <Linkedin className="w-4 h-4" />
+                              </a>
+                            )}
+                            {facultyMember.github && (
+                              <a href={facultyMember.github} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="GitHub">
+                                <Github className="w-4 h-4" />
+                              </a>
+                            )}
+                            {facultyMember.instagram && (
+                              <a href={facultyMember.instagram} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="Instagram">
+                                <Instagram className="w-4 h-4" />
+                              </a>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      
-                      {/* Name */}
-                      <h3 className="text-2xl md:text-3xl font-black text-foreground leading-tight">
-                        {facultyMember.name}
-                      </h3>
-                      
-                      {/* Decorative Line */}
-                      <div className="flex items-center gap-3">
-                        <div className="h-0.5 w-16 bg-primary" />
-                        <div className="h-0.5 w-8 bg-primary/50" />
-                        <div className="h-0.5 w-4 bg-primary/30" />
-                      </div>
-                      
-                      {/* Description */}
-                      <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                        {facultyMember.description}
-                      </p>
-
-                      {/* Social Links */}
-                      {(facultyMember.linkedin || facultyMember.github || facultyMember.instagram) && (
-                        <div className="flex items-center gap-3 pt-2">
-                          {facultyMember.linkedin && (
-                            <a 
-                              href={facultyMember.linkedin}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="group/link flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary hover:bg-primary/5 transition-all"
-                              title="LinkedIn"
-                            >
-                              <Linkedin className="w-4 h-4 group-hover/link:text-primary transition-colors" />
-                              <span className="text-xs font-medium">LinkedIn</span>
-                            </a>
-                          )}
-                          {facultyMember.github && (
-                            <a 
-                              href={facultyMember.github}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="group/link flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary hover:bg-primary/5 transition-all"
-                              title="GitHub"
-                            >
-                              <Github className="w-4 h-4 group-hover/link:text-primary transition-colors" />
-                              <span className="text-xs font-medium">GitHub</span>
-                            </a>
-                          )}
-                          {facultyMember.instagram && (
-                            <a 
-                              href={facultyMember.instagram}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="group/link flex items-center gap-2 px-3 py-1.5 border border-border hover:border-primary hover:bg-primary/5 transition-all"
-                              title="Instagram"
-                            >
-                              <Instagram className="w-4 h-4 group-hover/link:text-primary transition-colors" />
-                              <span className="text-xs font-medium">Instagram</span>
-                            </a>
+                    </>
+                  ) : (
+                    <>
+                      {/* Multiple Mentors Layout - Vertical Cards */}
+                      <div className="bg-card border border-border hover:border-primary/50 transition-all duration-500 flex flex-col h-full">
+                        <div className="relative flex-shrink-0">
+                          <div className="w-64 h-64 mx-auto mt-6 rounded-full overflow-hidden border-4 border-border bg-muted group-hover:border-primary/50 transition-all duration-500">
+                            <img 
+                              src={facultyMember.image || '/default-avatar.png'} 
+                              alt={facultyMember.name}
+                              className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = '/default-avatar.png';
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="p-5 space-y-2 text-center flex-1 flex flex-col">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 border border-primary/30 mx-auto">
+                            <div className="w-1 h-1 bg-primary animate-pulse" />
+                            <span className="text-[10px] font-mono text-primary tracking-wide uppercase">{facultyMember.title}</span>
+                          </div>
+                          <h3 className="text-lg font-black text-foreground leading-tight pt-1">{facultyMember.name}</h3>
+                          <div className="flex items-center gap-1.5 justify-center py-1">
+                            <div className="h-0.5 w-8 bg-primary" />
+                            <div className="h-0.5 w-4 bg-primary/50" />
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 flex-1">{facultyMember.description}</p>
+                          {(facultyMember.linkedin || facultyMember.github || facultyMember.instagram) && (
+                            <div className="flex items-center gap-2 pt-2 justify-center">
+                              {facultyMember.linkedin && (
+                                <a href={facultyMember.linkedin} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="LinkedIn">
+                                  <Linkedin className="w-3.5 h-3.5" />
+                                </a>
+                              )}
+                              {facultyMember.github && (
+                                <a href={facultyMember.github} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="GitHub">
+                                  <Github className="w-3.5 h-3.5" />
+                                </a>
+                              )}
+                              {facultyMember.instagram && (
+                                <a href={facultyMember.instagram} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="Instagram">
+                                  <Instagram className="w-3.5 h-3.5" />
+                                </a>
+                              )}
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
-                  </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>

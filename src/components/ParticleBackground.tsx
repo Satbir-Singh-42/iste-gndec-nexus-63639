@@ -62,19 +62,19 @@ const ParticleBackground = () => {
       
       const x = Math.random() * 100;
       const y = Math.random() * 100;
-      const size = Math.random() * 2 + 0.5;
-      const opacity = Math.random() * 0.3 + 0.1;
+      const size = Math.random() * 2.5 + 1;
+      const opacity = Math.random() * 0.5 + 0.3;
       
       star.style.cssText = `
         position: absolute;
         width: ${size}px;
         height: ${size}px;
-        background: radial-gradient(circle, rgba(255, 255, 255, ${opacity}) 0%, rgba(200, 220, 255, ${opacity * 0.5}) 50%, transparent 100%);
+        background: radial-gradient(circle, rgba(255, 255, 255, ${opacity}) 0%, rgba(200, 220, 255, ${opacity * 0.7}) 50%, transparent 100%);
         border-radius: 50%;
         left: ${x}%;
         top: ${y}%;
         pointer-events: none;
-        box-shadow: 0 0 ${size * 2}px rgba(255, 255, 255, ${opacity * 0.2});
+        box-shadow: 0 0 ${size * 3}px rgba(255, 255, 255, ${opacity * 0.4});
         animation: twinkle ${3 + Math.random() * 4}s ease-in-out infinite;
         animation-delay: ${Math.random() * 3}s;
       `;
@@ -298,8 +298,8 @@ const ParticleBackground = () => {
       
       <style>{`
         @keyframes twinkle {
-          0%, 100% { opacity: 0.2; }
-          50% { opacity: 0.8; }
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
         }
       `}</style>
     </div>
