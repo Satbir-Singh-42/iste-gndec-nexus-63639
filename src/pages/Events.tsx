@@ -330,11 +330,12 @@ const Events = () => {
               <p className="text-muted-foreground">No event highlights available yet.</p>
             </div>
           ) : (
-            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="relative">
+              <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-hide">
               {highlights.map((highlight) => (
                 <div 
                   key={highlight.id} 
-                  className="tech-card overflow-hidden group hover:border-accent/50 transition-all"
+                  className="tech-card overflow-hidden group hover:border-accent/50 transition-all flex-shrink-0 w-64 snap-start"
                 >
                   {/* Event Poster */}
                   <div className="relative aspect-square overflow-hidden bg-muted">
@@ -386,6 +387,7 @@ const Events = () => {
                   </div>
                 </div>
               ))}
+              </div>
             </div>
           )}
         </section>
