@@ -50,7 +50,7 @@ All colors MUST be HSL.
   }
 
   .light {
-    /* Enhanced Technical Light Theme - Modern & Vibrant */
+    /* Enhanced Technical Light Theme - Calm & Cool */
     --background: 220 20% 96%;
     --foreground: 222 47% 11%;
 
@@ -60,16 +60,16 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 217 91% 60%;
+    --primary: 210 55% 58%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 195 90% 52%;
+    --secondary: 195 50% 55%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 214 20% 90%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 268 83% 58%;
+    --accent: 200 48% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -77,24 +77,24 @@ All colors MUST be HSL.
 
     --border: 214 20% 88%;
     --input: 214 20% 92%;
-    --ring: 217 91% 60%;
+    --ring: 210 55% 58%;
 
     /* Enhanced Technical Colors - Light Mode */
-    --tech-blue: 217 91% 60%;
-    --tech-cyan: 195 90% 52%;
-    --tech-sky: 200 98% 39%;
-    --tech-purple: 268 83% 58%;
-    --tech-grid: 220 30% 75%;
+    --tech-blue: 210 55% 58%;
+    --tech-cyan: 195 50% 55%;
+    --tech-sky: 200 48% 52%;
+    --tech-purple: 235 45% 60%;
+    --tech-grid: 220 25% 78%;
     
     /* Gradient colors for enhanced visuals */
-    --gradient-start: 217 91% 60%;
-    --gradient-mid: 195 90% 52%;
-    --gradient-end: 268 83% 58%;
+    --gradient-start: 210 55% 58%;
+    --gradient-mid: 195 50% 55%;
+    --gradient-end: 235 45% 60%;
     
     /* Shadow colors */
-    --shadow-sm: 220 30% 50% / 0.05;
-    --shadow-md: 220 30% 50% / 0.08;
-    --shadow-lg: 220 30% 50% / 0.12;
+    --shadow-sm: 210 25% 55% / 0.04;
+    --shadow-md: 210 25% 55% / 0.06;
+    --shadow-lg: 210 25% 55% / 0.10;
     
     /* Technical Effects */
     --scanline-opacity: 0.01;
@@ -111,7 +111,7 @@ All colors MUST be HSL.
   }
 
   html.light {
-    background: linear-gradient(135deg, #E8F4FF 0%, #F0F8FF 25%, #FFFFFF 50%, #EFF6FF 75%, #E0F0FF 100%);
+    background: linear-gradient(135deg, #EBF5FF 0%, #F2F8FF 25%, #FAFCFF 50%, #F0F6FF 75%, #E8F3FF 100%);
     min-height: 100vh;
   }
 
@@ -125,7 +125,7 @@ All colors MUST be HSL.
   }
 
   html.light body {
-    background: linear-gradient(135deg, #E8F4FF 0%, #F0F8FF 25%, #FFFFFF 50%, #EFF6FF 75%, #E0F0FF 100%) !important;
+    background: linear-gradient(135deg, #EBF5FF 0%, #F2F8FF 25%, #FAFCFF 50%, #F0F6FF 75%, #E8F3FF 100%) !important;
   }
 
   * {
