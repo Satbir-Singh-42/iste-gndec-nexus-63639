@@ -122,23 +122,23 @@ const ProjectDetail = () => {
           <Button
             variant="ghost"
             onClick={() => navigate('/projects')}
-            className="mb-6 group"
+            className="mb-6 group animate-in fade-in slide-in-from-left-4 duration-500"
           >
             <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Back to Projects
           </Button>
 
           {/* Project Image */}
-          <div className="relative h-96 rounded-xl overflow-hidden mb-8 shadow-lg">
+          <div className="relative h-96 rounded-xl overflow-hidden mb-8 shadow-lg animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: '100ms' }}>
             <img
               src={project.image_url}
               alt={project.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
             />
           </div>
 
           {/* Project Header */}
-          <div className="mb-8">
+          <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: '200ms' }}>
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -152,7 +152,8 @@ const ProjectDetail = () => {
               {project.github_link && (
                 <Button
                   onClick={() => window.open(project.github_link, '_blank')}
-                  className="flex-1 sm:flex-none"
+                  className="flex-1 sm:flex-none animate-in fade-in slide-in-from-left-4 duration-500 hover:scale-105 transition-transform"
+                  style={{ animationDelay: '300ms' }}
                 >
                   <Github className="mr-2 h-4 w-4" />
                   View on GitHub
@@ -162,7 +163,8 @@ const ProjectDetail = () => {
                 <Button
                   variant="outline"
                   onClick={() => window.open(project.demo_link, '_blank')}
-                  className="flex-1 sm:flex-none"
+                  className="flex-1 sm:flex-none animate-in fade-in slide-in-from-left-4 duration-500 hover:scale-105 transition-transform"
+                  style={{ animationDelay: '350ms' }}
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Live Demo
@@ -171,7 +173,8 @@ const ProjectDetail = () => {
               <Button
                 variant="outline"
                 onClick={handleShare}
-                className="flex-1 sm:flex-none"
+                className="flex-1 sm:flex-none animate-in fade-in slide-in-from-left-4 duration-500 hover:scale-105 transition-transform"
+                style={{ animationDelay: '400ms' }}
               >
                 Share
               </Button>
@@ -179,7 +182,7 @@ const ProjectDetail = () => {
           </div>
 
           {/* Technologies */}
-          <Card className="mb-8 bg-card/50 backdrop-blur-sm border-border/50">
+          <Card className="mb-8 bg-card/50 backdrop-blur-sm border-border/50 animate-in fade-in slide-in-from-bottom-6 duration-700 hover:shadow-lg hover:shadow-primary/10 transition-all" style={{ animationDelay: '450ms' }}>
             <CardContent className="pt-6">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                 <Code className="h-5 w-5 text-primary" />
@@ -187,7 +190,12 @@ const ProjectDetail = () => {
               </h2>
               <div className="flex flex-wrap gap-2">
                 {project.technologies.map((tech, idx) => (
-                  <Badge key={idx} variant="secondary" className="text-sm py-1 px-3">
+                  <Badge 
+                    key={idx} 
+                    variant="secondary" 
+                    className="text-sm py-1 px-3 animate-in fade-in zoom-in-50 duration-300 hover:scale-110 transition-transform cursor-default"
+                    style={{ animationDelay: `${500 + idx * 50}ms` }}
+                  >
                     {tech}
                   </Badge>
                 ))}
@@ -196,7 +204,7 @@ const ProjectDetail = () => {
           </Card>
 
           {/* Description */}
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50 animate-in fade-in slide-in-from-bottom-6 duration-700 hover:shadow-lg hover:shadow-primary/10 transition-all" style={{ animationDelay: `${550 + project.technologies.length * 50}ms` }}>
             <CardContent className="pt-6">
               <h2 className="text-xl font-semibold mb-4">About This Project</h2>
               <div className="prose prose-invert max-w-none">
