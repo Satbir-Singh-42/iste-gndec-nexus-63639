@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -23,6 +23,7 @@ const TechNavbar = () => {
   const isHomePage = location.pathname === '/';
   const isAdminPage = location.pathname === '/admin';
   const isLightMode = theme === 'light';
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   // Memoize navItems to prevent unnecessary recalculations
   const navItems = useMemo(() => {
@@ -35,6 +36,23 @@ const TechNavbar = () => {
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     fetchNavbarSettings();
@@ -100,7 +118,7 @@ const TechNavbar = () => {
   }, [textColor]);
 
   return (
-    <nav className={navbarClassName}>
+    <nav className={navbarClassName} ref={mobileMenuRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -173,7 +191,7 @@ const TechNavbar = () => {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden border-t border-border bg-card/95 backdrop-blur-lg">
+        <div className="md:hidden border-t border-border bg-card/95 backdrop-blur-lg animate-slideDown">
           <div className="px-4 py-4 space-y-2">
             {navItems.map((item) => (
               <NavLink

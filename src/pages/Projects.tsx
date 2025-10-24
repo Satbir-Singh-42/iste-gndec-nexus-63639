@@ -27,7 +27,7 @@ const Projects = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const Projects = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedCategory === 'all') {
+    if (selectedCategory === 'all' || !selectedCategory) {
       setFilteredProjects(projects);
     } else {
       setFilteredProjects(projects.filter(p => p.category === selectedCategory));
@@ -69,7 +69,9 @@ const Projects = () => {
     }
   };
 
-  const categories = ['all', ...Array.from(new Set(projects.map(p => p.category)))];
+  const categories = Array.from(new Set(projects.map(p => p.category))).filter(cat => 
+    cat.toLowerCase() !== 'web application'
+  );
 
   if (loading) {
     return (
@@ -120,7 +122,7 @@ const Projects = () => {
               <Code className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
               <h3 className="text-xl font-semibold mb-2">No Projects Found</h3>
               <p className="text-muted-foreground">
-                {selectedCategory === 'all' 
+                {!selectedCategory 
                   ? 'No projects available at the moment.'
                   : `No projects in the ${selectedCategory} category.`
                 }
@@ -141,17 +143,6 @@ const Projects = () => {
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
-                    {project.featured && (
-                      <Badge className="absolute top-3 right-3 bg-primary">
-                        Featured
-                      </Badge>
-                    )}
-                    <Badge 
-                      className="absolute top-3 left-3"
-                      variant={project.status === 'completed' ? 'default' : 'secondary'}
-                    >
-                      {project.status}
-                    </Badge>
                   </div>
 
                   <CardHeader>
