@@ -150,6 +150,35 @@ export type Database = {
         Insert: Omit<Database['public']['Tables']['event_highlights']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['event_highlights']['Insert']>;
       };
+      projects: {
+        Row: {
+          id: number;
+          title: string;
+          description: string;
+          image_url: string;
+          technologies: string[];
+          github_link?: string;
+          demo_link?: string;
+          status: string;
+          category: string;
+          featured?: boolean;
+          hidden?: boolean;
+          display_order?: number;
+          created_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['projects']['Row'], 'id' | 'created_at'>;
+        Update: Partial<Database['public']['Tables']['projects']['Insert']>;
+      };
+      site_settings: {
+        Row: {
+          id: number;
+          setting_key: string;
+          setting_value: boolean;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['site_settings']['Row'], 'id' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['site_settings']['Insert']>;
+      };
     };
   };
 };

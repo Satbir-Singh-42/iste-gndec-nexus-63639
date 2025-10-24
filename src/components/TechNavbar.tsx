@@ -4,8 +4,9 @@ import { Menu, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import ThemeToggle from './ThemeToggle';
+import { supabase } from '@/lib/supabase';
 
-const navItems = [
+const staticNavItems = [
   { name: 'Home', path: '/' },
   { name: 'Events', path: '/events' },
   { name: 'Members', path: '/members' },
@@ -17,10 +18,40 @@ const TechNavbar = () => {
   const { theme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showProjects, setShowProjects] = useState(false);
+  const [navItems, setNavItems] = useState(staticNavItems);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const isAdminPage = location.pathname === '/admin';
   const isLightMode = theme === 'light';
+
+  useEffect(() => {
+    fetchNavbarSettings();
+  }, []);
+
+  useEffect(() => {
+    const updatedNavItems = showProjects 
+      ? [...staticNavItems.slice(0, 2), { name: 'Projects', path: '/projects' }, ...staticNavItems.slice(2)]
+      : staticNavItems;
+    setNavItems(updatedNavItems);
+  }, [showProjects]);
+
+  const fetchNavbarSettings = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('setting_key', 'show_projects_in_navbar')
+        .single();
+      
+      if (!error && data) {
+        setShowProjects(data.setting_value);
+      }
+    } catch (error) {
+      console.error('Error fetching navbar settings:', error);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {

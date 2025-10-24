@@ -94,6 +94,21 @@ interface EventHighlight {
   display_order?: number;
 }
 
+interface Project {
+  id: number;
+  title: string;
+  description: string;
+  image_url: string;
+  technologies: string[];
+  github_link?: string;
+  demo_link?: string;
+  status: string;
+  category: string;
+  featured?: boolean;
+  hidden?: boolean;
+  display_order?: number;
+}
+
 const Admin = () => {
   const { theme, setTheme } = useTheme();
   const [email, setEmail] = useState("");
@@ -111,6 +126,8 @@ const Admin = () => {
   const [postHolders, setPostHolders] = useState<Member[]>([]);
   const [executive, setExecutive] = useState<Member[]>([]);
   const [eventHighlights, setEventHighlights] = useState<EventHighlight[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [showProjectsInNavbar, setShowProjectsInNavbar] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [noticesSearch, setNoticesSearch] = useState("");
@@ -121,6 +138,7 @@ const Admin = () => {
   const [postHoldersSearch, setPostHoldersSearch] = useState("");
   const [executiveSearch, setExecutiveSearch] = useState("");
   const [gallerySearch, setGallerySearch] = useState("");
+  const [projectsSearch, setProjectsSearch] = useState("");
 
   useEffect(() => {
     checkAuthStatus();
@@ -147,6 +165,8 @@ const Admin = () => {
       fetchPostHolders();
       fetchExecutive();
       fetchEventHighlights();
+      fetchProjects();
+      fetchSiteSettings();
     }
   }, [isAuthenticated, refreshTrigger]);
 
@@ -537,6 +557,126 @@ const Admin = () => {
     setRefreshTrigger(prev => prev + 1);
   };
 
+  const fetchProjects = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase.from('projects').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      if (error) throw error;
+      setProjects(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch projects: ${error.message}`);
+    }
+  };
+
+  const deleteProject = async (id: number) => {
+    if (!supabase || !confirm('Are you sure you want to delete this project?')) return;
+    try {
+      const { error } = await supabase.from('projects').delete().eq('id', id);
+      if (error) throw error;
+      toast.success('Project deleted successfully');
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete project: ${error.message}`);
+    }
+  };
+
+  const toggleProjectVisibility = async (id: number, currentHidden: boolean) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from('projects').update({ hidden: !currentHidden }).eq('id', id);
+      if (error) throw error;
+      toast.success(`Project ${!currentHidden ? 'hidden' : 'visible'} successfully`);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update visibility: ${error.message}`);
+    }
+  };
+
+  const updateProjectOrder = async (id: number, newOrder: number, skipRefresh: boolean = false) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from('projects').update({ display_order: newOrder }).eq('id', id);
+      if (error) throw error;
+      if (!skipRefresh) {
+        toast.success('Project order updated');
+        setRefreshTrigger(prev => prev + 1);
+      }
+    } catch (error: any) {
+      toast.error(`Failed to update order: ${error.message}`);
+    }
+  };
+
+  const moveProjectUp = async (items: Project[], index: number) => {
+    if (index === 0) return;
+    const currentItem = items[index];
+    const previousItem = items[index - 1];
+    const currentOrder = currentItem.display_order ?? (items.length - index);
+    const previousOrder = previousItem.display_order ?? (items.length - index + 1);
+    await updateProjectOrder(currentItem.id, previousOrder, true);
+    await updateProjectOrder(previousItem.id, currentOrder, true);
+    toast.success('Project order updated');
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  const moveProjectDown = async (items: Project[], index: number) => {
+    if (index === items.length - 1) return;
+    const currentItem = items[index];
+    const nextItem = items[index + 1];
+    const currentOrder = currentItem.display_order ?? (items.length - index);
+    const nextOrder = nextItem.display_order ?? (items.length - index - 1);
+    await updateProjectOrder(currentItem.id, nextOrder, true);
+    await updateProjectOrder(nextItem.id, currentOrder, true);
+    toast.success('Project order updated');
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  const fetchSiteSettings = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('setting_key', 'show_projects_in_navbar')
+        .single();
+      
+      if (!error && data) {
+        setShowProjectsInNavbar(data.setting_value);
+      }
+    } catch (error: any) {
+      console.error('Error fetching site settings:', error);
+    }
+  };
+
+  const updateNavbarSetting = async (value: boolean) => {
+    if (!supabase) return;
+    try {
+      const { data: existing } = await supabase
+        .from('site_settings')
+        .select('id')
+        .eq('setting_key', 'show_projects_in_navbar')
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from('site_settings')
+          .update({ setting_value: value })
+          .eq('setting_key', 'show_projects_in_navbar');
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('site_settings')
+          .insert([{ setting_key: 'show_projects_in_navbar', setting_value: value }]);
+        if (error) throw error;
+      }
+
+      setShowProjectsInNavbar(value);
+      toast.success(`Projects link ${value ? 'shown in' : 'hidden from'} navbar`);
+      window.location.reload();
+    } catch (error: any) {
+      toast.error(`Failed to update setting: ${error.message}`);
+    }
+  };
+
   if (checkingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800">
@@ -638,12 +778,14 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="notices" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="notices">Notices</TabsTrigger>
             <TabsTrigger value="events">Events</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="highlights">Highlights</TabsTrigger>
+            <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="members">Members</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="notices">
@@ -1417,6 +1559,127 @@ const Admin = () => {
                       ))}
                     </TableBody>
                   </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="projects">
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle>Manage Projects</CardTitle>
+                    <CardDescription>Add, edit, or delete projects</CardDescription>
+                  </div>
+                  <AddProjectDialog onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                </div>
+                <div className="mt-4">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search by title or category..."
+                      value={projectsSearch}
+                      onChange={(e) => setProjectsSearch(e.target.value)}
+                      className="pl-8"
+                    />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="max-h-96 overflow-y-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-12">Order</TableHead>
+                        <TableHead className="w-12">Visible</TableHead>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Featured</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {projects
+                        .filter(project => 
+                          project.title.toLowerCase().includes(projectsSearch.toLowerCase()) ||
+                          project.category.toLowerCase().includes(projectsSearch.toLowerCase())
+                        )
+                        .map((project, index, filteredArray) => (
+                        <TableRow key={project.id} className={project.hidden ? 'opacity-50' : ''}>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => moveProjectUp(projects, projects.indexOf(project))}
+                                disabled={index === 0}
+                                className="h-6 w-6 p-0"
+                              >
+                                <ChevronUp className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => moveProjectDown(projects, projects.indexOf(project))}
+                                disabled={index === filteredArray.length - 1}
+                                className="h-6 w-6 p-0"
+                              >
+                                <ChevronDown className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleProjectVisibility(project.id, project.hidden || false)}
+                            >
+                              {project.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </Button>
+                          </TableCell>
+                          <TableCell>{project.title}</TableCell>
+                          <TableCell className="capitalize">{project.category}</TableCell>
+                          <TableCell className="capitalize">{project.status}</TableCell>
+                          <TableCell>{project.featured ? '⭐' : '-'}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <EditProjectDialog project={project} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
+                              <Button variant="destructive" size="sm" onClick={() => deleteProject(project.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <Card>
+              <CardHeader>
+                <CardTitle>Site Settings</CardTitle>
+                <CardDescription>Configure website appearance and functionality</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <h3 className="font-medium">Show Projects in Navbar</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Display the Projects link in the main navigation bar
+                    </p>
+                  </div>
+                  <Button
+                    variant={showProjectsInNavbar ? "default" : "outline"}
+                    onClick={() => updateNavbarSetting(!showProjectsInNavbar)}
+                  >
+                    {showProjectsInNavbar ? 'Enabled' : 'Disabled'}
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -3028,6 +3291,271 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
           <DialogFooter>
             <Button type="submit" disabled={uploading}>Update Event Highlight</Button>
           </DialogFooter>
+          </form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    image_url: "",
+    technologies: "",
+    github_link: "",
+    demo_link: "",
+    status: "ongoing",
+    category: "",
+    featured: false
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'projects');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image_url: url });
+      toast.success('Image uploaded successfully');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const technologiesArray = formData.technologies.split(',').map(t => t.trim()).filter(t => t);
+      const { error } = await supabase.from('projects').insert([{
+        ...formData,
+        technologies: technologiesArray
+      }]);
+      if (error) throw error;
+      toast.success('Project added successfully');
+      setOpen(false);
+      setFormData({
+        title: "",
+        description: "",
+        image_url: "",
+        technologies: "",
+        github_link: "",
+        demo_link: "",
+        status: "ongoing",
+        category: "",
+        featured: false
+      });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add project: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Project</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Add New Project</DialogTitle>
+          <DialogDescription>Add a new project to the projects page</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="project-title">Title *</Label>
+              <Input id="project-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+            </div>
+            <div>
+              <Label htmlFor="project-description">Description *</Label>
+              <Textarea id="project-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={4} />
+            </div>
+            <div>
+              <Label htmlFor="project-image">Project Image *</Label>
+              <Input id="project-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} required={!formData.image_url} />
+              {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+              {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
+            </div>
+            <div>
+              <Label htmlFor="project-technologies">Technologies (comma-separated) *</Label>
+              <Input id="project-technologies" value={formData.technologies} onChange={(e) => setFormData({ ...formData, technologies: e.target.value })} placeholder="React, TypeScript, Node.js" required />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="project-category">Category *</Label>
+                <Input id="project-category" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} placeholder="Web, Mobile, AI, etc." required />
+              </div>
+              <div>
+                <Label htmlFor="project-status">Status *</Label>
+                <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ongoing">Ongoing</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="project-github">GitHub Link (optional)</Label>
+              <Input id="project-github" type="url" value={formData.github_link} onChange={(e) => setFormData({ ...formData, github_link: e.target.value })} placeholder="https://github.com/..." />
+            </div>
+            <div>
+              <Label htmlFor="project-demo">Demo Link (optional)</Label>
+              <Input id="project-demo" type="url" value={formData.demo_link} onChange={(e) => setFormData({ ...formData, demo_link: e.target.value })} placeholder="https://..." />
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="project-featured"
+                checked={formData.featured}
+                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                className="w-4 h-4"
+              />
+              <Label htmlFor="project-featured">Featured Project</Label>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>Add Project</Button>
+            </DialogFooter>
+          </form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    title: project.title,
+    description: project.description,
+    image_url: project.image_url,
+    technologies: project.technologies.join(', '),
+    github_link: project.github_link || "",
+    demo_link: project.demo_link || "",
+    status: project.status,
+    category: project.category,
+    featured: project.featured || false
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, 'projects');
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image_url: url });
+      toast.success('Image uploaded successfully');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const technologiesArray = formData.technologies.split(',').map(t => t.trim()).filter(t => t);
+      const { error } = await supabase.from('projects').update({
+        ...formData,
+        technologies: technologiesArray
+      }).eq('id', project.id);
+      if (error) throw error;
+      toast.success('Project updated successfully');
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update project: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-xl md:max-w-2xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Edit Project</DialogTitle>
+          <DialogDescription>Update project information</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="edit-project-title">Title *</Label>
+              <Input id="edit-project-title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} required />
+            </div>
+            <div>
+              <Label htmlFor="edit-project-description">Description *</Label>
+              <Textarea id="edit-project-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required rows={4} />
+            </div>
+            <div>
+              <Label htmlFor="edit-project-image">Project Image</Label>
+              <Input id="edit-project-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+              {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+              {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
+            </div>
+            <div>
+              <Label htmlFor="edit-project-technologies">Technologies (comma-separated) *</Label>
+              <Input id="edit-project-technologies" value={formData.technologies} onChange={(e) => setFormData({ ...formData, technologies: e.target.value })} placeholder="React, TypeScript, Node.js" required />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-project-category">Category *</Label>
+                <Input id="edit-project-category" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} placeholder="Web, Mobile, AI, etc." required />
+              </div>
+              <div>
+                <Label htmlFor="edit-project-status">Status *</Label>
+                <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ongoing">Ongoing</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-project-github">GitHub Link (optional)</Label>
+              <Input id="edit-project-github" type="url" value={formData.github_link} onChange={(e) => setFormData({ ...formData, github_link: e.target.value })} placeholder="https://github.com/..." />
+            </div>
+            <div>
+              <Label htmlFor="edit-project-demo">Demo Link (optional)</Label>
+              <Input id="edit-project-demo" type="url" value={formData.demo_link} onChange={(e) => setFormData({ ...formData, demo_link: e.target.value })} placeholder="https://..." />
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="edit-project-featured"
+                checked={formData.featured}
+                onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                className="w-4 h-4"
+              />
+              <Label htmlFor="edit-project-featured">Featured Project</Label>
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>Update Project</Button>
+            </DialogFooter>
           </form>
         </ScrollArea>
       </DialogContent>
