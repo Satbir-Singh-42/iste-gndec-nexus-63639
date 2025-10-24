@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +95,7 @@ interface EventHighlight {
 }
 
 const Admin = () => {
+  const { theme, setTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -122,6 +124,17 @@ const Admin = () => {
 
   useEffect(() => {
     checkAuthStatus();
+  }, []);
+
+  useEffect(() => {
+    const previousTheme = theme;
+    setTheme('dark');
+    
+    return () => {
+      if (previousTheme && previousTheme !== 'dark') {
+        setTheme(previousTheme);
+      }
+    };
   }, []);
 
   useEffect(() => {

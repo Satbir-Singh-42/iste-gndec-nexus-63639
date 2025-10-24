@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ThemeToggle from './ThemeToggle';
 
 const navItems = [
   { name: 'Home', path: '/' },
@@ -16,6 +17,7 @@ const TechNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const isAdminPage = location.pathname === '/admin';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,6 +89,11 @@ const TechNavbar = () => {
                 )}
               </NavLink>
             ))}
+            {!isAdminPage && (
+              <div className="ml-2">
+                <ThemeToggle />
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -125,6 +132,11 @@ const TechNavbar = () => {
                 {item.name}
               </NavLink>
             ))}
+            {!isAdminPage && (
+              <div className="flex items-center justify-center pt-2 border-t border-border mt-2">
+                <ThemeToggle />
+              </div>
+            )}
           </div>
         </div>
       )}

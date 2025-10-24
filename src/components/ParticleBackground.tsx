@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 import gsap from 'gsap';
 
 interface BinaryStream {
@@ -28,6 +29,7 @@ interface Star {
 
 const ParticleBackground = () => {
   const location = useLocation();
+  const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamsRef = useRef<BinaryStream[]>([]);
@@ -39,6 +41,7 @@ const ParticleBackground = () => {
   
   // Only show binary streams on home page
   const isHomePage = location.pathname === '/';
+  const isLightMode = theme === 'light';
 
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
@@ -65,16 +68,23 @@ const ParticleBackground = () => {
       const size = Math.random() * 2.5 + 1;
       const opacity = Math.random() * 0.5 + 0.3;
       
+      const starColor = isLightMode 
+        ? `rgba(100, 130, 180, ${opacity * 0.4}), rgba(60, 100, 150, ${opacity * 0.3})` 
+        : `rgba(255, 255, 255, ${opacity}), rgba(200, 220, 255, ${opacity * 0.7})`;
+      const shadowColor = isLightMode
+        ? `rgba(100, 130, 180, ${opacity * 0.2})`
+        : `rgba(255, 255, 255, ${opacity * 0.4})`;
+      
       star.style.cssText = `
         position: absolute;
         width: ${size}px;
         height: ${size}px;
-        background: radial-gradient(circle, rgba(255, 255, 255, ${opacity}) 0%, rgba(200, 220, 255, ${opacity * 0.7}) 50%, transparent 100%);
+        background: radial-gradient(circle, ${starColor} 50%, transparent 100%);
         border-radius: 50%;
         left: ${x}%;
         top: ${y}%;
         pointer-events: none;
-        box-shadow: 0 0 ${size * 3}px rgba(255, 255, 255, ${opacity * 0.4});
+        box-shadow: 0 0 ${size * 3}px ${shadowColor};
         animation: twinkle ${3 + Math.random() * 4}s ease-in-out infinite;
         animation-delay: ${Math.random() * 3}s;
       `;
@@ -150,7 +160,7 @@ const ParticleBackground = () => {
     // Animation loop
     const animate = () => {
       // Clear canvas with stronger fade for cleaner trail
-      ctx.fillStyle = 'rgba(4, 6, 15, 0.2)';
+      ctx.fillStyle = isLightMode ? 'rgba(240, 242, 248, 0.2)' : 'rgba(4, 6, 15, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const fontSize = 11;
@@ -180,12 +190,19 @@ const ParticleBackground = () => {
           
           if (digitY > -fontSize && digitY < canvas.height + fontSize) {
             // Extremely translucent: only 6% base opacity
-            const baseOpacity = stream.opacity[index] * 0.06;
-            const finalOpacity = baseOpacity + mouseInfluence * 0.08;
+            const baseOpacity = stream.opacity[index] * (isLightMode ? 0.08 : 0.06);
+            const finalOpacity = baseOpacity + mouseInfluence * (isLightMode ? 0.1 : 0.08);
 
-            const r = 60 + mouseInfluence * 50;
-            const g = 160 + mouseInfluence * 30;
-            const b = 210;
+            let r, g, b;
+            if (isLightMode) {
+              r = 40 + mouseInfluence * 30;
+              g = 90 + mouseInfluence * 40;
+              b = 150;
+            } else {
+              r = 60 + mouseInfluence * 50;
+              g = 160 + mouseInfluence * 30;
+              b = 210;
+            }
 
             ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${finalOpacity})`;
             ctx.shadowBlur = 0; // No glow for cleaner look
@@ -227,16 +244,24 @@ const ParticleBackground = () => {
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
         
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
-        gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
-        gradient.addColorStop(0.6, `rgba(100, 180, 255, ${opacity * 0.4})`);
-        gradient.addColorStop(1, `rgba(100, 180, 255, 0)`);
+        if (isLightMode) {
+          gradient.addColorStop(0, `rgba(50, 120, 200, ${opacity * 0.6})`);
+          gradient.addColorStop(0.6, `rgba(30, 90, 180, ${opacity * 0.3})`);
+          gradient.addColorStop(1, `rgba(30, 90, 180, 0)`);
+        } else {
+          gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
+          gradient.addColorStop(0.6, `rgba(100, 180, 255, ${opacity * 0.4})`);
+          gradient.addColorStop(1, `rgba(100, 180, 255, 0)`);
+        }
         
         ctx.fillStyle = gradient;
         ctx.fill();
         
         // Minimal glow for clean effect
         ctx.shadowBlur = size;
-        ctx.shadowColor = `rgba(100, 180, 255, ${opacity * 0.3})`;
+        ctx.shadowColor = isLightMode 
+          ? `rgba(50, 120, 200, ${opacity * 0.2})` 
+          : `rgba(100, 180, 255, ${opacity * 0.3})`;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
@@ -277,14 +302,16 @@ const ParticleBackground = () => {
         }
       });
     };
-  }, [isHomePage]);
+  }, [isHomePage, isLightMode]);
 
   return (
     <div 
       ref={containerRef} 
       className="absolute inset-0 -z-10 overflow-hidden"
       style={{ 
-        background: 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
+        background: isLightMode 
+          ? 'radial-gradient(ellipse at center, rgba(220, 230, 245, 0.3) 0%, rgba(240, 244, 250, 0.15) 50%, transparent 100%)'
+          : 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
       }}
     >
       <canvas 
@@ -292,7 +319,9 @@ const ParticleBackground = () => {
         className="absolute inset-0 w-full h-full"
         style={{ 
           pointerEvents: 'none',
-          background: 'linear-gradient(to bottom, rgba(4, 6, 15, 1) 0%, rgba(6, 10, 20, 1) 50%, rgba(4, 6, 15, 1) 100%)'
+          background: isLightMode
+            ? 'linear-gradient(to bottom, rgba(240, 242, 248, 1) 0%, rgba(230, 235, 245, 1) 50%, rgba(240, 242, 248, 1) 100%)'
+            : 'linear-gradient(to bottom, rgba(4, 6, 15, 1) 0%, rgba(6, 10, 20, 1) 50%, rgba(4, 6, 15, 1) 100%)'
         }}
       />
       

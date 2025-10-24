@@ -48,6 +48,46 @@ All colors MUST be HSL.
     /* Technical Effects */
     --scanline-opacity: 0.03;
   }
+
+  .light {
+    /* Technical Light Theme - Soft Bluish */
+    --background: 210 25% 97%;
+    --foreground: 220 20% 15%;
+
+    --card: 210 20% 99%;
+    --card-foreground: 220 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
+
+    --primary: 210 90% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 195 75% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 25% 92%;
+    --muted-foreground: 220 15% 45%;
+
+    --accent: 200 85% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 20% 85%;
+    --input: 220 20% 85%;
+    --ring: 210 90% 48%;
+
+    /* Technical Colors - Light Mode */
+    --tech-blue: 210 90% 48%;
+    --tech-cyan: 195 75% 45%;
+    --tech-sky: 200 85% 50%;
+    --tech-grid: 210 60% 60%;
+    
+    /* Technical Effects */
+    --scanline-opacity: 0.015;
+  }
 }
 
 @layer base {
