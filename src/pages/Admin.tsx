@@ -247,7 +247,7 @@ const Admin = () => {
   const fetchGallery = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase.from('gallery').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true });
+      const { data, error } = await supabase.from('gallery').select('*').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: false });
       if (error) throw error;
       setGallery(data || []);
     } catch (error: any) {
