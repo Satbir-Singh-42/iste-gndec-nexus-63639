@@ -88,7 +88,7 @@ const Gallery = () => {
             <p className="text-muted-foreground">No gallery images available yet.</p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {galleryImages.map((item) => (
               <div 
                 key={item.id} 
@@ -98,7 +98,7 @@ const Gallery = () => {
                   setCurrentImageIndex(0);
                 }}
               >
-                <div className="relative aspect-[3/4] overflow-hidden bg-muted">
+                <div className="relative aspect-square overflow-hidden bg-muted">
                   <img 
                     src={item.images?.[0]} 
                     alt={item.title}
@@ -106,15 +106,15 @@ const Gallery = () => {
                   />
                   
                   {item.images?.length > 1 && (
-                    <div className="absolute top-4 left-4 px-2 py-1 text-xs font-mono bg-background/80 text-foreground border border-border">
+                    <div className="absolute top-2 left-2 px-2 py-1 text-xs font-mono bg-background/80 text-foreground border border-border">
                       1/{item.images.length}
                     </div>
                   )}
                 </div>
                 
-                <div className="p-4">
+                <div className="p-3">
                   <span className="text-xs font-mono text-primary mb-1 block">{item.category}</span>
-                  <h3 className="text-lg font-bold text-foreground mb-1">{item.title}</h3>
+                  <h3 className="text-base font-bold text-foreground mb-1">{item.title}</h3>
                   {item.images?.length > 1 && (
                     <span className="text-xs text-muted-foreground">
                       {item.images.length} images
