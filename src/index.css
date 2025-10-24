@@ -110,6 +110,10 @@ All colors MUST be HSL.
     transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  .light html {
+    background: linear-gradient(to bottom, #C8DCFF 0%, #E6F0FF 30%, #FAFCFF 50%, #E6F0FF 70%, #D2E1FF 100%);
+  }
+
   body {
     @apply bg-background text-foreground overflow-x-hidden;
     position: relative;
