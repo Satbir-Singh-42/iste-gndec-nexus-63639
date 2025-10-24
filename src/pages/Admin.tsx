@@ -401,8 +401,30 @@ const Admin = () => {
     if (!supabase || !confirm("Are you sure you want to delete this notice?"))
       return;
     try {
+      // First, get the notice to retrieve image URLs
+      const { data: notice } = await supabase
+        .from("notices")
+        .select("poster_url, attachments")
+        .eq("id", id)
+        .single();
+
+      // Delete from database
       const { error } = await supabase.from("notices").delete().eq("id", id);
       if (error) throw error;
+
+      // Delete poster from storage
+      if (notice?.poster_url) {
+        await deleteImageFromSupabase(notice.poster_url);
+        console.log("Deleted notice poster from storage");
+      }
+
+      // Delete attachments from storage (if they're stored as URLs, not base64)
+      if (notice?.attachments && notice.attachments.length > 0) {
+        const attachmentUrls = notice.attachments.map((att: any) => att.url);
+        const { deletedCount } = await deleteMultipleImagesFromSupabase(attachmentUrls);
+        console.log(`Deleted ${deletedCount} attachment(s) from storage`);
+      }
+
       toast.success("Notice deleted successfully");
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
@@ -431,8 +453,29 @@ const Admin = () => {
     if (!supabase || !confirm("Are you sure you want to delete this event?"))
       return;
     try {
+      // First, get the event to retrieve image URLs
+      const { data: event } = await supabase
+        .from("events")
+        .select("poster_url, image_url")
+        .eq("id", id)
+        .single();
+
+      // Delete from database
       const { error } = await supabase.from("events").delete().eq("id", id);
       if (error) throw error;
+
+      // Delete poster from storage
+      if (event?.poster_url) {
+        await deleteImageFromSupabase(event.poster_url);
+        console.log("Deleted event poster from storage");
+      }
+
+      // Delete event image from storage
+      if (event?.image_url) {
+        await deleteImageFromSupabase(event.image_url);
+        console.log("Deleted event image from storage");
+      }
+
       toast.success("Event deleted successfully");
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
