@@ -177,9 +177,8 @@ const ParticleBackground = () => {
 
     // Animation loop
     const animate = () => {
-      // Clear canvas with slower fade for better particle visibility
-      ctx.fillStyle = isLightMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(4, 6, 15, 0.2)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Fully clear canvas to prevent particle residue
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const fontSize = 11;
       ctx.font = `${fontSize}px "Courier New", monospace`;
