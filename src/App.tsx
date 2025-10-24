@@ -37,6 +37,8 @@ const AppContent = () => {
   const isNotFoundPage = !['/', '/events', '/members', '/gallery', '/contact', '/notices', '/projects', '/admin'].some(path => 
     location.pathname === path || location.pathname.startsWith(path + '/')
   );
+  const isAdminPage = location.pathname === '/admin';
+  const showNavbar = !isNotFoundPage && !isAdminPage;
 
   return (
     <>
@@ -45,8 +47,8 @@ const AppContent = () => {
       <div className="fixed inset-0 -z-10">
         <ParticleBackground />
       </div>
-      {/* Global navbar - hidden on 404 page */}
-      {!isNotFoundPage && <TechNavbar />}
+      {/* Global navbar - hidden on 404 and admin pages */}
+      {showNavbar && <TechNavbar />}
       <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/events" element={<Events />} />

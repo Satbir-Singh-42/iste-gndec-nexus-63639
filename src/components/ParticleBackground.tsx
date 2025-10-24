@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTheme } from 'next-themes';
 import gsap from 'gsap';
 
 interface BinaryStream {
@@ -36,6 +37,8 @@ interface TechNode {
 
 const ParticleBackground = () => {
   const location = useLocation();
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamsRef = useRef<BinaryStream[]>([]);
@@ -47,9 +50,14 @@ const ParticleBackground = () => {
   const lastSpawnTime = useRef(0);
   
   const isHomePage = location.pathname === '/';
+  const isDark = theme === 'dark';
 
   useEffect(() => {
-    if (!containerRef.current || !canvasRef.current) return;
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !containerRef.current || !canvasRef.current) return;
 
     const container = containerRef.current;
     const canvas = canvasRef.current;
@@ -58,7 +66,7 @@ const ParticleBackground = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    console.log('✨ Clean tech background initialized');
+    console.log('✨ Clean tech background initialized', { theme, isDark });
 
     const starCount = 60;
     const stars: Star[] = [];
@@ -71,8 +79,12 @@ const ParticleBackground = () => {
       const size = Math.random() * 2.5 + 1;
       const opacity = Math.random() * 0.5 + 0.3;
       
-      const starColor = `rgba(255, 255, 255, ${opacity}), rgba(200, 220, 255, ${opacity * 0.7})`;
-      const shadowColor = `rgba(255, 255, 255, ${opacity * 0.4})`;
+      const starColor = isDark 
+        ? `rgba(255, 255, 255, ${opacity}), rgba(200, 220, 255, ${opacity * 0.7})`
+        : `rgba(59, 130, 246, ${opacity * 0.8}), rgba(14, 165, 233, ${opacity * 0.6})`;
+      const shadowColor = isDark 
+        ? `rgba(255, 255, 255, ${opacity * 0.4})`
+        : `rgba(59, 130, 246, ${opacity * 0.5})`;
       
       star.style.cssText = `
         position: absolute;
@@ -83,10 +95,11 @@ const ParticleBackground = () => {
         left: ${x}%;
         top: ${y}%;
         pointer-events: none;
-        box-shadow: 0 0 ${size * 3}px ${shadowColor};
+        box-shadow: 0 0 ${size * (isDark ? 3 : 4)}px ${shadowColor};
         animation: twinkle ${3 + Math.random() * 4}s ease-in-out infinite;
         animation-delay: ${Math.random() * 3}s;
         z-index: 2;
+        transition: all 0.5s ease;
       `;
       
       container.appendChild(star);
@@ -187,12 +200,12 @@ const ParticleBackground = () => {
           const digitY = stream.y + index * fontSize;
           
           if (digitY > -fontSize && digitY < canvas.height + fontSize) {
-            const baseOpacity = stream.opacity[index] * 0.06;
-            const finalOpacity = baseOpacity + mouseInfluence * 0.08;
+            const baseOpacity = stream.opacity[index] * (isDark ? 0.06 : 0.2);
+            const finalOpacity = baseOpacity + mouseInfluence * (isDark ? 0.08 : 0.25);
 
-            const r = 60 + mouseInfluence * 50;
-            const g = 160 + mouseInfluence * 30;
-            const b = 210;
+            const r = isDark ? (60 + mouseInfluence * 50) : (30 + mouseInfluence * 40);
+            const g = isDark ? (160 + mouseInfluence * 30) : (100 + mouseInfluence * 60);
+            const b = isDark ? 210 : (200 + mouseInfluence * 40);
 
             ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${finalOpacity})`;
             ctx.shadowBlur = 0;
@@ -225,22 +238,30 @@ const ParticleBackground = () => {
           continue;
         }
         
-        const opacity = p.life * 0.75;
+        const opacity = p.life * (isDark ? 0.75 : 0.9);
         const size = p.size * p.life;
         
         ctx.beginPath();
         ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
         
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
-        gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
-        gradient.addColorStop(0.6, `rgba(100, 180, 255, ${opacity * 0.4})`);
-        gradient.addColorStop(1, `rgba(100, 180, 255, 0)`);
+        if (isDark) {
+          gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
+          gradient.addColorStop(0.6, `rgba(100, 180, 255, ${opacity * 0.4})`);
+          gradient.addColorStop(1, `rgba(100, 180, 255, 0)`);
+        } else {
+          gradient.addColorStop(0, `rgba(59, 130, 246, ${opacity})`);
+          gradient.addColorStop(0.6, `rgba(14, 165, 233, ${opacity * 0.6})`);
+          gradient.addColorStop(1, `rgba(59, 130, 246, 0)`);
+        }
         
         ctx.fillStyle = gradient;
         ctx.fill();
         
-        ctx.shadowBlur = size * 1.5;
-        ctx.shadowColor = `rgba(100, 180, 255, ${opacity * 0.3})`;
+        ctx.shadowBlur = size * (isDark ? 1.5 : 2);
+        ctx.shadowColor = isDark 
+          ? `rgba(100, 180, 255, ${opacity * 0.3})`
+          : `rgba(59, 130, 246, ${opacity * 0.5})`;
         ctx.fill();
         ctx.shadowBlur = 0;
       }
@@ -278,24 +299,28 @@ const ParticleBackground = () => {
         }
       });
     };
-  }, [isHomePage]);
+  }, [isHomePage, isDark, mounted]);
 
   return (
     <div 
       ref={containerRef} 
-      className="absolute inset-0 overflow-hidden"
+      className="absolute inset-0 overflow-hidden transition-all duration-500"
       style={{ 
         zIndex: -10,
-        background: 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
+        background: isDark 
+          ? 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
+          : 'radial-gradient(ellipse at center, rgba(224, 239, 255, 0.3) 0%, rgba(235, 245, 255, 0.2) 50%, transparent 100%)'
       }}
     >
       <canvas 
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full transition-all duration-500"
         style={{ 
           pointerEvents: 'none',
           zIndex: 1,
-          background: 'linear-gradient(to bottom, rgba(4, 6, 15, 1) 0%, rgba(6, 10, 20, 1) 50%, rgba(4, 6, 15, 1) 100%)'
+          background: isDark 
+            ? 'linear-gradient(to bottom, rgba(4, 6, 15, 1) 0%, rgba(6, 10, 20, 1) 50%, rgba(4, 6, 15, 1) 100%)'
+            : 'transparent'
         }}
       />
       

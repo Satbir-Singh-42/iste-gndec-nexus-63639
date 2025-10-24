@@ -79,31 +79,12 @@ const TechNavbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const textShadow = useMemo(() => {
-    if (isScrolled || !isHomePage) return undefined;
-    return { textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' };
-  }, [isScrolled, isHomePage]);
-
-  const textColor = useMemo(() => {
-    if (isScrolled || !isHomePage) return "text-foreground";
-    return "text-white";
-  }, [isScrolled, isHomePage]);
-
-  const navbarClassName = useMemo(() => {
-    return cn(
-      'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
-      isScrolled || !isHomePage
-        ? 'bg-background/80 backdrop-blur-lg border-border' 
-        : 'bg-transparent border-transparent'
-    );
-  }, [isScrolled, isHomePage]);
-
-  const mobileButtonClassName = useMemo(() => {
-    return cn(
-      "md:hidden p-2 hover:text-primary transition-colors",
-      textColor
-    );
-  }, [textColor]);
+  const navbarClassName = cn(
+    'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
+    isScrolled
+      ? 'bg-background/80 backdrop-blur-lg border-border' 
+      : 'bg-transparent border-transparent'
+  );
 
   return (
     <nav className={navbarClassName} ref={mobileMenuRef}>
@@ -117,12 +98,7 @@ const TechNavbar = () => {
                 className="h-10 w-auto object-contain"
               />
             </div>
-            <span className={cn(
-              "font-black text-xl tracking-tight group-hover:text-primary transition-colors",
-              textColor
-            )}
-            style={textShadow}
-            >
+            <span className="font-black text-xl tracking-tight text-foreground group-hover:text-primary transition-colors">
               ISTE GNDEC
             </span>
           </NavLink>
@@ -138,12 +114,9 @@ const TechNavbar = () => {
                     'relative px-4 py-2 font-mono text-sm tracking-wider transition-all',
                     isActive
                       ? 'text-primary'
-                      : isScrolled || !isHomePage
-                        ? 'text-muted-foreground hover:text-foreground'
-                        : 'text-white/95 hover:text-white'
+                      : 'text-muted-foreground hover:text-foreground'
                   )
                 }
-                style={!isScrolled && isHomePage ? { textShadow: '0 2px 6px rgba(0,0,0,0.8)' } : undefined}
               >
                 {({ isActive }) => (
                   <>
@@ -155,13 +128,12 @@ const TechNavbar = () => {
                 )}
               </NavLink>
             ))}
-            <ThemeToggle isScrolled={isScrolled} isHomePage={isHomePage} />
+            <ThemeToggle />
           </div>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={mobileButtonClassName}
-            style={!isScrolled && isHomePage ? { filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.8))' } : undefined}
+            className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>

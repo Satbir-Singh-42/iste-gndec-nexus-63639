@@ -2,14 +2,13 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import gsap from "gsap";
 
 interface ThemeToggleProps {
   className?: string;
-  isScrolled?: boolean;
-  isHomePage?: boolean;
 }
 
-export function ThemeToggle({ className, isScrolled = false, isHomePage = false }: ThemeToggleProps) {
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -22,21 +21,29 @@ export function ThemeToggle({ className, isScrolled = false, isHomePage = false 
   }
 
   const isDark = theme === "dark";
-  const toggleTheme = () => setTheme(isDark ? "light" : "dark");
-
-  const buttonColor = (!isScrolled && isHomePage) 
-    ? "text-white/95 hover:text-white" 
-    : "text-muted-foreground hover:text-foreground";
+  const toggleTheme = () => {
+    gsap.to(document.documentElement, {
+      opacity: 0.95,
+      duration: 0.15,
+      ease: "power2.inOut",
+      onComplete: () => {
+        setTheme(isDark ? "light" : "dark");
+        gsap.to(document.documentElement, {
+          opacity: 1,
+          duration: 0.15,
+          ease: "power2.inOut"
+        });
+      }
+    });
+  };
 
   return (
     <button
       onClick={toggleTheme}
       className={cn(
-        "relative p-2 rounded-lg transition-all duration-300 hover:bg-primary/10",
-        buttonColor,
+        "relative p-2 rounded-lg transition-all duration-300 hover:bg-primary/10 text-muted-foreground hover:text-foreground",
         className
       )}
-      style={(!isScrolled && isHomePage) ? { filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.8))' } : undefined}
       aria-label="Toggle theme"
     >
       <div className="relative w-5 h-5">
