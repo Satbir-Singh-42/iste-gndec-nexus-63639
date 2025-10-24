@@ -39,7 +39,8 @@ const Gallery = () => {
         .from('gallery')
         .select('*')
         .or('hidden.is.null,hidden.eq.false')
-        .order('created_at', { ascending: false });
+        .order('display_order', { ascending: true, nullsFirst: false })
+        .order('id', { ascending: true });
 
       if (error) throw error;
       setGalleryImages(data || []);
