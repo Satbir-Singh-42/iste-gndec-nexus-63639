@@ -15,6 +15,7 @@ const staticNavItems = [
 
 const TechNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
   const location = useLocation();
@@ -27,14 +28,24 @@ const TechNavbar = () => {
       : staticNavItems;
   }, [showProjects]);
 
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+    }, 200); // Match animation duration
+  };
+
   useEffect(() => {
-    setIsOpen(false);
+    if (isOpen) {
+      handleClose();
+    }
   }, [location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        handleClose();
       }
     };
 
@@ -132,7 +143,7 @@ const TechNavbar = () => {
           </div>
 
           <button
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => isOpen ? handleClose() : setIsOpen(true)}
             className="md:hidden p-2 text-muted-foreground hover:text-primary transition-colors"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -141,14 +152,17 @@ const TechNavbar = () => {
       </div>
 
       {isOpen && (
-        <div className="md:hidden border-t border-border bg-card/95 backdrop-blur-lg animate-slideDown">
+        <div className={cn(
+          "md:hidden border-t border-border bg-card/95 backdrop-blur-lg",
+          isClosing ? "animate-slideUp" : "animate-slideDown"
+        )}>
           <div className="px-4 py-4 space-y-2">
             {navItems.map((item) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 end={item.path === '/'}
-                onClick={() => setIsOpen(false)}
+                onClick={handleClose}
                 className={({ isActive }) =>
                   cn(
                     'block px-4 py-3 font-mono text-sm tracking-wider transition-all tech-border',
