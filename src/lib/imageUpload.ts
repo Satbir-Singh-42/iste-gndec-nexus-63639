@@ -108,32 +108,47 @@ export async function deleteImageFromSupabase(
 ): Promise<{ success: boolean; error: string | null }> {
   try {
     if (!supabase) {
+      console.error("❌ Supabase not initialized for delete operation");
       return { success: false, error: "Supabase not initialized" };
     }
 
     if (!imageUrl) {
+      console.log("ℹ️ No image URL provided, skipping delete");
       return { success: true, error: null }; // Nothing to delete
     }
 
+    console.log("🗑️ Attempting to delete image:", imageUrl);
+    
     const filePath = extractStoragePath(imageUrl);
     
     if (!filePath) {
       // Image is not in storage (could be base64 or external URL)
+      console.log("ℹ️ Image not in storage (base64 or external URL), skipping delete");
       return { success: true, error: null };
     }
 
-    const { error } = await supabase.storage
+    console.log("📂 Extracted file path:", filePath);
+    console.log("🪣 Deleting from bucket: images");
+
+    const { data, error } = await supabase.storage
       .from("images")
       .remove([filePath]);
 
     if (error) {
-      console.error("Error deleting image from storage:", error);
+      console.error("❌ Error deleting image from storage:", error);
+      console.error("Error details:", {
+        message: error.message,
+        statusCode: error.statusCode,
+        error: error
+      });
       return { success: false, error: error.message };
     }
 
+    console.log("✅ Successfully deleted from storage:", filePath);
+    console.log("Delete response:", data);
     return { success: true, error: null };
   } catch (error: any) {
-    console.error("Error in deleteImageFromSupabase:", error);
+    console.error("❌ Exception in deleteImageFromSupabase:", error);
     return { success: false, error: error.message || "Delete failed" };
   }
 }
@@ -146,34 +161,48 @@ export async function deleteMultipleImagesFromSupabase(
 ): Promise<{ success: boolean; error: string | null; deletedCount: number }> {
   try {
     if (!supabase) {
+      console.error("❌ Supabase not initialized for multiple delete");
       return { success: false, error: "Supabase not initialized", deletedCount: 0 };
     }
 
     if (!imageUrls || imageUrls.length === 0) {
+      console.log("ℹ️ No images to delete");
       return { success: true, error: null, deletedCount: 0 };
     }
+
+    console.log(`🗑️ Attempting to delete ${imageUrls.length} image(s)`);
 
     const filePaths = imageUrls
       .map(url => extractStoragePath(url))
       .filter((path): path is string => path !== null);
 
     if (filePaths.length === 0) {
-      // No images in storage to delete
+      console.log("ℹ️ No images in storage to delete (all base64 or external)");
       return { success: true, error: null, deletedCount: 0 };
     }
 
-    const { error } = await supabase.storage
+    console.log("📂 File paths to delete:", filePaths);
+    console.log("🪣 Deleting from bucket: images");
+
+    const { data, error } = await supabase.storage
       .from("images")
       .remove(filePaths);
 
     if (error) {
-      console.error("Error deleting images from storage:", error);
+      console.error("❌ Error deleting images from storage:", error);
+      console.error("Error details:", {
+        message: error.message,
+        statusCode: error.statusCode,
+        error: error
+      });
       return { success: false, error: error.message, deletedCount: 0 };
     }
 
+    console.log(`✅ Successfully deleted ${filePaths.length} image(s) from storage`);
+    console.log("Delete response:", data);
     return { success: true, error: null, deletedCount: filePaths.length };
   } catch (error: any) {
-    console.error("Error in deleteMultipleImagesFromSupabase:", error);
+    console.error("❌ Exception in deleteMultipleImagesFromSupabase:", error);
     return { success: false, error: error.message || "Delete failed", deletedCount: 0 };
   }
 }
