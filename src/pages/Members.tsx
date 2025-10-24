@@ -33,7 +33,7 @@ interface Faculty {
 
 const Members = () => {
   const [activeTab, setActiveTab] = useState('core');
-  const [faculty, setFaculty] = useState<Faculty | null>(null);
+  const [faculty, setFaculty] = useState<Faculty[]>([]);
   const [coreTeam, setCoreTeam] = useState<Member[]>([]);
   const [postHolders, setPostHolders] = useState<Member[]>([]);
   const [executiveTeam, setExecutiveTeam] = useState<Member[]>([]);
@@ -56,14 +56,14 @@ const Members = () => {
 
     try {
       const [facultyRes, coreRes, postRes, execRes] = await Promise.all([
-        supabase.from('members_faculty').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }).limit(1).single(),
+        supabase.from('members_faculty').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }),
         supabase.from('members_core_team').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }),
         supabase.from('members_post_holders').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }),
         supabase.from('members_executive').select('*').or('hidden.is.null,hidden.eq.false').order('display_order', { ascending: true, nullsFirst: false }).order('id', { ascending: true }),
       ]);
 
       if (facultyRes.error) console.error('Faculty error:', facultyRes.error);
-      else setFaculty(facultyRes.data);
+      else setFaculty(facultyRes.data || []);
 
       if (coreRes.error) console.error('Core team error:', coreRes.error);
       else setCoreTeam(coreRes.data || []);
@@ -113,80 +113,84 @@ const Members = () => {
       
       <main className="pt-24 pb-16 px-4">
         {/* Faculty Advisor Section */}
-        {faculty && (
+        {faculty.length > 0 && (
           <section className="mb-16 max-w-7xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-              Our Faculty Advisor
+              {faculty.length === 1 ? 'Our Faculty Advisor' : 'Our Faculty Advisors'}
             </h2>
             
-            <div className="grid md:grid-cols-[300px,1fr] gap-8 items-start max-w-5xl mx-auto">
-              {/* Circular Image */}
-              <div className="mx-auto">
-                <div className="w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden bg-muted border-4 border-border">
-                  <img 
-                    src={faculty.image || '/default-avatar.png'} 
-                    alt={faculty.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/default-avatar.png';
-                    }}
-                  />
-                </div>
-              </div>
+            <div className="space-y-12">
+              {faculty.map((facultyMember) => (
+                <div key={facultyMember.id} className="grid md:grid-cols-[300px,1fr] gap-8 items-start max-w-5xl mx-auto">
+                  {/* Circular Image */}
+                  <div className="mx-auto">
+                    <div className="w-64 h-64 md:w-72 md:h-72 rounded-full overflow-hidden bg-muted border-4 border-border">
+                      <img 
+                        src={facultyMember.image || '/default-avatar.png'} 
+                        alt={facultyMember.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/default-avatar.png';
+                        }}
+                      />
+                    </div>
+                  </div>
 
-              {/* Faculty Details Card */}
-              <div className="bg-card border border-border p-8 rounded-sm">
-                <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
-                  {faculty.name}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-6 font-medium">
-                  {faculty.title}
-                </p>
-                
-                <p className="text-foreground/90 leading-relaxed mb-6">
-                  {faculty.description}
-                </p>
+                  {/* Faculty Details Card */}
+                  <div className="bg-card border border-border p-8 rounded-sm">
+                    <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                      {facultyMember.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-6 font-medium">
+                      {facultyMember.title}
+                    </p>
+                    
+                    <p className="text-foreground/90 leading-relaxed mb-6">
+                      {facultyMember.description}
+                    </p>
 
-                {/* Social Links */}
-                {(faculty.linkedin || faculty.github || faculty.instagram) && (
-                  <div className="flex items-center gap-3 pt-4 border-t border-border">
-                    {faculty.linkedin && (
-                      <a 
-                        href={faculty.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                        title="LinkedIn"
-                      >
-                        <Linkedin className="w-4 h-4" />
-                      </a>
-                    )}
-                    {faculty.github && (
-                      <a 
-                        href={faculty.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                        title="GitHub"
-                      >
-                        <Github className="w-4 h-4" />
-                      </a>
-                    )}
-                    {faculty.instagram && (
-                      <a 
-                        href={faculty.instagram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
-                        title="Instagram"
-                      >
-                        <Instagram className="w-4 h-4" />
-                      </a>
+                    {/* Social Links */}
+                    {(facultyMember.linkedin || facultyMember.github || facultyMember.instagram) && (
+                      <div className="flex items-center gap-3 pt-4 border-t border-border">
+                        {facultyMember.linkedin && (
+                          <a 
+                            href={facultyMember.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                            title="LinkedIn"
+                          >
+                            <Linkedin className="w-4 h-4" />
+                          </a>
+                        )}
+                        {facultyMember.github && (
+                          <a 
+                            href={facultyMember.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                            title="GitHub"
+                          >
+                            <Github className="w-4 h-4" />
+                          </a>
+                        )}
+                        {facultyMember.instagram && (
+                          <a 
+                            href={facultyMember.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-9 h-9 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
+                            title="Instagram"
+                          >
+                            <Instagram className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
+                </div>
+              ))}
             </div>
           </section>
         )}
