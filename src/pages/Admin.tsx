@@ -1584,7 +1584,16 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from('events').insert([formData]);
+      const { data: maxOrderData } = await supabase
+        .from('events')
+        .select('display_order')
+        .order('display_order', { ascending: false, nullsFirst: false })
+        .limit(1)
+        .single();
+      
+      const newDisplayOrder = (maxOrderData?.display_order ?? 0) + 1;
+      
+      const { error } = await supabase.from('events').insert([{ ...formData, display_order: newDisplayOrder }]);
       if (error) throw error;
       toast.success('Event added successfully');
       setOpen(false);
