@@ -312,7 +312,7 @@ const Contact = () => {
                   value={formData.message}
                   onChange={handleChange}
                   placeholder="Your message..."
-                  rows={5}
+                  rows={8}
                   className="bg-background border-border resize-none"
                   required
                 />
