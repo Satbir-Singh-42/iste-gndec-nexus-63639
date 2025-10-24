@@ -2360,6 +2360,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     title: "",
+    category: "site",
     description: ""
   });
 
@@ -2414,7 +2415,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
       const galleryItem = {
         title: formData.title,
         images: uploadedImages,
-        category: "site",
+        category: formData.category,
         status: "completed",
         description: formData.description
       };
@@ -2424,7 +2425,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
       
       toast.success(`Gallery item added with ${uploadedImages.length} image(s)`);
       setOpen(false);
-      setFormData({ title: "", description: "" });
+      setFormData({ title: "", category: "site", description: "" });
       setUploadedImages([]);
       onSuccess();
     } catch (error: any) {
@@ -2509,6 +2510,19 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
               </p>
             </div>
             <div>
+              <Label htmlFor="gallery-category">Category</Label>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="site">Site</SelectItem>
+                  <SelectItem value="trip">Trip</SelectItem>
+                  <SelectItem value="visit">Visit</SelectItem>
+                  <SelectItem value="event">Event</SelectItem>
+                  <SelectItem value="workshop">Workshop</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
               <Label htmlFor="gallery-description">Description</Label>
               <Textarea id="gallery-description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} required />
             </div>
@@ -2589,7 +2603,6 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
       const updatedData = {
         ...formData,
         images: uploadedImages,
-        category: "site",
         status: "completed"
       };
       
@@ -2682,6 +2695,19 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                   </div>
                 </div>
               )}
+            </div>
+            <div>
+              <Label htmlFor="edit-gallery-category">Category</Label>
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="site">Site</SelectItem>
+                  <SelectItem value="trip">Trip</SelectItem>
+                  <SelectItem value="visit">Visit</SelectItem>
+                  <SelectItem value="event">Event</SelectItem>
+                  <SelectItem value="workshop">Workshop</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="edit-gallery-description">Description</Label>
