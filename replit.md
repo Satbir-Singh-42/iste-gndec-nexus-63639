@@ -4,6 +4,13 @@
 
 Official website for the ISTE (Indian Society for Technical Education) GNDEC Student Chapter at Guru Nanak Dev Engineering College, Ludhiana. This is a modern, interactive web application showcasing the chapter's events, members, projects, gallery, and notices with a technical aesthetic featuring particle animations and dynamic backgrounds.
 
+## Recent Changes
+
+**October 24, 2025** - Fixed image deletion from Supabase Storage bucket
+- Updated `deleteNotice()` and `deleteEvent()` functions to properly remove images from storage
+- All admin delete functions now clean up orphaned images from the bucket
+- Added required Supabase Storage RLS policy for public delete operations
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -99,6 +106,11 @@ Tables include:
 - Support for single and batch uploads
 - 5MB file size limit enforced
 - Public URL generation for uploaded images
+- **Image Deletion**: All admin delete functions properly remove images from storage bucket
+  - Delete functions fetch image URLs before database deletion
+  - Uses `deleteImageFromSupabase()` and `deleteMultipleImagesFromSupabase()` helper functions
+  - Required Storage RLS policy: "Allow public delete" policy on `storage.objects` for DELETE operations
+  - Policy: `CREATE POLICY "Allow public delete" ON storage.objects FOR DELETE TO public USING (bucket_id = 'images')`
 
 **Data Patterns**
 - Common fields across tables: `hidden`, `display_order` for content visibility and sorting
