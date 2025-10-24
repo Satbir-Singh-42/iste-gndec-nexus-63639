@@ -241,11 +241,11 @@ const NoticeDetail = () => {
                 className="prose prose-lg prose-invert max-w-none mb-8
                   prose-headings:text-foreground prose-headings:font-bold
                   prose-p:text-foreground/90 prose-p:leading-relaxed
-                  prose-a:text-blue-500 hover:prose-a:text-blue-400 prose-a:underline
                   prose-strong:text-foreground prose-strong:font-bold
                   prose-ul:text-foreground/90 prose-ol:text-foreground/90
                   prose-li:marker:text-primary
-                  prose-blockquote:border-l-primary prose-blockquote:text-foreground/80"
+                  prose-blockquote:border-l-primary prose-blockquote:text-foreground/80
+                  [&_a]:text-blue-500 [&_a]:underline hover:[&_a]:text-blue-400"
                 dangerouslySetInnerHTML={{ __html: notice.rich_description }}
               />
             ) : (
