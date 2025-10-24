@@ -137,6 +137,44 @@ const ParticleBackground = () => {
     // No technical nodes in light mode - keep it clean
     techNodesRef.current = [];
 
+    // Mouse tracking for particle trail
+    const handleMouseMove = (event: MouseEvent) => {
+      const rect = container.getBoundingClientRect();
+      mouseRef.current.prevX = mouseRef.current.x;
+      mouseRef.current.prevY = mouseRef.current.y;
+      mouseRef.current.x = event.clientX - rect.left;
+      mouseRef.current.y = event.clientY - rect.top;
+      
+      // Spawn trail particles
+      const now = Date.now();
+      const spawnInterval = isLightMode ? 15 : 20;
+      const particleCount = isLightMode ? 4 : 3;
+      
+      if (now - lastSpawnTime.current > spawnInterval) {
+        const dx = mouseRef.current.x - mouseRef.current.prevX;
+        const dy = mouseRef.current.y - mouseRef.current.prevY;
+        const speed = Math.sqrt(dx * dx + dy * dy);
+        
+        if (speed > 0.5) {
+          for (let i = 0; i < particleCount; i++) {
+            trailParticlesRef.current.push({
+              x: mouseRef.current.x + (Math.random() - 0.5) * 5,
+              y: mouseRef.current.y + (Math.random() - 0.5) * 5,
+              vx: (Math.random() - 0.5) * 1.2,
+              vy: (Math.random() - 0.5) * 1.2,
+              life: 1,
+              maxLife: isLightMode ? Math.random() * 50 + 40 : Math.random() * 40 + 30,
+              size: isLightMode ? Math.random() * 4 + 3 : Math.random() * 3 + 2.5
+            });
+          }
+          
+          lastSpawnTime.current = now;
+        }
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+
     // Animation loop
     const animate = () => {
       // Clear canvas with slower fade for better particle visibility
@@ -197,6 +235,53 @@ const ParticleBackground = () => {
         });
       }
 
+      // Draw mouse trail particles (overlay on top, doesn't affect background)
+      const trailParticles = trailParticlesRef.current;
+      
+      for (let i = trailParticles.length - 1; i >= 0; i--) {
+        const p = trailParticles[i];
+        
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.01;
+        p.vx *= 0.99;
+        p.vy *= 0.99;
+        
+        p.life = 1 - ((p.maxLife - p.life * p.maxLife + 1) / p.maxLife);
+        
+        if (p.life <= 0) {
+          trailParticles.splice(i, 1);
+          continue;
+        }
+        
+        const opacity = isLightMode ? p.life : p.life * 0.75;
+        const size = isLightMode ? p.size * p.life * 1.5 : p.size * p.life;
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+        
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
+        if (isLightMode) {
+          gradient.addColorStop(0, `rgba(20, 60, 160, ${opacity})`);
+          gradient.addColorStop(0.4, `rgba(10, 120, 200, ${opacity * 0.9})`);
+          gradient.addColorStop(1, `rgba(30, 80, 180, 0)`);
+        } else {
+          gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
+          gradient.addColorStop(0.6, `rgba(100, 180, 255, ${opacity * 0.4})`);
+          gradient.addColorStop(1, `rgba(100, 180, 255, 0)`);
+        }
+        
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        
+        ctx.shadowBlur = isLightMode ? size * 6 : size * 1.5;
+        ctx.shadowColor = isLightMode 
+          ? `rgba(20, 60, 160, ${opacity})` 
+          : `rgba(100, 180, 255, ${opacity * 0.3})`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
       ctx.shadowBlur = 0;
       animationFrameRef.current = requestAnimationFrame(animate);
     };
@@ -220,6 +305,7 @@ const ParticleBackground = () => {
 
     // Cleanup
     return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       
       if (animationFrameRef.current) {
