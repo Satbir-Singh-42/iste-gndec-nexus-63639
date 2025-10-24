@@ -87,18 +87,18 @@ const Gallery = () => {
           </div>
         ) : (
           <div className="relative">
-            <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-hide">
+            <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-hide px-2">
               {galleryImages.map((item) => (
                 <div 
                   key={item.id} 
-                  className="tech-card overflow-hidden group hover:border-accent/50 transition-all flex-shrink-0 w-64 snap-start cursor-pointer"
+                  className="tech-card overflow-hidden group hover:border-accent/50 transition-all flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-80 lg:w-96 snap-start cursor-pointer"
                   onClick={() => {
                     setSelectedImage(item);
                     setCurrentImageIndex(0);
                   }}
                 >
                   {/* Gallery Image */}
-                  <div className="relative aspect-square overflow-hidden bg-muted">
+                  <div className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-square overflow-hidden bg-muted">
                     <img 
                       src={item.images?.[0]} 
                       alt={item.title}
@@ -114,9 +114,9 @@ const Gallery = () => {
                   </div>
 
                   {/* Gallery Details */}
-                  <div className="p-3">
+                  <div className="p-4">
                     <span className="text-xs font-mono text-primary mb-1 block uppercase">{item.category}</span>
-                    <h3 className="text-base font-bold text-foreground line-clamp-2">{item.title}</h3>
+                    <h3 className="text-lg md:text-base font-bold text-foreground line-clamp-2">{item.title}</h3>
                   </div>
                 </div>
               ))}
