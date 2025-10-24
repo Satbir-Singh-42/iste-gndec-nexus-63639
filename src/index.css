@@ -95,9 +95,25 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   body {
     @apply bg-background text-foreground overflow-x-hidden;
     position: relative;
+    transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.3s;
+  }
+
+  canvas {
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   body::before {
