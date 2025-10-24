@@ -115,14 +115,15 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    @apply text-foreground overflow-x-hidden;
     position: relative;
+    background: hsl(var(--background));
     transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   html.light body {
-    background: transparent;
+    background: transparent !important;
   }
 
   * {
