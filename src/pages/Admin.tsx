@@ -281,12 +281,52 @@ const Admin = () => {
       return;
     }
 
+    // Input validation and sanitization
+    const sanitizedEmail = email.trim().toLowerCase();
+    const sanitizedPassword = password.trim();
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(sanitizedEmail)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    // Validate password length
+    if (sanitizedPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    // Check for suspicious patterns (basic XSS/injection attempt detection)
+    const suspiciousPatterns = [
+      /<script/i,
+      /javascript:/i,
+      /on\w+=/i,
+      /SELECT.*FROM/i,
+      /DROP.*TABLE/i,
+      /INSERT.*INTO/i,
+      /DELETE.*FROM/i,
+      /UPDATE.*SET/i,
+      /UNION.*SELECT/i,
+    ];
+
+    const isSuspicious = suspiciousPatterns.some(
+      (pattern) => pattern.test(sanitizedEmail) || pattern.test(sanitizedPassword)
+    );
+
+    if (isSuspicious) {
+      toast.error("Invalid input detected");
+      console.warn("Suspicious login attempt detected:", { email: sanitizedEmail });
+      return;
+    }
+
     setLoading(true);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: sanitizedEmail,
+        password: sanitizedPassword,
       });
 
       if (error) throw error;
@@ -294,7 +334,12 @@ const Admin = () => {
       setIsAuthenticated(true);
       toast.success("Logged in successfully!");
     } catch (error: any) {
-      toast.error(error.message || "Failed to login");
+      // Don't expose detailed error messages to prevent information leakage
+      const errorMessage = error.message?.includes("Invalid login credentials")
+        ? "Invalid email or password"
+        : "Failed to login. Please try again.";
+      toast.error(errorMessage);
+      console.error("Login error:", error.message);
     } finally {
       setLoading(false);
     }
