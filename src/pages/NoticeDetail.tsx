@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TechFooter from '@/components/TechFooter';
 import { supabase } from '@/lib/supabase';
-import { ArrowLeft, Calendar, Clock, Tag, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Tag, ExternalLink, Download, FileText } from 'lucide-react';
 
 interface Notice {
   id: number;
@@ -12,6 +12,14 @@ interface Notice {
   type: string;
   status: string;
   description: string;
+  rich_description?: string;
+  poster_url?: string;
+  attachments?: {
+    name: string;
+    url: string;
+    type: string;
+  }[];
+  external_link?: string;
   created_at?: string;
 }
 
@@ -216,25 +224,104 @@ const NoticeDetail = () => {
             {/* Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-8" />
 
-            {/* Description */}
-            <div className="prose prose-invert max-w-none">
-              <p className="text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap">
-                {renderDescriptionWithLinks(notice.description)}
-              </p>
-            </div>
+            {/* Poster Image */}
+            {notice.poster_url && (
+              <div className="mb-8 rounded-lg overflow-hidden">
+                <img 
+                  src={notice.poster_url} 
+                  alt={notice.title}
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            )}
+
+            {/* Rich Description or Plain Description */}
+            {notice.rich_description ? (
+              <div 
+                className="prose prose-lg prose-invert max-w-none mb-8
+                  prose-headings:text-foreground prose-headings:font-bold
+                  prose-p:text-foreground/90 prose-p:leading-relaxed
+                  prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-foreground prose-strong:font-bold
+                  prose-ul:text-foreground/90 prose-ol:text-foreground/90
+                  prose-li:marker:text-primary
+                  prose-blockquote:border-l-primary prose-blockquote:text-foreground/80"
+                dangerouslySetInnerHTML={{ __html: notice.rich_description }}
+              />
+            ) : (
+              <div className="prose prose-lg prose-invert max-w-none mb-8">
+                <p className="text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                  {renderDescriptionWithLinks(notice.description)}
+                </p>
+              </div>
+            )}
+
+            {/* Attachments */}
+            {notice.attachments && notice.attachments.length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-primary" />
+                  Attachments
+                </h3>
+                <div className="grid gap-3">
+                  {notice.attachments.map((attachment, index) => (
+                    <a
+                      key={index}
+                      href={attachment.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="tech-border p-4 hover:border-primary/50 transition-all group flex items-center justify-between"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded flex items-center justify-center">
+                          <FileText className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-mono text-sm group-hover:text-primary transition-colors">
+                            {attachment.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground uppercase">
+                            {attachment.type}
+                          </p>
+                        </div>
+                      </div>
+                      <Download className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* External Link */}
+            {notice.external_link && (
+              <div className="mb-8 p-6 tech-border bg-primary/5">
+                <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                  <ExternalLink className="w-5 h-5 text-primary" />
+                  Registration / External Link
+                </h3>
+                <a
+                  href={notice.external_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline font-mono text-sm break-all"
+                >
+                  {notice.external_link}
+                </a>
+              </div>
+            )}
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-4 mt-10 pt-8 border-t border-border/50 flex-wrap">
-              {url && (
+            <div className="flex items-center gap-4 pt-8 border-t border-border/50 flex-wrap">
+              {notice.external_link && (
                 <a
-                  href={url}
+                  href={notice.external_link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="tech-border px-6 py-3 font-mono text-sm hover:text-primary transition-colors inline-flex items-center gap-2 group relative overflow-hidden"
                 >
                   <span className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                   <ExternalLink className="w-4 h-4 relative z-10" />
-                  <span className="relative z-10">Visit Link</span>
+                  <span className="relative z-10">Open External Link</span>
                 </a>
               )}
               
