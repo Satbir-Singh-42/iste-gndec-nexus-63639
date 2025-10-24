@@ -1,6 +1,6 @@
 import TechFooter from '@/components/TechFooter';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -17,6 +17,8 @@ const Gallery = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   useEffect(() => {
     if (!supabase) {
@@ -49,6 +51,36 @@ const Gallery = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!selectedImage || selectedImage.images.length <= 1) return;
+    
+    const swipeThreshold = 50;
+    const diff = touchStartX.current - touchEndX.current;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        setCurrentImageIndex((prev) => 
+          prev === selectedImage.images.length - 1 ? 0 : prev + 1
+        );
+      } else {
+        setCurrentImageIndex((prev) => 
+          prev === 0 ? selectedImage.images.length - 1 : prev - 1
+        );
+      }
+    }
+    
+    touchStartX.current = 0;
+    touchEndX.current = 0;
   };
 
   if (loading) {
@@ -126,21 +158,27 @@ const Gallery = () => {
 
         {/* Image View Dialog */}
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-          <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-2xl md:max-w-3xl max-h-[95vh] overflow-y-auto p-2 sm:p-6">
-            <DialogHeader className="pb-2">
+          <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-2xl md:max-w-3xl max-h-[80vh] sm:max-h-[85vh] overflow-y-auto p-2 sm:p-6">
+            <DialogHeader className="pb-2 flex-shrink-0">
               <DialogTitle className="text-base sm:text-lg md:text-xl font-bold flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3">
                 <span className="text-primary font-mono text-xs sm:text-sm">{selectedImage?.category}</span>
                 <span className="hidden sm:block w-1 h-6 bg-primary" />
                 <span className="line-clamp-2">{selectedImage?.title}</span>
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-2 sm:space-y-4">
-              <div className="relative">
-                <div className="min-h-[60vh] sm:min-h-0 sm:aspect-video overflow-hidden bg-muted rounded flex items-center justify-center">
+            <div className="space-y-2 sm:space-y-4 pb-4">
+              <div 
+                className="relative touch-pan-y"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <div className="h-[40vh] sm:min-h-0 sm:aspect-video overflow-hidden bg-muted rounded flex items-center justify-center">
                   <img 
                     src={selectedImage?.images?.[currentImageIndex]} 
                     alt={`${selectedImage?.title} ${currentImageIndex + 1}`}
-                    className="max-h-[60vh] sm:max-h-full w-auto max-w-full h-auto object-contain"
+                    className="max-h-[40vh] sm:max-h-full w-auto max-w-full h-auto object-contain select-none"
+                    draggable={false}
                   />
                 </div>
                 
@@ -185,7 +223,9 @@ const Gallery = () => {
                 </div>
               )}
               
-              <p className="text-sm sm:text-base text-muted-foreground">{selectedImage?.description}</p>
+              <div className="pb-2">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">{selectedImage?.description}</p>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
