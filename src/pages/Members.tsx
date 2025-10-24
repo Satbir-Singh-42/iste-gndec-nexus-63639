@@ -123,7 +123,7 @@ const Members = () => {
                 </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-black text-gradient">
-                Meet Our Mentors
+                {faculty.length === 1 ? 'Meet Our Mentor' : 'Meet Our Mentors'}
               </h2>
             </div>
             
