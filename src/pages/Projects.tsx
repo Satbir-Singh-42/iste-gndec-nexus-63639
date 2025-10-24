@@ -96,6 +96,7 @@ const Projects = () => {
         <meta property="og:title" content="Student Projects & Innovations | ISTE GNDEC" />
         <meta property="og:description" content="Explore innovative projects developed by ISTE GNDEC members. Browse web applications, mobile apps, machine learning projects, and technical innovations." />
         <meta property="og:url" content="https://iste-gndec.vercel.app/projects" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Student Projects & Innovations | ISTE GNDEC" />
         <meta name="twitter:description" content="Explore innovative projects developed by ISTE GNDEC members." />
         <link rel="canonical" href="https://iste-gndec.vercel.app/projects" />
@@ -156,6 +157,7 @@ const Projects = () => {
                       src={project.image_url}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      loading="lazy"
                     />
                   </div>
 
@@ -220,10 +222,11 @@ const Projects = () => {
             </div>
           )}
         </div>
-      </div>
+        </div>
 
-      <TechFooter />
-    </div>
+        <TechFooter />
+      </div>
+    </>
   );
 };
 

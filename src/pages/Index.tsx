@@ -18,6 +18,7 @@ const Index = () => {
         <meta property="og:title" content="ISTE GNDEC Student Chapter | Technical Education & Innovation Hub" />
         <meta property="og:description" content="Official ISTE Student Chapter at Guru Nanak Dev Engineering College, Ludhiana. Join us for technical workshops, hackathons, seminars, and innovation programs." />
         <meta property="og:url" content="https://iste-gndec.vercel.app/" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="ISTE GNDEC Student Chapter | Technical Education & Innovation Hub" />
         <meta name="twitter:description" content="Official ISTE Student Chapter at GNDEC Ludhiana. Join us for technical workshops, hackathons, and innovation programs." />
         <link rel="canonical" href="https://iste-gndec.vercel.app/" />

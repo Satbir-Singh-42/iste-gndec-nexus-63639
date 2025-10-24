@@ -109,24 +109,36 @@ const Notices = () => {
   };
 
   return (
-    <div className="min-h-screen w-full relative z-10">
+    <>
+      <Helmet>
+        <title>Notices & Announcements | ISTE GNDEC Student Chapter</title>
+        <meta name="description" content="Stay updated with the latest announcements, event notifications, and important updates from ISTE GNDEC. Check registration deadlines, upcoming events, and club activities." />
+        <meta property="og:title" content="Notices & Announcements | ISTE GNDEC Student Chapter" />
+        <meta property="og:description" content="Stay updated with the latest announcements, event notifications, and important updates from ISTE GNDEC." />
+        <meta property="og:url" content="https://iste-gndec.vercel.app/notices" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Notices & Announcements | ISTE GNDEC Student Chapter" />
+        <meta name="twitter:description" content="Stay updated with the latest announcements, event notifications, and important updates from ISTE GNDEC." />
+        <link rel="canonical" href="https://iste-gndec.vercel.app/notices" />
+      </Helmet>
+      <div className="min-h-screen w-full relative z-10">
 
-      <main className="relative pt-24 pb-20 px-4 md:px-8 lg:px-16">
-        <div className="max-w-7xl mx-auto">
-          {/* Page Header */}
-          <div className="mb-16">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="h-0.5 w-12 bg-secondary" />
-              <span className="font-mono text-xs text-secondary tracking-[0.3em]">UPDATES</span>
+        <main className="relative pt-24 pb-20 px-4 md:px-8 lg:px-16">
+          <div className="max-w-7xl mx-auto">
+            {/* Page Header */}
+            <div className="mb-16">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-0.5 w-12 bg-secondary" />
+                <span className="font-mono text-xs text-secondary tracking-[0.3em]">UPDATES</span>
+              </div>
+              <h1 className="text-6xl md:text-8xl font-black mb-4">
+                NOTICE BOARD
+              </h1>
+              <div className="h-1 w-32 bg-gradient-to-r from-secondary to-primary mb-6" />
+              <p className="text-muted-foreground font-mono text-sm">
+                STAY_UPDATED // LATEST_EVENTS // ANNOUNCEMENTS
+              </p>
             </div>
-            <h1 className="text-6xl md:text-8xl font-black mb-4">
-              NOTICE BOARD
-            </h1>
-            <div className="h-1 w-32 bg-gradient-to-r from-secondary to-primary mb-6" />
-            <p className="text-muted-foreground font-mono text-sm">
-              STAY_UPDATED // LATEST_EVENTS // ANNOUNCEMENTS
-            </p>
-          </div>
 
           {loading ? (
             <div className="text-center py-20">
@@ -259,10 +271,11 @@ const Notices = () => {
         {/* Background Elements */}
         <div className="absolute top-20 right-1/4 w-px h-64 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
         <div className="absolute bottom-20 left-1/3 w-px h-48 bg-gradient-to-b from-transparent via-secondary/5 to-transparent" />
-      </main>
+        </main>
 
-      <TechFooter />
-    </div>
+        <TechFooter />
+      </div>
+    </>
   );
 };
 

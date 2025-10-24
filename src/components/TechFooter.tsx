@@ -31,6 +31,7 @@ const TechFooter = () => {
                     src="/Iste.webp" 
                     alt="ISTE Logo" 
                     className="h-10 md:h-16 w-auto object-contain"
+                    loading="lazy"
                   />
                 </div>
                 <div className="p-2 md:p-3 bg-background/50 border border-border/50 rounded">
@@ -38,6 +39,7 @@ const TechFooter = () => {
                     src="/gne new logo.png" 
                     alt="GNDEC Logo" 
                     className="h-10 md:h-16 w-auto object-contain"
+                    loading="lazy"
                   />
                 </div>
               </div>

@@ -135,6 +135,7 @@ const Members = () => {
         <meta property="og:title" content="Team Members & Faculty | ISTE GNDEC Student Chapter" />
         <meta property="og:description" content="Meet the dedicated team behind ISTE GNDEC - our faculty advisors, core team, post holders, and executive members." />
         <meta property="og:url" content="https://iste-gndec.vercel.app/members" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Team Members & Faculty | ISTE GNDEC Student Chapter" />
         <meta name="twitter:description" content="Meet the dedicated team behind ISTE GNDEC - our faculty advisors, core team, post holders, and executive members." />
         <link rel="canonical" href="https://iste-gndec.vercel.app/members" />
@@ -176,6 +177,7 @@ const Members = () => {
                               src={facultyMember.image || '/default-avatar.png'} 
                               alt={facultyMember.name}
                               className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = '/default-avatar.png';
@@ -229,6 +231,7 @@ const Members = () => {
                               src={facultyMember.image || '/default-avatar.png'} 
                               alt={facultyMember.name}
                               className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                              loading="lazy"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
                                 target.src = '/default-avatar.png';
@@ -351,6 +354,7 @@ const Members = () => {
                       src={member.image || '/default-avatar.png'} 
                       alt={member.name}
                       className="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-110"
+                      loading="lazy"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/default-avatar.png';
@@ -414,10 +418,11 @@ const Members = () => {
             </div>
           )}
         </section>
-      </main>
+        </main>
 
-      <TechFooter />
-    </div>
+        <TechFooter />
+      </div>
+    </>
   );
 };
 

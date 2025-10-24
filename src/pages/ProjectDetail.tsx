@@ -134,6 +134,7 @@ const ProjectDetail = () => {
               src={project.image_url}
               alt={project.title}
               className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              loading="lazy"
             />
           </div>
 

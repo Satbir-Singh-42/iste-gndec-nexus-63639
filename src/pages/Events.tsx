@@ -147,6 +147,7 @@ const Events = () => {
         <meta property="og:title" content="Events & Workshops | ISTE GNDEC Student Chapter" />
         <meta property="og:description" content="Explore upcoming and past technical events, workshops, hackathons, seminars, and competitions organized by ISTE GNDEC." />
         <meta property="og:url" content="https://iste-gndec.vercel.app/events" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Events & Workshops | ISTE GNDEC Student Chapter" />
         <meta name="twitter:description" content="Explore upcoming and past technical events, workshops, hackathons, seminars, and competitions organized by ISTE GNDEC." />
         <link rel="canonical" href="https://iste-gndec.vercel.app/events" />
@@ -359,6 +360,7 @@ const Events = () => {
                           src={highlight.poster} 
                           alt={highlight.title}
                           className="w-full h-full object-cover cursor-pointer"
+                          loading="lazy"
                         />
                       </a>
                     ) : (
@@ -366,6 +368,7 @@ const Events = () => {
                         src={highlight.poster} 
                         alt={highlight.title}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     )}
                     

@@ -192,22 +192,34 @@ const Contact = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full relative z-10">
-      
-      <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div ref={heroRef} className="mb-16 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 border border-primary/30 bg-primary/5">
-            <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-            <span className="text-xs font-mono text-primary tracking-wider">CONTACT PORTAL</span>
+    <>
+      <Helmet>
+        <title>Contact Us | ISTE GNDEC Student Chapter</title>
+        <meta name="description" content="Get in touch with ISTE GNDEC. Contact us for event inquiries, collaborations, membership questions, or any other information. Located at Guru Nanak Dev Engineering College, Ludhiana." />
+        <meta property="og:title" content="Contact Us | ISTE GNDEC Student Chapter" />
+        <meta property="og:description" content="Get in touch with ISTE GNDEC. Contact us for event inquiries, collaborations, membership questions, or any other information." />
+        <meta property="og:url" content="https://iste-gndec.vercel.app/contact" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Contact Us | ISTE GNDEC Student Chapter" />
+        <meta name="twitter:description" content="Get in touch with ISTE GNDEC. Contact us for event inquiries, collaborations, and membership questions." />
+        <link rel="canonical" href="https://iste-gndec.vercel.app/contact" />
+      </Helmet>
+      <div className="min-h-screen w-full relative z-10">
+        
+        <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
+          {/* Hero Section */}
+          <div ref={heroRef} className="mb-16 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 border border-primary/30 bg-primary/5">
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+              <span className="text-xs font-mono text-primary tracking-wider">CONTACT PORTAL</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
+              Get In Touch
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Have questions? We'd love to hear from you
+            </p>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black mb-6 text-gradient">
-            Get In Touch
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Have questions? We'd love to hear from you
-          </p>
-        </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Information */}
@@ -374,10 +386,11 @@ const Contact = () => {
             </div>
           </div>
         </div>
-      </main>
+        </main>
 
-      <TechFooter />
-    </div>
+        <TechFooter />
+      </div>
+    </>
   );
 };
 

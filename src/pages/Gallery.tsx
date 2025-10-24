@@ -103,6 +103,7 @@ const Gallery = () => {
         <meta property="og:title" content="Event Gallery | ISTE GNDEC Student Chapter" />
         <meta property="og:description" content="Browse through photos from ISTE GNDEC events, workshops, hackathons, and technical activities." />
         <meta property="og:url" content="https://iste-gndec.vercel.app/gallery" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Event Gallery | ISTE GNDEC Student Chapter" />
         <meta name="twitter:description" content="Browse through photos from ISTE GNDEC events, workshops, hackathons, and technical activities." />
         <link rel="canonical" href="https://iste-gndec.vercel.app/gallery" />
@@ -147,6 +148,7 @@ const Gallery = () => {
                       src={item.images?.[0]} 
                       alt={item.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                     
                     {/* Image Count Indicator */}
@@ -191,6 +193,7 @@ const Gallery = () => {
                     src={selectedImage?.images?.[currentImageIndex]} 
                     alt={`${selectedImage?.title} ${currentImageIndex + 1}`}
                     className="max-h-full max-w-full w-auto h-auto object-contain select-none"
+                    loading="lazy"
                     draggable={false}
                   />
                 </div>
@@ -232,7 +235,7 @@ const Gallery = () => {
                         idx === currentImageIndex ? 'border-primary scale-105' : 'border-border opacity-60 hover:opacity-100 hover:scale-105'
                       }`}
                     >
-                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                      <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" loading="lazy" />
                     </button>
                   ))}
                 </div>
@@ -244,10 +247,11 @@ const Gallery = () => {
             </div>
           </DialogContent>
         </Dialog>
-      </main>
+        </main>
 
-      <TechFooter />
-    </div>
+        <TechFooter />
+      </div>
+    </>
   );
 };
 
