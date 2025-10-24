@@ -80,47 +80,47 @@ const Gallery = () => {
           </p>
         </div>
 
-        {/* Gallery Grid */}
+        {/* Gallery Highlights */}
         {galleryImages.length === 0 ? (
           <div className="tech-card p-8 text-center">
             <p className="text-muted-foreground">No gallery images available yet.</p>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryImages.map((item) => (
-              <div 
-                key={item.id} 
-                className="group tech-card p-0 cursor-pointer overflow-hidden"
-                onClick={() => {
-                  setSelectedImage(item);
-                  setCurrentImageIndex(0);
-                }}
-              >
-                <div className="relative aspect-square overflow-hidden bg-muted">
-                  <img 
-                    src={item.images?.[0]} 
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-all duration-500"
-                  />
-                  
-                  {item.images?.length > 1 && (
-                    <div className="absolute top-2 left-2 px-2 py-1 text-xs font-mono bg-background/80 text-foreground border border-border">
-                      1/{item.images.length}
-                    </div>
-                  )}
+          <div className="relative">
+            <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-hide">
+              {galleryImages.map((item) => (
+                <div 
+                  key={item.id} 
+                  className="tech-card overflow-hidden group hover:border-accent/50 transition-all flex-shrink-0 w-64 snap-start cursor-pointer"
+                  onClick={() => {
+                    setSelectedImage(item);
+                    setCurrentImageIndex(0);
+                  }}
+                >
+                  {/* Gallery Image */}
+                  <div className="relative aspect-square overflow-hidden bg-muted">
+                    <img 
+                      src={item.images?.[0]} 
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Image Count Indicator */}
+                    {item.images?.length > 1 && (
+                      <div className="absolute top-2 right-2 px-2 py-1 text-xs font-mono bg-background/80 backdrop-blur-sm text-foreground border border-border rounded">
+                        {item.images.length} images
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Gallery Details */}
+                  <div className="p-3">
+                    <span className="text-xs font-mono text-primary mb-1 block uppercase">{item.category}</span>
+                    <h3 className="text-base font-bold text-foreground line-clamp-2">{item.title}</h3>
+                  </div>
                 </div>
-                
-                <div className="p-3">
-                  <span className="text-xs font-mono text-primary mb-1 block">{item.category}</span>
-                  <h3 className="text-base font-bold text-foreground mb-1">{item.title}</h3>
-                  {item.images?.length > 1 && (
-                    <span className="text-xs text-muted-foreground">
-                      {item.images.length} images
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
