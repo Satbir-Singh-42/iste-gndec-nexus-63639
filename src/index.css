@@ -110,7 +110,7 @@ All colors MUST be HSL.
     transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .light html {
+  html.light {
     background: linear-gradient(135deg, #F0F5FF 0%, #FCF5FF 25%, #FFFAFA 50%, #F5FAFF 75%, #FAF5FF 100%);
   }
 
@@ -121,7 +121,7 @@ All colors MUST be HSL.
                 color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .light body {
+  html.light body {
     background: transparent;
   }
 

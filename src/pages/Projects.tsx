@@ -75,7 +75,7 @@ const Projects = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 py-20">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -88,7 +88,7 @@ const Projects = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       
       <div className="container mx-auto px-4 py-20">
         <div className="max-w-7xl mx-auto">
