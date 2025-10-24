@@ -3,6 +3,7 @@ import TechFooter from '@/components/TechFooter';
 import { Mail, Linkedin, Github, Instagram } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { normalizeUrl } from '@/lib/utils';
 
 interface Member {
   id: number;
@@ -188,17 +189,17 @@ const Members = () => {
                         {(facultyMember.linkedin || facultyMember.github || facultyMember.instagram) && (
                           <div className="flex items-center gap-2 pt-2">
                             {facultyMember.linkedin && (
-                              <a href={facultyMember.linkedin} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="LinkedIn">
+                              <a href={normalizeUrl(facultyMember.linkedin)} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="LinkedIn">
                                 <Linkedin className="w-4 h-4" />
                               </a>
                             )}
                             {facultyMember.github && (
-                              <a href={facultyMember.github} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="GitHub">
+                              <a href={normalizeUrl(facultyMember.github)} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="GitHub">
                                 <Github className="w-4 h-4" />
                               </a>
                             )}
                             {facultyMember.instagram && (
-                              <a href={facultyMember.instagram} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="Instagram">
+                              <a href={normalizeUrl(facultyMember.instagram)} target="_blank" rel="noopener noreferrer" className="w-8 h-8 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="Instagram">
                                 <Instagram className="w-4 h-4" />
                               </a>
                             )}
@@ -237,17 +238,17 @@ const Members = () => {
                           {(facultyMember.linkedin || facultyMember.github || facultyMember.instagram) && (
                             <div className="flex items-center gap-2 pt-2 justify-center">
                               {facultyMember.linkedin && (
-                                <a href={facultyMember.linkedin} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="LinkedIn">
+                                <a href={normalizeUrl(facultyMember.linkedin)} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="LinkedIn">
                                   <Linkedin className="w-3.5 h-3.5" />
                                 </a>
                               )}
                               {facultyMember.github && (
-                                <a href={facultyMember.github} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="GitHub">
+                                <a href={normalizeUrl(facultyMember.github)} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="GitHub">
                                   <Github className="w-3.5 h-3.5" />
                                 </a>
                               )}
                               {facultyMember.instagram && (
-                                <a href={facultyMember.instagram} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="Instagram">
+                                <a href={normalizeUrl(facultyMember.instagram)} target="_blank" rel="noopener noreferrer" className="w-7 h-7 border border-border hover:border-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="Instagram">
                                   <Instagram className="w-3.5 h-3.5" />
                                 </a>
                               )}
@@ -364,7 +365,7 @@ const Members = () => {
                     )}
                     {member.linkedin && (
                       <a 
-                        href={member.linkedin}
+                        href={normalizeUrl(member.linkedin)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
@@ -375,7 +376,7 @@ const Members = () => {
                     )}
                     {member.github && (
                       <a 
-                        href={member.github}
+                        href={normalizeUrl(member.github)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
@@ -386,7 +387,7 @@ const Members = () => {
                     )}
                     {member.instagram && (
                       <a 
-                        href={member.instagram}
+                        href={normalizeUrl(member.instagram)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-7 h-7 border border-border hover:border-primary hover:text-primary flex items-center justify-center transition-colors"
