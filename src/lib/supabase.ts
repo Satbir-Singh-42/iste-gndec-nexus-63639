@@ -47,6 +47,11 @@ export type Database = {
           position: string;
           image: string;
           email: string;
+          linkedin?: string;
+          github?: string;
+          instagram?: string;
+          hidden?: boolean;
+          display_order?: number;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['members_core_team']['Row'], 'id' | 'created_at'>;
@@ -59,6 +64,11 @@ export type Database = {
           position: string;
           image: string;
           email: string;
+          linkedin?: string;
+          github?: string;
+          instagram?: string;
+          hidden?: boolean;
+          display_order?: number;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['members_post_holders']['Row'], 'id' | 'created_at'>;
@@ -71,6 +81,11 @@ export type Database = {
           position: string;
           image: string;
           email: string;
+          linkedin?: string;
+          github?: string;
+          instagram?: string;
+          hidden?: boolean;
+          display_order?: number;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['members_executive']['Row'], 'id' | 'created_at'>;
@@ -83,6 +98,11 @@ export type Database = {
           title: string;
           image: string;
           description: string;
+          linkedin?: string;
+          github?: string;
+          instagram?: string;
+          hidden?: boolean;
+          display_order?: number;
           created_at: string;
         };
         Insert: Omit<Database['public']['Tables']['members_faculty']['Row'], 'id' | 'created_at'>;
