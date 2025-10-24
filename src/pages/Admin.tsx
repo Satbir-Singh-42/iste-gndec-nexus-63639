@@ -38,6 +38,8 @@ interface Notice {
     type: string;
   }[];
   external_link?: string;
+  hidden?: boolean;
+  display_order?: number;
 }
 
 interface Event {
@@ -263,6 +265,18 @@ const Admin = () => {
       setRefreshTrigger(prev => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to delete notice: ${error.message}`);
+    }
+  };
+
+  const toggleNoticeVisibility = async (id: number, currentHidden: boolean) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase.from('notices').update({ hidden: !currentHidden }).eq('id', id);
+      if (error) throw error;
+      toast.success(`Notice ${!currentHidden ? 'hidden' : 'visible'} successfully`);
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update notice visibility: ${error.message}`);
     }
   };
 
@@ -856,6 +870,7 @@ const Admin = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">Visible</TableHead>
                       <TableHead>Title</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Time</TableHead>
@@ -871,7 +886,16 @@ const Admin = () => {
                         notice.type.toLowerCase().includes(noticesSearch.toLowerCase())
                       )
                       .map((notice) => (
-                      <TableRow key={notice.id}>
+                      <TableRow key={notice.id} className={notice.hidden ? 'opacity-50' : ''}>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleNoticeVisibility(notice.id, notice.hidden || false)}
+                          >
+                            {notice.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </Button>
+                        </TableCell>
                         <TableCell>{notice.title}</TableCell>
                         <TableCell>{notice.date}</TableCell>
                         <TableCell>{notice.time}</TableCell>
