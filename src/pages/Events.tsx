@@ -93,8 +93,8 @@ const Events = () => {
         .from('events')
         .select('*')
         .or('hidden.is.null,hidden.eq.false')
-        .order('display_order', { ascending: true, nullsFirst: false })
-        .order('date', { ascending: true });
+        .order('display_order', { ascending: false, nullsFirst: false })
+        .order('id', { ascending: false });
 
       if (error) throw error;
       
@@ -117,8 +117,8 @@ const Events = () => {
         .from('event_highlights')
         .select('*')
         .or('hidden.is.null,hidden.eq.false')
-        .order('display_order', { ascending: true, nullsFirst: false })
-        .order('date', { ascending: false});
+        .order('display_order', { ascending: false, nullsFirst: false })
+        .order('id', { ascending: false });
 
       if (error) throw error;
       setHighlights(data || []);
