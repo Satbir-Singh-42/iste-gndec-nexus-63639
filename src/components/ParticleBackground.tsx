@@ -69,10 +69,10 @@ const ParticleBackground = () => {
       const opacity = Math.random() * 0.5 + 0.3;
       
       const starColor = isLightMode 
-        ? `rgba(100, 130, 180, ${opacity * 0.4}), rgba(60, 100, 150, ${opacity * 0.3})` 
+        ? `rgba(91, 144, 247, ${opacity * 0.6}), rgba(52, 211, 253, ${opacity * 0.4})` 
         : `rgba(255, 255, 255, ${opacity}), rgba(200, 220, 255, ${opacity * 0.7})`;
       const shadowColor = isLightMode
-        ? `rgba(100, 130, 180, ${opacity * 0.2})`
+        ? `rgba(91, 144, 247, ${opacity * 0.3})`
         : `rgba(255, 255, 255, ${opacity * 0.4})`;
       
       star.style.cssText = `
@@ -160,7 +160,7 @@ const ParticleBackground = () => {
     // Animation loop
     const animate = () => {
       // Clear canvas with stronger fade for cleaner trail
-      ctx.fillStyle = isLightMode ? 'rgba(240, 242, 248, 0.2)' : 'rgba(4, 6, 15, 0.2)';
+      ctx.fillStyle = isLightMode ? 'rgba(235, 240, 250, 0.15)' : 'rgba(4, 6, 15, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const fontSize = 11;
@@ -245,9 +245,9 @@ const ParticleBackground = () => {
         
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
         if (isLightMode) {
-          gradient.addColorStop(0, `rgba(50, 120, 200, ${opacity * 0.6})`);
-          gradient.addColorStop(0.6, `rgba(30, 90, 180, ${opacity * 0.3})`);
-          gradient.addColorStop(1, `rgba(30, 90, 180, 0)`);
+          gradient.addColorStop(0, `rgba(91, 144, 247, ${opacity * 0.7})`);
+          gradient.addColorStop(0.5, `rgba(52, 211, 253, ${opacity * 0.4})`);
+          gradient.addColorStop(1, `rgba(147, 51, 234, 0)`);
         } else {
           gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
           gradient.addColorStop(0.6, `rgba(100, 180, 255, ${opacity * 0.4})`);
@@ -258,9 +258,9 @@ const ParticleBackground = () => {
         ctx.fill();
         
         // Minimal glow for clean effect
-        ctx.shadowBlur = size;
+        ctx.shadowBlur = size * 1.5;
         ctx.shadowColor = isLightMode 
-          ? `rgba(50, 120, 200, ${opacity * 0.2})` 
+          ? `rgba(91, 144, 247, ${opacity * 0.4})` 
           : `rgba(100, 180, 255, ${opacity * 0.3})`;
         ctx.fill();
         ctx.shadowBlur = 0;
@@ -310,7 +310,7 @@ const ParticleBackground = () => {
       className="absolute inset-0 -z-10 overflow-hidden"
       style={{ 
         background: isLightMode 
-          ? 'radial-gradient(ellipse at center, rgba(220, 230, 245, 0.3) 0%, rgba(240, 244, 250, 0.15) 50%, transparent 100%)'
+          ? 'radial-gradient(ellipse at top, rgba(91, 144, 247, 0.08) 0%, rgba(52, 211, 253, 0.05) 30%, transparent 70%)'
           : 'radial-gradient(ellipse at center, rgba(8, 12, 25, 0.15) 0%, rgba(4, 6, 15, 0.08) 50%, transparent 100%)'
       }}
     >
@@ -320,7 +320,7 @@ const ParticleBackground = () => {
         style={{ 
           pointerEvents: 'none',
           background: isLightMode
-            ? 'linear-gradient(to bottom, rgba(240, 242, 248, 1) 0%, rgba(230, 235, 245, 1) 50%, rgba(240, 242, 248, 1) 100%)'
+            ? 'linear-gradient(to bottom, rgba(235, 240, 250, 1) 0%, rgba(245, 248, 255, 1) 30%, rgba(240, 244, 252, 1) 70%, rgba(235, 240, 250, 1) 100%)'
             : 'linear-gradient(to bottom, rgba(4, 6, 15, 1) 0%, rgba(6, 10, 20, 1) 50%, rgba(4, 6, 15, 1) 100%)'
         }}
       />

@@ -50,43 +50,54 @@ All colors MUST be HSL.
   }
 
   .light {
-    /* Technical Light Theme - Soft Bluish */
-    --background: 210 25% 97%;
-    --foreground: 220 20% 15%;
+    /* Enhanced Technical Light Theme - Modern & Vibrant */
+    --background: 220 20% 96%;
+    --foreground: 222 47% 11%;
 
-    --card: 210 20% 99%;
-    --card-foreground: 220 20% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 15%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 210 90% 48%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 195 75% 45%;
+    --secondary: 195 90% 52%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 25% 92%;
-    --muted-foreground: 220 15% 45%;
+    --muted: 214 20% 90%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 200 85% 50%;
+    --accent: 268 83% 58%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 75% 55%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 85%;
-    --input: 220 20% 85%;
-    --ring: 210 90% 48%;
+    --border: 214 20% 88%;
+    --input: 214 20% 92%;
+    --ring: 217 91% 60%;
 
-    /* Technical Colors - Light Mode */
-    --tech-blue: 210 90% 48%;
-    --tech-cyan: 195 75% 45%;
-    --tech-sky: 200 85% 50%;
-    --tech-grid: 210 60% 60%;
+    /* Enhanced Technical Colors - Light Mode */
+    --tech-blue: 217 91% 60%;
+    --tech-cyan: 195 90% 52%;
+    --tech-sky: 200 98% 39%;
+    --tech-purple: 268 83% 58%;
+    --tech-grid: 220 30% 75%;
+    
+    /* Gradient colors for enhanced visuals */
+    --gradient-start: 217 91% 60%;
+    --gradient-mid: 195 90% 52%;
+    --gradient-end: 268 83% 58%;
+    
+    /* Shadow colors */
+    --shadow-sm: 220 30% 50% / 0.05;
+    --shadow-md: 220 30% 50% / 0.08;
+    --shadow-lg: 220 30% 50% / 0.12;
     
     /* Technical Effects */
-    --scanline-opacity: 0.015;
+    --scanline-opacity: 0.01;
   }
 }
 
@@ -198,6 +209,11 @@ All colors MUST be HSL.
   .tech-card {
     @apply bg-card border-2 border-border relative;
     clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+
+  .light .tech-card {
+    box-shadow: 0 2px 8px hsl(var(--shadow-sm)),
+                0 4px 16px hsl(var(--shadow-md));
   }
 
   .tech-card::before {
@@ -323,5 +339,92 @@ All colors MUST be HSL.
 
   .animate-slideDown {
     animation: slideDown 0.2s ease-out;
+  }
+
+  /* Enhanced shadows for light theme */
+  .light .shadow-tech-sm {
+    box-shadow: 0 1px 3px hsl(var(--shadow-sm)),
+                0 1px 2px hsl(var(--shadow-sm));
+  }
+
+  .light .shadow-tech-md {
+    box-shadow: 0 4px 6px -1px hsl(var(--shadow-md)),
+                0 2px 4px -1px hsl(var(--shadow-sm));
+  }
+
+  .light .shadow-tech-lg {
+    box-shadow: 0 10px 15px -3px hsl(var(--shadow-lg)),
+                0 4px 6px -2px hsl(var(--shadow-md));
+  }
+
+  .light .shadow-tech-xl {
+    box-shadow: 0 20px 25px -5px hsl(var(--shadow-lg)),
+                0 10px 10px -5px hsl(var(--shadow-md));
+  }
+
+  /* Gradient backgrounds for light theme */
+  .light .gradient-bg-primary {
+    background: linear-gradient(135deg, 
+      hsl(var(--gradient-start)), 
+      hsl(var(--gradient-mid)));
+  }
+
+  .light .gradient-bg-accent {
+    background: linear-gradient(135deg, 
+      hsl(var(--gradient-mid)), 
+      hsl(var(--gradient-end)));
+  }
+
+  .light .gradient-bg-full {
+    background: linear-gradient(135deg, 
+      hsl(var(--gradient-start)) 0%, 
+      hsl(var(--gradient-mid)) 50%, 
+      hsl(var(--gradient-end)) 100%);
+  }
+
+  /* Enhanced borders for light theme */
+  .light .border-gradient {
+    border: 2px solid transparent;
+    background-image: linear-gradient(hsl(var(--card)), hsl(var(--card))),
+                      linear-gradient(135deg, 
+                        hsl(var(--tech-blue)), 
+                        hsl(var(--tech-cyan)));
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  /* Glassmorphism effect for light theme */
+  .light .glass-card {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: 0 8px 32px hsl(var(--shadow-lg)),
+                inset 0 1px 1px hsl(0 0% 100% / 0.8);
+  }
+
+  /* Hover effects for light theme */
+  .light .hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .light .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -6px hsl(var(--shadow-lg)),
+                0 6px 12px -3px hsl(var(--shadow-md));
+  }
+
+  /* Enhanced text gradients for light theme */
+  .light .text-gradient-primary {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, 
+      hsl(var(--tech-blue)), 
+      hsl(var(--tech-cyan)));
+  }
+
+  .light .text-gradient-accent {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, 
+      hsl(var(--tech-cyan)), 
+      hsl(var(--tech-purple)));
   }
 }
