@@ -22,6 +22,8 @@ interface Notice {
     type: string;
   }[];
   external_link?: string;
+  hidden?: boolean;
+  display_order?: number;
 }
 
 const TechNoticeBoard = () => {
@@ -71,6 +73,7 @@ const TechNoticeBoard = () => {
       const { data, error } = await supabase
         .from('notices')
         .select('*')
+        .or('hidden.is.null,hidden.eq.false')
         .order('date', { ascending: false })
         .limit(3);
 

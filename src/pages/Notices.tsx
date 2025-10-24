@@ -19,6 +19,8 @@ interface Notice {
     type: string;
   }[];
   external_link?: string;
+  hidden?: boolean;
+  display_order?: number;
 }
 
 const Notices = () => {
@@ -66,6 +68,7 @@ const Notices = () => {
       const { data, error } = await supabase
         .from('notices')
         .select('*')
+        .or('hidden.is.null,hidden.eq.false')
         .order('date', { ascending: false });
 
       if (error) throw error;
