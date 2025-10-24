@@ -145,27 +145,27 @@ const ParticleBackground = () => {
       mouseRef.current.x = event.clientX - rect.left;
       mouseRef.current.y = event.clientY - rect.top;
       
-      // Spawn cleaner trail particles - MORE particles for light mode
+      // Spawn cleaner trail particles - MORE particles for better visibility
       const now = Date.now();
-      const spawnInterval = isLightMode ? 25 : 40;
-      const particleCount = isLightMode ? 2 : 1;
+      const spawnInterval = isLightMode ? 15 : 20;
+      const particleCount = isLightMode ? 4 : 3;
       
       if (now - lastSpawnTime.current > spawnInterval) {
         const dx = mouseRef.current.x - mouseRef.current.prevX;
         const dy = mouseRef.current.y - mouseRef.current.prevY;
         const speed = Math.sqrt(dx * dx + dy * dy);
         
-        if (speed > 2) { // Only spawn when moving faster
-          // Spawn more particles for better visibility in light mode
+        if (speed > 0.5) { // Spawn even with slow movement
+          // Spawn more particles for better visibility
           for (let i = 0; i < particleCount; i++) {
             trailParticlesRef.current.push({
-              x: mouseRef.current.x + (Math.random() - 0.5) * 3,
-              y: mouseRef.current.y + (Math.random() - 0.5) * 3,
-              vx: (Math.random() - 0.5) * 0.8,
-              vy: (Math.random() - 0.5) * 0.8,
+              x: mouseRef.current.x + (Math.random() - 0.5) * 5,
+              y: mouseRef.current.y + (Math.random() - 0.5) * 5,
+              vx: (Math.random() - 0.5) * 1.2,
+              vy: (Math.random() - 0.5) * 1.2,
               life: 1,
-              maxLife: isLightMode ? Math.random() * 40 + 30 : Math.random() * 30 + 20,
-              size: isLightMode ? Math.random() * 3 + 2 : Math.random() * 2 + 2
+              maxLife: isLightMode ? Math.random() * 50 + 40 : Math.random() * 40 + 30,
+              size: isLightMode ? Math.random() * 4 + 3 : Math.random() * 3 + 2.5
             });
           }
           
@@ -256,8 +256,8 @@ const ParticleBackground = () => {
           continue;
         }
         
-        // Cleaner, sharper particles with better visibility in light mode
-        const opacity = isLightMode ? p.life * 0.8 : p.life * 0.5;
+        // Cleaner, sharper particles with enhanced visibility
+        const opacity = isLightMode ? p.life * 0.95 : p.life * 0.75;
         const size = p.size * p.life;
         
         ctx.beginPath();
