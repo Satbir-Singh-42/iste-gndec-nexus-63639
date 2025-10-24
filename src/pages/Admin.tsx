@@ -1987,19 +1987,6 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             description="Upload PDFs, registration forms, Excel sheets, etc. (max 5 files)"
             maxFiles={5}
           />
-          <div>
-            <Label htmlFor="external-link">Registration / External Link</Label>
-            <Input
-              id="external-link"
-              type="url"
-              value={formData.external_link}
-              onChange={(e) => setFormData({ ...formData, external_link: e.target.value })}
-              placeholder="https://forms.google.com/..."
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Add link to Google Forms, Drive folders, or external registration pages
-            </p>
-          </div>
           <DialogFooter>
             <Button type="submit">Add Notice</Button>
           </DialogFooter>
@@ -2161,19 +2148,6 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
             description="Upload PDFs, registration forms, Excel sheets, etc. (max 5 files)"
             maxFiles={5}
           />
-          <div>
-            <Label htmlFor="edit-external-link">Registration / External Link</Label>
-            <Input
-              id="edit-external-link"
-              type="url"
-              value={formData.external_link || ''}
-              onChange={(e) => setFormData({ ...formData, external_link: e.target.value })}
-              placeholder="https://forms.google.com/..."
-            />
-            <p className="text-sm text-muted-foreground mt-1">
-              Add link to Google Forms, Drive folders, or external registration pages
-            </p>
-          </div>
           <DialogFooter>
             <Button type="submit">Update Notice</Button>
           </DialogFooter>
