@@ -128,6 +128,7 @@ const Admin = () => {
   const [eventHighlights, setEventHighlights] = useState<EventHighlight[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [showProjectsInNavbar, setShowProjectsInNavbar] = useState(false);
+  const [showExecutiveTeam, setShowExecutiveTeam] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [noticesSearch, setNoticesSearch] = useState("");
@@ -633,14 +634,24 @@ const Admin = () => {
   const fetchSiteSettings = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase
+      const { data: projectsData } = await supabase
         .from('site_settings')
         .select('*')
         .eq('setting_key', 'show_projects_in_navbar')
         .single();
       
-      if (!error && data) {
-        setShowProjectsInNavbar(data.setting_value);
+      if (projectsData) {
+        setShowProjectsInNavbar(projectsData.setting_value);
+      }
+
+      const { data: executiveData } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('setting_key', 'show_executive_team')
+        .single();
+      
+      if (executiveData) {
+        setShowExecutiveTeam(executiveData.setting_value);
       }
     } catch (error: any) {
       console.error('Error fetching site settings:', error);
@@ -671,6 +682,36 @@ const Admin = () => {
 
       setShowProjectsInNavbar(value);
       toast.success(`Projects link ${value ? 'shown in' : 'hidden from'} navbar`);
+      window.location.reload();
+    } catch (error: any) {
+      toast.error(`Failed to update setting: ${error.message}`);
+    }
+  };
+
+  const updateExecutiveTeamSetting = async (value: boolean) => {
+    if (!supabase) return;
+    try {
+      const { data: existing } = await supabase
+        .from('site_settings')
+        .select('id')
+        .eq('setting_key', 'show_executive_team')
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from('site_settings')
+          .update({ setting_value: value })
+          .eq('setting_key', 'show_executive_team');
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('site_settings')
+          .insert([{ setting_key: 'show_executive_team', setting_value: value }]);
+        if (error) throw error;
+      }
+
+      setShowExecutiveTeam(value);
+      toast.success(`Executive Team section ${value ? 'shown on' : 'hidden from'} Members page`);
       window.location.reload();
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
@@ -1594,9 +1635,6 @@ const Admin = () => {
                         <TableHead className="w-12">Order</TableHead>
                         <TableHead className="w-12">Visible</TableHead>
                         <TableHead>Title</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Featured</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -1640,9 +1678,6 @@ const Admin = () => {
                             </Button>
                           </TableCell>
                           <TableCell>{project.title}</TableCell>
-                          <TableCell className="capitalize">{project.category}</TableCell>
-                          <TableCell className="capitalize">{project.status}</TableCell>
-                          <TableCell>{project.featured ? '⭐' : '-'}</TableCell>
                           <TableCell>
                             <div className="flex gap-2">
                               <EditProjectDialog project={project} onSuccess={() => setRefreshTrigger(prev => prev + 1)} />
@@ -1679,6 +1714,21 @@ const Admin = () => {
                     onClick={() => updateNavbarSetting(!showProjectsInNavbar)}
                   >
                     {showProjectsInNavbar ? 'Enabled' : 'Disabled'}
+                  </Button>
+                </div>
+                
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <h3 className="font-medium">Show Executive Team in Members</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Display the Executive Team section on the Members page
+                    </p>
+                  </div>
+                  <Button
+                    variant={showExecutiveTeam ? "default" : "outline"}
+                    onClick={() => updateExecutiveTeamSetting(!showExecutiveTeam)}
+                  >
+                    {showExecutiveTeam ? 'Enabled' : 'Disabled'}
                   </Button>
                 </div>
               </CardContent>

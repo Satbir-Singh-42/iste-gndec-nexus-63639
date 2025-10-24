@@ -37,6 +37,7 @@ const Members = () => {
   const [postHolders, setPostHolders] = useState<Member[]>([]);
   const [executiveTeam, setExecutiveTeam] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showExecutiveTeam, setShowExecutiveTeam] = useState(true);
 
   useEffect(() => {
     if (!supabase) {
@@ -45,7 +46,25 @@ const Members = () => {
       return;
     }
     fetchMembers();
+    fetchExecutiveTeamSetting();
   }, []);
+
+  const fetchExecutiveTeamSetting = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('setting_key', 'show_executive_team')
+        .single();
+      
+      if (!error && data) {
+        setShowExecutiveTeam(data.setting_value);
+      }
+    } catch (error) {
+      console.error('Error fetching executive team setting:', error);
+    }
+  };
 
   const fetchMembers = async () => {
     if (!supabase) {
@@ -273,36 +292,40 @@ const Members = () => {
                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
               )}
             </button>
-            <button
-              onClick={() => setActiveTab('executive')}
-              className={`flex-1 px-8 py-4 font-semibold transition-all relative ${
-                activeTab === 'executive'
-                  ? 'text-foreground bg-background'
-                  : 'text-muted-foreground hover:text-foreground bg-muted/30'
-              }`}
-            >
-              Executive Team
-              {activeTab === 'executive' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
-              )}
-            </button>
+            {showExecutiveTeam && (
+              <button
+                onClick={() => setActiveTab('executive')}
+                className={`flex-1 px-8 py-4 font-semibold transition-all relative ${
+                  activeTab === 'executive'
+                    ? 'text-foreground bg-background'
+                    : 'text-muted-foreground hover:text-foreground bg-muted/30'
+                }`}
+              >
+                Executive Team
+                {activeTab === 'executive' && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                )}
+              </button>
+            )}
           </div>
         </div>
 
         {/* Member Cards */}
-        <section className="px-4 md:px-8 lg:px-12">
+        <section className="md:px-8 lg:px-12">
           {members.length === 0 ? (
-            <div className="tech-card p-8 text-center animate-in fade-in duration-500">
+            <div className="tech-card p-8 text-center animate-in fade-in duration-500 mx-4">
               <p className="text-muted-foreground">No members found in this category.</p>
             </div>
           ) : (
             <div 
               key={activeTab}
-              className={`grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ${
-                activeTab === 'executive' 
-                  ? 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5' 
-                  : 'sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-              }`}
+              className={`
+                grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500
+                ${activeTab === 'executive' 
+                  ? 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-5' 
+                  : 'grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                }
+              `}
             >
               {members.map((member, index) => (
                 <div 
