@@ -87,18 +87,18 @@ const Gallery = () => {
           </div>
         ) : (
           <div className="relative">
-            <div className="flex gap-4 md:gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-hide px-2">
+            <div className="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory scrollbar-hide">
               {galleryImages.map((item) => (
                 <div 
                   key={item.id} 
-                  className="tech-card overflow-hidden group hover:border-accent/50 transition-all flex-shrink-0 w-[85vw] sm:w-[70vw] md:w-80 lg:w-96 snap-start cursor-pointer"
+                  className="tech-card overflow-hidden group hover:border-accent/50 transition-all flex-shrink-0 w-64 snap-start cursor-pointer"
                   onClick={() => {
                     setSelectedImage(item);
                     setCurrentImageIndex(0);
                   }}
                 >
                   {/* Gallery Image */}
-                  <div className="relative aspect-[3/4] sm:aspect-[4/5] md:aspect-square overflow-hidden bg-muted">
+                  <div className="relative aspect-square overflow-hidden bg-muted">
                     <img 
                       src={item.images?.[0]} 
                       alt={item.title}
@@ -114,9 +114,9 @@ const Gallery = () => {
                   </div>
 
                   {/* Gallery Details */}
-                  <div className="p-4">
+                  <div className="p-3">
                     <span className="text-xs font-mono text-primary mb-1 block uppercase">{item.category}</span>
-                    <h3 className="text-lg md:text-base font-bold text-foreground line-clamp-2">{item.title}</h3>
+                    <h3 className="text-base font-bold text-foreground line-clamp-2">{item.title}</h3>
                   </div>
                 </div>
               ))}
@@ -126,21 +126,21 @@ const Gallery = () => {
 
         {/* Image View Dialog */}
         <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-          <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-2xl md:max-w-3xl">
-            <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2 sm:gap-3">
-                <span className="text-primary font-mono text-sm">{selectedImage?.category}</span>
-                <span className="w-1 h-6 bg-primary" />
-                {selectedImage?.title}
+          <DialogContent className="max-w-[calc(100%-1rem)] sm:max-w-2xl md:max-w-3xl max-h-[95vh] overflow-y-auto p-2 sm:p-6">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-base sm:text-lg md:text-xl font-bold flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3">
+                <span className="text-primary font-mono text-xs sm:text-sm">{selectedImage?.category}</span>
+                <span className="hidden sm:block w-1 h-6 bg-primary" />
+                <span className="line-clamp-2">{selectedImage?.title}</span>
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-2 sm:space-y-4">
               <div className="relative">
-                <div className="aspect-video overflow-hidden bg-muted">
+                <div className="min-h-[60vh] sm:min-h-0 sm:aspect-video overflow-hidden bg-muted rounded flex items-center justify-center">
                   <img 
                     src={selectedImage?.images?.[currentImageIndex]} 
                     alt={`${selectedImage?.title} ${currentImageIndex + 1}`}
-                    className="w-full h-full object-contain"
+                    className="max-h-[60vh] sm:max-h-full w-auto max-w-full h-auto object-contain"
                   />
                 </div>
                 
@@ -150,19 +150,19 @@ const Gallery = () => {
                       onClick={() => setCurrentImageIndex((prev) => 
                         prev === 0 ? selectedImage.images.length - 1 : prev - 1
                       )}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2 rounded-full border border-border"
+                      className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background p-2 sm:p-3 rounded-full border border-border backdrop-blur-sm"
                     >
-                      ←
+                      <span className="text-lg sm:text-xl">←</span>
                     </button>
                     <button
                       onClick={() => setCurrentImageIndex((prev) => 
                         prev === selectedImage.images.length - 1 ? 0 : prev + 1
                       )}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background p-2 rounded-full border border-border"
+                      className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background p-2 sm:p-3 rounded-full border border-border backdrop-blur-sm"
                     >
-                      →
+                      <span className="text-lg sm:text-xl">→</span>
                     </button>
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-background/80 text-sm font-mono border border-border rounded">
+                    <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 px-2 sm:px-3 py-1 bg-background/90 text-xs sm:text-sm font-mono border border-border rounded backdrop-blur-sm">
                       {currentImageIndex + 1} / {selectedImage.images.length}
                     </div>
                   </>
@@ -170,12 +170,12 @@ const Gallery = () => {
               </div>
               
               {selectedImage?.images && selectedImage.images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                   {selectedImage.images.map((img, idx) => (
                     <button
                       key={idx}
                       onClick={() => setCurrentImageIndex(idx)}
-                      className={`flex-shrink-0 w-20 h-20 rounded overflow-hidden border-2 transition-all ${
+                      className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded overflow-hidden border-2 transition-all ${
                         idx === currentImageIndex ? 'border-primary' : 'border-border opacity-50 hover:opacity-100'
                       }`}
                     >
@@ -185,7 +185,7 @@ const Gallery = () => {
                 </div>
               )}
               
-              <p className="text-muted-foreground">{selectedImage?.description}</p>
+              <p className="text-sm sm:text-base text-muted-foreground">{selectedImage?.description}</p>
             </div>
           </DialogContent>
         </Dialog>
