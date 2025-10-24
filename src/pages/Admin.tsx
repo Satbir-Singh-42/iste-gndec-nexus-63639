@@ -707,10 +707,10 @@ const Admin = () => {
 
   if (checkingAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 relative z-10">
+      <div className="min-h-screen flex items-center justify-center bg-background relative z-10">
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-white">Checking authentication...</p>
+          <p className="text-foreground">Checking authentication...</p>
         </div>
       </div>
     );
@@ -718,10 +718,10 @@ const Admin = () => {
 
   if (!supabase) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-8 relative z-10">
+      <div className="min-h-screen flex items-center justify-center bg-background p-8 relative z-10">
         <Card className="w-full max-w-2xl">
           <CardHeader>
-            <CardTitle className="text-red-500">Configuration Error</CardTitle>
+            <CardTitle className="text-destructive">Configuration Error</CardTitle>
             <CardDescription>Supabase is not properly configured</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -729,8 +729,8 @@ const Admin = () => {
               The application cannot connect to Supabase. Please ensure the following environment variables are set:
             </p>
             <ul className="list-disc list-inside space-y-2 text-sm">
-              <li><code className="bg-gray-800 px-2 py-1 rounded">VITE_SUPABASE_URL</code> - Your Supabase project URL</li>
-              <li><code className="bg-gray-800 px-2 py-1 rounded">VITE_SUPABASE_ANON_KEY</code> - Your Supabase anonymous key</li>
+              <li><code className="bg-muted px-2 py-1 rounded">VITE_SUPABASE_URL</code> - Your Supabase project URL</li>
+              <li><code className="bg-muted px-2 py-1 rounded">VITE_SUPABASE_ANON_KEY</code> - Your Supabase anonymous key</li>
             </ul>
             <p className="text-sm text-muted-foreground">
               After adding the environment variables, restart the application for changes to take effect.
@@ -746,7 +746,7 @@ const Admin = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 relative z-10">
+      <div className="min-h-screen flex items-center justify-center bg-background relative z-10">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Admin Login</CardTitle>
@@ -791,10 +791,10 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 pt-20 sm:pt-24 pb-8 px-4 sm:px-8 relative z-10">
+    <div className="min-h-screen bg-background pt-20 sm:pt-24 pb-8 px-4 sm:px-8 relative z-10">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Admin Panel</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Admin Panel</h1>
           <div className="flex gap-2 sm:gap-4 w-full sm:w-auto">
             <Button variant="outline" onClick={() => navigate("/")} className="flex-1 sm:flex-none text-xs sm:text-sm">
               Back to Home
@@ -1059,7 +1059,7 @@ const Admin = () => {
                                 <img key={idx} src={img} alt={`${item.title} ${idx + 1}`} className="w-12 h-12 object-cover rounded" />
                               ))}
                               {item.images?.length > 3 && (
-                                <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-xs">
+                                <div className="w-12 h-12 bg-muted rounded flex items-center justify-center text-xs">
                                   +{item.images.length - 3}
                                 </div>
                               )}
@@ -1871,19 +1871,18 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-left font-normal text-white"
+                    className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover text-white">
+                <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
                     onSelect={handleDateSelect}
                     initialFocus
-                    className="text-white"
                   />
                 </PopoverContent>
               </Popover>
@@ -1896,7 +1895,6 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
                 value={timeInput} 
                 onChange={(e) => handleTimeChange(e.target.value)} 
                 required
-                className="text-white"
               />
             </div>
           </div>
@@ -2005,19 +2003,18 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-left font-normal text-white"
+                    className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover text-white">
+                <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
                     onSelect={handleDateSelect}
                     initialFocus
-                    className="text-white"
                   />
                 </PopoverContent>
               </Popover>
@@ -2032,7 +2029,6 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
                 type="time"
                 value={timeInput} 
                 onChange={(e) => handleTimeChange(e.target.value)} 
-                className="text-white"
               />
               <p className="text-sm text-muted-foreground mt-1">
                 Current: {formData.time}
@@ -2160,26 +2156,25 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-left font-normal text-white"
+                    className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover text-white">
+                <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
                     onSelect={handleDateSelect}
                     initialFocus
-                    className="text-white"
                   />
                 </PopoverContent>
               </Popover>
             </div>
             <div>
               <Label htmlFor="event-time">Time</Label>
-              <Input id="event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} placeholder="10:00 AM" required className="text-white" />
+              <Input id="event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} placeholder="10:00 AM" required />
             </div>
           </div>
           <div>
@@ -2314,19 +2309,18 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start text-left font-normal text-white"
+                    className="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover text-white">
+                <PopoverContent className="w-auto p-0">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
                     onSelect={handleDateSelect}
                     initialFocus
-                    className="text-white"
                   />
                 </PopoverContent>
               </Popover>
@@ -2336,7 +2330,7 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
             </div>
             <div>
               <Label htmlFor="edit-event-time">Time</Label>
-              <Input id="edit-event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} required className="text-white" />
+              <Input id="edit-event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} required />
             </div>
           </div>
           <div>
@@ -2524,7 +2518,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
                 onChange={handleImageUpload} 
                 disabled={uploading} 
               />
-              {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+              {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
               {uploadedImages.length > 0 && (
                 <div className="mt-3 grid grid-cols-3 gap-2">
                   {uploadedImages.map((url, index) => (
@@ -2535,7 +2529,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
                           <button
                             type="button"
                             onClick={() => moveImageUp(index)}
-                            className="bg-blue-500 text-white rounded-full p-1"
+                            className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
                             title="Move left"
                           >
                             <ChevronUp className="h-3 w-3" />
@@ -2545,7 +2539,7 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
                           <button
                             type="button"
                             onClick={() => moveImageDown(index)}
-                            className="bg-blue-500 text-white rounded-full p-1"
+                            className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
                             title="Move right"
                           >
                             <ChevronDown className="h-3 w-3" />
@@ -2554,13 +2548,13 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
-                          className="bg-red-500 text-white rounded-full p-1"
+                          className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
                           title="Remove"
                         >
                           <X className="h-3 w-3" />
                         </button>
                       </div>
-                      <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-1.5 py-0.5 rounded">
+                      <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
                         {index + 1}
                       </div>
                     </div>
@@ -2706,7 +2700,7 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                 onChange={handleImageUpload} 
                 disabled={uploading} 
               />
-              {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+              {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
               {uploadedImages.length > 0 && (
                 <div className="mt-3">
                   <p className="text-xs text-muted-foreground mb-2">
@@ -2721,7 +2715,7 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                             <button
                               type="button"
                               onClick={() => moveImageUp(index)}
-                              className="bg-blue-500 text-white rounded-full p-1"
+                              className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
                               title="Move left"
                             >
                               <ChevronUp className="h-3 w-3" />
@@ -2731,7 +2725,7 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                             <button
                               type="button"
                               onClick={() => moveImageDown(index)}
-                              className="bg-blue-500 text-white rounded-full p-1"
+                              className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
                               title="Move right"
                             >
                               <ChevronDown className="h-3 w-3" />
@@ -2740,13 +2734,13 @@ function EditGalleryDialog({ item, onSuccess }: { item: GalleryItem; onSuccess: 
                           <button
                             type="button"
                             onClick={() => removeImage(index)}
-                            className="bg-red-500 text-white rounded-full p-1"
+                            className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
                             title="Remove"
                           >
                             <X className="h-3 w-3" />
                           </button>
                         </div>
-                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-1.5 py-0.5 rounded">
+                        <div className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
                           {index + 1}
                         </div>
                       </div>
@@ -2856,7 +2850,7 @@ function AddFacultyDialog({ onSuccess }: { onSuccess: () => void }) {
           <div>
             <Label htmlFor="faculty-image">Profile Image</Label>
             <Input id="faculty-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
             {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
           </div>
           <div>
@@ -2944,7 +2938,7 @@ function EditFacultyDialog({ member, onSuccess }: { member: Faculty; onSuccess: 
           <div>
             <Label htmlFor="edit-faculty-image">Profile Image</Label>
             <Input id="edit-faculty-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
             {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
           </div>
           <div>
@@ -3066,7 +3060,7 @@ function AddMemberDialog({ table, title, onSuccess }: { table: string; title: st
           <div>
             <Label htmlFor="member-image">Profile Image (optional)</Label>
             <Input id="member-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
             {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
           </div>
           <DialogFooter>
@@ -3154,7 +3148,7 @@ function EditMemberDialog({ member, table, title, onSuccess }: { member: Member;
           <div>
             <Label htmlFor="edit-member-image">Profile Image</Label>
             <Input id="edit-member-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
             {formData.image && <img src={formData.image} alt="Preview" className="mt-2 w-20 h-20 rounded-full object-cover" />}
           </div>
           <DialogFooter>
@@ -3256,19 +3250,18 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal text-white"
+                  className="w-full justify-start text-left font-normal"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-popover text-white">
+              <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
                   onSelect={handleDateSelect}
                   initialFocus
-                  className="text-white"
                 />
               </PopoverContent>
             </Popover>
@@ -3276,7 +3269,7 @@ function AddEventHighlightDialog({ onSuccess }: { onSuccess: () => void }) {
           <div>
             <Label htmlFor="highlight-poster">Event Poster *</Label>
             <Input id="highlight-poster" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
             {formData.poster && <img src={formData.poster} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
           </div>
           <div>
@@ -3372,19 +3365,18 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal text-white"
+                  className="w-full justify-start text-left font-normal"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-popover text-white">
+              <PopoverContent className="w-auto p-0">
                 <Calendar
                   mode="single"
                   selected={selectedDate}
                   onSelect={handleDateSelect}
                   initialFocus
-                  className="text-white"
                 />
               </PopoverContent>
             </Popover>
@@ -3395,7 +3387,7 @@ function EditEventHighlightDialog({ highlight, onSuccess }: { highlight: EventHi
           <div>
             <Label htmlFor="edit-highlight-poster">Event Poster *</Label>
             <Input id="edit-highlight-poster" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-            {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+            {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
             {formData.poster && <img src={formData.poster} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
           </div>
           <div>
@@ -3490,7 +3482,7 @@ function AddProjectDialog({ onSuccess }: { onSuccess: () => void }) {
             <div>
               <Label htmlFor="project-image">Project Image *</Label>
               <Input id="project-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} required={!formData.image_url} />
-              {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+              {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
               {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
             </div>
             <div>
@@ -3585,7 +3577,7 @@ function EditProjectDialog({ project, onSuccess }: { project: Project; onSuccess
             <div>
               <Label htmlFor="edit-project-image">Project Image</Label>
               <Input id="edit-project-image" type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
-              {uploading && <p className="text-sm text-gray-400 mt-1">Uploading...</p>}
+              {uploading && <p className="text-sm text-muted-foreground mt-1">Uploading...</p>}
               {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded" />}
             </div>
             <div>
