@@ -155,7 +155,6 @@ const Members = () => {
                     <>
                       {/* Single Mentor Layout - Horizontal */}
                       <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-purple-500/20 blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
                         <div className="relative aspect-square">
                           <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-primary/50 z-10" />
                           <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-primary/50 z-10" />
