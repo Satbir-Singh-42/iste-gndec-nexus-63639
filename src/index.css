@@ -60,16 +60,16 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 210 55% 58%;
+    --primary: 210 70% 48%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 195 50% 55%;
+    --secondary: 195 65% 45%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 214 20% 90%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 200 48% 52%;
+    --accent: 200 60% 42%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -77,19 +77,19 @@ All colors MUST be HSL.
 
     --border: 214 20% 88%;
     --input: 214 20% 92%;
-    --ring: 210 55% 58%;
+    --ring: 210 70% 48%;
 
-    /* Enhanced Technical Colors - Light Mode */
-    --tech-blue: 210 55% 58%;
-    --tech-cyan: 195 50% 55%;
-    --tech-sky: 200 48% 52%;
-    --tech-purple: 235 45% 60%;
+    /* Enhanced Technical Colors - Light Mode - More Vibrant */
+    --tech-blue: 210 70% 48%;
+    --tech-cyan: 195 65% 45%;
+    --tech-sky: 200 60% 42%;
+    --tech-purple: 235 60% 52%;
     --tech-grid: 220 25% 78%;
     
     /* Gradient colors for enhanced visuals */
-    --gradient-start: 210 55% 58%;
-    --gradient-mid: 195 50% 55%;
-    --gradient-end: 235 45% 60%;
+    --gradient-start: 210 70% 48%;
+    --gradient-mid: 195 65% 45%;
+    --gradient-end: 235 60% 52%;
     
     /* Shadow colors */
     --shadow-sm: 210 25% 55% / 0.04;

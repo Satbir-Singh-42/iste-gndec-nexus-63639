@@ -178,8 +178,8 @@ const ParticleBackground = () => {
 
     // Animation loop
     const animate = () => {
-      // Clear canvas with stronger fade for cleaner trail
-      ctx.fillStyle = isLightMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(4, 6, 15, 0.2)';
+      // Clear canvas with lighter fade for better particle visibility in light mode
+      ctx.fillStyle = isLightMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(4, 6, 15, 0.2)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const fontSize = 11;
@@ -265,9 +265,10 @@ const ParticleBackground = () => {
         
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size);
         if (isLightMode) {
-          gradient.addColorStop(0, `rgba(91, 144, 247, ${opacity * 0.9})`);
-          gradient.addColorStop(0.5, `rgba(52, 211, 253, ${opacity * 0.6})`);
-          gradient.addColorStop(1, `rgba(147, 51, 234, 0)`);
+          // Darker, more vibrant colors for light mode visibility
+          gradient.addColorStop(0, `rgba(33, 96, 207, ${opacity})`);
+          gradient.addColorStop(0.5, `rgba(14, 165, 233, ${opacity * 0.8})`);
+          gradient.addColorStop(1, `rgba(99, 102, 241, 0)`);
         } else {
           gradient.addColorStop(0, `rgba(200, 230, 255, ${opacity})`);
           gradient.addColorStop(0.6, `rgba(100, 180, 255, ${opacity * 0.4})`);
@@ -278,9 +279,9 @@ const ParticleBackground = () => {
         ctx.fill();
         
         // Enhanced glow for better visibility in light mode
-        ctx.shadowBlur = isLightMode ? size * 2.5 : size * 1.5;
+        ctx.shadowBlur = isLightMode ? size * 3.5 : size * 1.5;
         ctx.shadowColor = isLightMode 
-          ? `rgba(91, 144, 247, ${opacity * 0.6})` 
+          ? `rgba(33, 96, 207, ${opacity * 0.8})` 
           : `rgba(100, 180, 255, ${opacity * 0.3})`;
         ctx.fill();
         ctx.shadowBlur = 0;
