@@ -710,7 +710,7 @@ const Admin = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 relative z-10">
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-foreground">Checking authentication...</p>
+          <p className="text-white">Checking authentication...</p>
         </div>
       </div>
     );
@@ -794,7 +794,7 @@ const Admin = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 pt-20 sm:pt-24 pb-8 px-4 sm:px-8 relative z-10">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Admin Panel</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Admin Panel</h1>
           <div className="flex gap-2 sm:gap-4 w-full sm:w-auto">
             <Button variant="outline" onClick={() => navigate("/")} className="flex-1 sm:flex-none text-xs sm:text-sm">
               Back to Home
