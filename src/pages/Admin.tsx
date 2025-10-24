@@ -22,6 +22,39 @@ import { FileUploadField } from "@/components/FileUploadField";
 import { MultipleFileUpload } from "@/components/MultipleFileUpload";
 import "@/styles/quill-custom.css";
 
+// Helper function to convert time to 12-hour format (handles both 24-hour and 12-hour input)
+const convertTo12Hour = (time: string): string => {
+  if (!time) return "";
+  
+  // If already in 12-hour format, return as is
+  if (time.match(/AM|PM|am|pm/)) return time;
+  
+  // Convert from 24-hour format
+  const [hours, minutes] = time.split(':');
+  const hour = parseInt(hours, 10);
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${period}`;
+};
+
+// Helper function to convert 12-hour time to 24-hour format for storage
+const convertTo24Hour = (time12: string): string => {
+  if (!time12) return "";
+  const match = time12.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!match) return time12;
+  
+  let [, hours, minutes, period] = match;
+  let hour = parseInt(hours, 10);
+  
+  if (period.toUpperCase() === 'PM' && hour !== 12) {
+    hour += 12;
+  } else if (period.toUpperCase() === 'AM' && hour === 12) {
+    hour = 0;
+  }
+  
+  return `${hour.toString().padStart(2, '0')}:${minutes}`;
+};
+
 interface Notice {
   id: number;
   title: string;
@@ -832,7 +865,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="notices" className="w-full">
-          <div className="w-full overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="w-full overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
             <TabsList className="inline-flex w-auto min-w-full sm:w-full sm:grid sm:grid-cols-7 h-auto sm:h-10 gap-1 p-1">
               <TabsTrigger value="notices" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Notices</TabsTrigger>
               <TabsTrigger value="events" className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">Events</TabsTrigger>
@@ -866,7 +899,7 @@ const Admin = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="overflow-x-auto">
+              <CardContent className="overflow-x-auto scrollbar-hide">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -898,7 +931,7 @@ const Admin = () => {
                         </TableCell>
                         <TableCell>{notice.title}</TableCell>
                         <TableCell>{notice.date}</TableCell>
-                        <TableCell>{notice.time}</TableCell>
+                        <TableCell>{convertTo12Hour(notice.time)}</TableCell>
                         <TableCell>{notice.type}</TableCell>
                         <TableCell>{notice.status}</TableCell>
                         <TableCell>
@@ -939,8 +972,8 @@ const Admin = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="overflow-x-auto">
-                <div className="max-h-96 overflow-y-auto">
+              <CardContent className="overflow-x-auto scrollbar-hide">
+                <div className="max-h-96 overflow-y-auto scrollbar-hide">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1035,8 +1068,8 @@ const Admin = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="overflow-x-auto">
-                <div className="max-h-96 overflow-y-auto">
+              <CardContent className="overflow-x-auto scrollbar-hide">
+                <div className="max-h-96 overflow-y-auto scrollbar-hide">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1141,8 +1174,8 @@ const Admin = () => {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="overflow-x-auto">
-                  <div className="max-h-96 overflow-y-auto">
+                <CardContent className="overflow-x-auto scrollbar-hide">
+                  <div className="max-h-96 overflow-y-auto scrollbar-hide">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -1243,8 +1276,8 @@ const Admin = () => {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="overflow-x-auto">
-                  <div className="max-h-96 overflow-y-auto">
+                <CardContent className="overflow-x-auto scrollbar-hide">
+                  <div className="max-h-96 overflow-y-auto scrollbar-hide">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -1348,7 +1381,7 @@ const Admin = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="max-h-96 overflow-y-auto">
+                  <div className="max-h-96 overflow-y-auto scrollbar-hide">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -1451,8 +1484,8 @@ const Admin = () => {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="overflow-x-auto">
-                  <div className="max-h-96 overflow-y-auto">
+                <CardContent className="overflow-x-auto scrollbar-hide">
+                  <div className="max-h-96 overflow-y-auto scrollbar-hide">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -1558,8 +1591,8 @@ const Admin = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="overflow-x-auto">
-                <div className="max-h-96 overflow-y-auto">
+              <CardContent className="overflow-x-auto scrollbar-hide">
+                <div className="max-h-96 overflow-y-auto scrollbar-hide">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1652,8 +1685,8 @@ const Admin = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="overflow-x-auto">
-                <div className="max-h-96 overflow-y-auto">
+              <CardContent className="overflow-x-auto scrollbar-hide">
+                <div className="max-h-96 overflow-y-auto scrollbar-hide">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -1864,7 +1897,7 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
       setSelectedDate(now);
       
       const dateStr = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      const timeStr = now.toTimeString().slice(0, 5); // HH:MM format
+      const timeStr = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }); // 12-hour format
       
       setTimeInput(timeStr);
       setFormData(prev => ({
@@ -1966,11 +1999,15 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
               <Label htmlFor="time">Time</Label>
               <Input 
                 id="time" 
-                type="time"
+                type="text"
                 value={timeInput} 
                 onChange={(e) => handleTimeChange(e.target.value)} 
+                placeholder="11:30 PM"
+                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
+                title="Enter time in 12-hour format (e.g., 11:30 PM)"
                 required
               />
+              <p className="text-xs text-muted-foreground mt-1">Format: 11:30 PM</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -2043,7 +2080,14 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(notice);
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [timeInput, setTimeInput] = useState("");
+  const [timeInput, setTimeInput] = useState(convertTo12Hour(notice.time || ""));
+  
+  // Initialize time input when dialog opens
+  useEffect(() => {
+    if (open) {
+      setTimeInput(convertTo12Hour(notice.time || ""));
+    }
+  }, [open, notice.time]);
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
@@ -2125,12 +2169,15 @@ function EditNoticeDialog({ notice, onSuccess }: { notice: Notice; onSuccess: ()
               <Label htmlFor="edit-time">Time (optional)</Label>
               <Input 
                 id="edit-time" 
-                type="time"
+                type="text"
                 value={timeInput} 
                 onChange={(e) => handleTimeChange(e.target.value)} 
+                placeholder="11:30 PM"
+                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
+                title="Enter time in 12-hour format (e.g., 11:30 PM)"
               />
-              <p className="text-sm text-muted-foreground mt-1">
-                Current: {formData.time}
+              <p className="text-xs text-muted-foreground mt-1">
+                Format: 11:30 PM | Current: {formData.time}
               </p>
             </div>
           </div>
@@ -2291,7 +2338,17 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
             </div>
             <div>
               <Label htmlFor="event-time">Time</Label>
-              <Input id="event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} placeholder="10:00 AM" required />
+              <Input 
+                id="event-time" 
+                type="text"
+                value={formData.time} 
+                onChange={(e) => setFormData({ ...formData, time: e.target.value })} 
+                placeholder="11:30 PM" 
+                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
+                title="Enter time in 12-hour format (e.g., 11:30 PM)"
+                required 
+              />
+              <p className="text-xs text-muted-foreground mt-1">Format: 11:30 PM</p>
             </div>
           </div>
           <div>
@@ -2447,7 +2504,17 @@ function EditEventDialog({ event, onSuccess }: { event: Event; onSuccess: () => 
             </div>
             <div>
               <Label htmlFor="edit-event-time">Time</Label>
-              <Input id="edit-event-time" value={formData.time} onChange={(e) => setFormData({ ...formData, time: e.target.value })} required />
+              <Input 
+                id="edit-event-time" 
+                type="text"
+                value={formData.time} 
+                onChange={(e) => setFormData({ ...formData, time: e.target.value })} 
+                placeholder="11:30 PM"
+                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
+                title="Enter time in 12-hour format (e.g., 11:30 PM)"
+                required 
+              />
+              <p className="text-xs text-muted-foreground mt-1">Format: 11:30 PM</p>
             </div>
           </div>
           <div>
