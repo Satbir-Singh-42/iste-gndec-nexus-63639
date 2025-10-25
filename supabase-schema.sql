@@ -320,3 +320,61 @@ COMMENT ON TABLE public.chapter_awards IS 'Annual Best Student Chapter awards';
 COMMENT ON TABLE public.past_convenors IS 'Past convenor profiles with tenure information';
 COMMENT ON TABLE public.student_achievements IS 'Individual student achievements and awards';
 COMMENT ON TABLE public.site_settings IS 'Application-wide configuration settings';
+
+
+
+--actual supabase coded
+-- Chapter Awards Table
+  CREATE TABLE public.chapter_awards (
+    id bigserial PRIMARY KEY,
+    award_title text NOT NULL,
+    year text NOT NULL,
+    description text NOT NULL,
+    certificate_image text NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    hidden boolean DEFAULT false,
+    display_order integer
+  );
+
+  CREATE INDEX idx_chapter_awards_display_order ON public.chapter_awards(display_order);
+  CREATE INDEX idx_chapter_awards_hidden ON public.chapter_awards(hidden);
+
+  -- Past Convenors Table
+  CREATE TABLE public.past_convenors (
+    id bigserial PRIMARY KEY,
+    name text NOT NULL,
+    image text NOT NULL,
+    tenure_start text NOT NULL,
+    tenure_end text NOT NULL,
+    description text,
+    created_at timestamp with time zone DEFAULT now(),
+    hidden boolean DEFAULT false,
+    display_order integer
+  );
+
+  CREATE INDEX idx_past_convenors_display_order ON public.past_convenors(display_order);
+  CREATE INDEX idx_past_convenors_hidden ON public.past_convenors(hidden);
+
+  -- Student Achievements Table
+  CREATE TABLE public.student_achievements (
+    id bigserial PRIMARY KEY,
+    student_name text NOT NULL,
+    event_name text NOT NULL,
+    position text NOT NULL,
+    date text NOT NULL,
+    organized_by text NOT NULL,
+    description text NOT NULL,
+    achievement_image text NOT NULL,
+    created_at timestamp with time zone DEFAULT now(),
+    hidden boolean DEFAULT false,
+    display_order integer
+  );
+
+  CREATE INDEX idx_student_achievements_display_order ON public.student_achievements(display_order);
+  CREATE INDEX idx_student_achievements_hidden ON public.student_achievements(hidden);
+
+  -- Add settings entry to enable Achievements in navbar
+  INSERT INTO public.site_settings (setting_key, setting_value)
+  VALUES ('show_achievements_in_navbar', false)
+  ON CONFLICT (setting_key) DO NOTHING;
+
