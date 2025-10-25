@@ -6241,34 +6241,39 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
     certificate_images: [] as string[],
   });
 
-  const handleMultipleImagesUpload = async (files: File[]) => {
-    if (files.length === 0) return;
+  const handleMultipleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     
     setUploading(true);
-    const { urls, error } = await uploadMultipleImages(files, "achievements");
+    const fileArray = Array.from(files);
+    const { urls, errors } = await uploadMultipleImages(fileArray, "achievements");
     setUploading(false);
 
-    if (error) {
-      toast.error(error);
-    } else if (urls && urls.length > 0) {
+    if (errors && errors.length > 0) {
+      toast.error(errors[0]);
+    }
+    
+    if (urls && urls.length > 0) {
+      const newImages = [...formData.certificate_images, ...urls];
       setFormData({ 
         ...formData, 
-        certificate_image: urls[0],
-        certificate_images: urls 
+        certificate_image: newImages[0],
+        certificate_images: newImages 
       });
       toast.success(`${urls.length} certificate image(s) uploaded successfully`);
     }
   };
 
-  const handleRemoveImage = async (index: number) => {
-    const imageToDelete = formData.certificate_images[index];
-    await deleteImageFromSupabase(imageToDelete);
-    const newImages = formData.certificate_images.filter((_, i) => i !== index);
+  const handleRemoveImage = async (url: string) => {
+    await deleteImageFromSupabase(url);
+    const newImages = formData.certificate_images.filter(img => img !== url);
     setFormData({ 
       ...formData, 
       certificate_images: newImages,
       certificate_image: newImages[0] || ""
     });
+    toast.success("Image removed");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -6329,17 +6334,31 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
               />
             </div>
             <div>
-              <Label>Certificate Images *</Label>
-              <MultipleFileUpload
-                images={formData.certificate_images}
-                onImagesUpload={handleMultipleImagesUpload}
-                onRemoveImage={handleRemoveImage}
-                uploading={uploading}
-                maxImages={10}
+              <Label>Certificate Images * (Multiple allowed)</Label>
+              <Input
+                type="file"
+                onChange={handleMultipleImagesUpload}
+                accept="image/*"
+                multiple
+                disabled={uploading}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Upload one or more certificate images. First image will be the primary image.
+                Select multiple images to upload. First image will be the primary image.
               </p>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                {formData.certificate_images.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(url)}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={uploading || formData.certificate_images.length === 0}>Add Award</Button>
@@ -6362,16 +6381,20 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
     certificate_images: award.certificate_images || [award.certificate_image],
   });
 
-  const handleMultipleImagesUpload = async (files: File[]) => {
-    if (files.length === 0) return;
+  const handleMultipleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     
     setUploading(true);
-    const { urls, error } = await uploadMultipleImages(files, "achievements");
+    const fileArray = Array.from(files);
+    const { urls, errors } = await uploadMultipleImages(fileArray, "achievements");
     setUploading(false);
 
-    if (error) {
-      toast.error(error);
-    } else if (urls && urls.length > 0) {
+    if (errors && errors.length > 0) {
+      toast.error(errors[0]);
+    }
+    
+    if (urls && urls.length > 0) {
       const newImages = [...formData.certificate_images, ...urls];
       setFormData({ 
         ...formData, 
@@ -6382,15 +6405,15 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
     }
   };
 
-  const handleRemoveImage = async (index: number) => {
-    const imageToDelete = formData.certificate_images[index];
-    await deleteImageFromSupabase(imageToDelete);
-    const newImages = formData.certificate_images.filter((_, i) => i !== index);
+  const handleRemoveImage = async (url: string) => {
+    await deleteImageFromSupabase(url);
+    const newImages = formData.certificate_images.filter(img => img !== url);
     setFormData({ 
       ...formData, 
       certificate_images: newImages,
       certificate_image: newImages[0] || ""
     });
+    toast.success("Image removed");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -6449,17 +6472,31 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
               />
             </div>
             <div>
-              <Label>Certificate Images *</Label>
-              <MultipleFileUpload
-                images={formData.certificate_images}
-                onImagesUpload={handleMultipleImagesUpload}
-                onRemoveImage={handleRemoveImage}
-                uploading={uploading}
-                maxImages={10}
+              <Label>Certificate Images * (Multiple allowed)</Label>
+              <Input
+                type="file"
+                onChange={handleMultipleImagesUpload}
+                accept="image/*"
+                multiple
+                disabled={uploading}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Upload one or more certificate images. First image will be the primary image.
+                Select multiple images to upload. First image will be the primary image.
               </p>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                {formData.certificate_images.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(url)}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={uploading || formData.certificate_images.length === 0}>Update Award</Button>

@@ -88,7 +88,7 @@ const PastConvenorDetail = () => {
 
   return (
     <div className="min-h-screen w-full relative z-10">
-      <main className="pt-16 pb-8 px-4 max-w-2xl mx-auto">
+      <main className="pt-16 pb-8 px-4 max-w-5xl mx-auto">
         <Button
           variant="ghost"
           size="sm"
@@ -99,39 +99,43 @@ const PastConvenorDetail = () => {
           Back
         </Button>
 
-        <div className="mb-4">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-2 border border-primary/30 bg-primary/5">
-            <Award className="w-3 h-3 text-primary" />
-            <span className="text-xs font-mono text-primary tracking-wider">
-              PAST CONVENOR
-            </span>
-          </div>
-          <h1 className="text-xl md:text-2xl font-bold mb-1.5 text-gradient">
-            {convenor.name}
-          </h1>
-          <div className="flex items-center gap-2 text-primary font-mono text-sm">
-            <Calendar className="w-3.5 h-3.5" />
-            {tenureDisplay}
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="overflow-hidden rounded-lg border border-primary/20 bg-card">
-            <img
-              src={convenor.image}
-              alt={convenor.name}
-              className="w-full max-h-[300px] object-cover object-top"
-            />
-          </div>
-
-          {convenor.description && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="md:col-span-1 space-y-3">
             <div className="bg-card border border-primary/20 rounded-lg p-3">
-              <h2 className="text-base font-bold mb-1.5">About</h2>
-              <p className="text-muted-foreground whitespace-pre-wrap text-sm leading-relaxed">
-                {convenor.description}
-              </p>
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-2 border border-primary/30 bg-primary/5">
+                <Award className="w-3 h-3 text-primary" />
+                <span className="text-xs font-mono text-primary tracking-wider">
+                  PAST CONVENOR
+                </span>
+              </div>
+              <h1 className="text-lg font-bold mb-2 text-gradient">
+                {convenor.name}
+              </h1>
+              <div className="flex items-center gap-2 text-primary font-mono text-sm">
+                <Calendar className="w-3.5 h-3.5" />
+                {tenureDisplay}
+              </div>
             </div>
-          )}
+
+            {convenor.description && (
+              <div className="bg-card border border-primary/20 rounded-lg p-3">
+                <h2 className="text-base font-bold mb-2">About</h2>
+                <p className="text-muted-foreground whitespace-pre-wrap text-sm leading-relaxed">
+                  {convenor.description}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="md:col-span-2">
+            <div className="overflow-hidden rounded-lg border border-primary/20 bg-card">
+              <img
+                src={convenor.image}
+                alt={convenor.name}
+                className="w-full max-h-[500px] object-cover object-top"
+              />
+            </div>
+          </div>
         </div>
       </main>
       <TechFooter />

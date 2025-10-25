@@ -75,9 +75,13 @@ const ChapterAwardDetail = () => {
     return null;
   }
 
+  const images = award.certificate_images && award.certificate_images.length > 0
+    ? award.certificate_images
+    : [award.certificate_image];
+
   return (
     <div className="min-h-screen w-full relative z-10">
-      <main className="pt-16 pb-8 px-4 max-w-2xl mx-auto">
+      <main className="pt-16 pb-8 px-4 max-w-5xl mx-auto">
         <Button
           variant="ghost"
           size="sm"
@@ -88,36 +92,42 @@ const ChapterAwardDetail = () => {
           Back
         </Button>
 
-        <div className="mb-4">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-2 border border-primary/30 bg-primary/5">
-            <Trophy className="w-3 h-3 text-primary" />
-            <span className="text-xs font-mono text-primary tracking-wider">
-              CHAPTER AWARD
-            </span>
-          </div>
-          <h1 className="text-xl md:text-2xl font-bold mb-1.5 text-gradient">
-            {award.award_title}
-          </h1>
-          <div className="flex items-center gap-2 text-primary font-mono text-sm">
-            <Calendar className="w-3.5 h-3.5" />
-            {award.year}
-          </div>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="md:col-span-1 space-y-3">
+            <div className="bg-card border border-primary/20 rounded-lg p-3">
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-2 border border-primary/30 bg-primary/5">
+                <Trophy className="w-3 h-3 text-primary" />
+                <span className="text-xs font-mono text-primary tracking-wider">
+                  CHAPTER AWARD
+                </span>
+              </div>
+              <h1 className="text-lg font-bold mb-2 text-gradient">
+                {award.award_title}
+              </h1>
+              <div className="flex items-center gap-2 text-primary font-mono text-sm">
+                <Calendar className="w-3.5 h-3.5" />
+                {award.year}
+              </div>
+            </div>
 
-        <div className="space-y-3">
-          <div className="overflow-hidden rounded-lg border border-primary/20 bg-card">
-            <img
-              src={award.certificate_image}
-              alt={award.award_title}
-              className="w-full object-contain object-top"
-            />
+            <div className="bg-card border border-primary/20 rounded-lg p-3">
+              <h2 className="text-base font-bold mb-2">Description</h2>
+              <p className="text-muted-foreground whitespace-pre-wrap text-sm leading-relaxed">
+                {award.description}
+              </p>
+            </div>
           </div>
 
-          <div className="bg-card border border-primary/20 rounded-lg p-3">
-            <h2 className="text-base font-bold mb-1.5">Description</h2>
-            <p className="text-muted-foreground whitespace-pre-wrap text-sm leading-relaxed">
-              {award.description}
-            </p>
+          <div className="md:col-span-2 space-y-2">
+            {images.map((image, index) => (
+              <div key={index} className="overflow-hidden rounded-lg border border-primary/20 bg-card">
+                <img
+                  src={image}
+                  alt={`${award.award_title} - Certificate ${index + 1}`}
+                  className="w-full object-contain object-top"
+                />
+              </div>
+            ))}
           </div>
         </div>
       </main>
