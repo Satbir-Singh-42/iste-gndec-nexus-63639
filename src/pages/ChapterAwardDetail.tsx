@@ -288,25 +288,25 @@ const ChapterAwardDetail = () => {
       {isFullscreen && (
         <div 
           ref={fullscreenRef}
-          className="fixed inset-0 z-50 bg-black flex flex-col"
+          className="fixed inset-0 z-50 bg-black flex flex-col w-screen h-screen overflow-hidden"
         >
-          <div className="flex items-center justify-between p-3 sm:p-4 bg-black/80 backdrop-blur-sm">
-            <div className="flex-1 min-w-0 mr-4">
-              <h2 className="text-sm sm:text-base md:text-lg font-bold line-clamp-1 text-white">
+          <div className="flex-shrink-0 flex items-center justify-between px-2 py-1.5 sm:px-3 sm:py-2 bg-black/90 backdrop-blur-sm border-b border-white/10">
+            <div className="flex-1 min-w-0 mr-2 sm:mr-3">
+              <h2 className="text-xs sm:text-sm font-bold line-clamp-1 text-white">
                 {award.award_title}
               </h2>
-              <p className="text-xs sm:text-sm text-gray-300">{award.year}</p>
+              <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-1">{award.year}</p>
             </div>
             <button
               onClick={exitFullscreen}
-              className="flex-shrink-0 p-2 rounded-full hover:bg-white/10 transition-colors"
+              className="flex-shrink-0 p-1.5 sm:p-2 rounded-full hover:bg-white/10 transition-colors"
               aria-label="Close fullscreen"
             >
-              <X className="w-5 h-5 text-white" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </button>
           </div>
 
-          <div className="flex-1 relative flex items-center justify-center p-2 sm:p-4">
+          <div className="flex-1 relative flex items-center justify-center overflow-hidden">
             <div
               className="w-full h-full flex items-center justify-center touch-pan-y"
               onTouchStart={handleTouchStart}
@@ -330,10 +330,10 @@ const ChapterAwardDetail = () => {
                       prev === 0 ? images.length - 1 : prev - 1
                     )
                   }
-                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 sm:p-3 md:p-4 rounded-full transition-all hover:scale-110"
+                  className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-1.5 sm:p-2 md:p-3 rounded-full transition-all hover:scale-110 active:scale-95"
                   aria-label="Previous image"
                 >
-                  <span className="text-xl sm:text-2xl text-white">←</span>
+                  <span className="text-base sm:text-xl text-white">←</span>
                 </button>
                 <button
                   onClick={() =>
@@ -341,12 +341,12 @@ const ChapterAwardDetail = () => {
                       prev === images.length - 1 ? 0 : prev + 1
                     )
                   }
-                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 sm:p-3 md:p-4 rounded-full transition-all hover:scale-110"
+                  className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-1.5 sm:p-2 md:p-3 rounded-full transition-all hover:scale-110 active:scale-95"
                   aria-label="Next image"
                 >
-                  <span className="text-xl sm:text-2xl text-white">→</span>
+                  <span className="text-base sm:text-xl text-white">→</span>
                 </button>
-                <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm text-xs sm:text-sm md:text-base font-mono rounded text-white">
+                <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 px-2 sm:px-3 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm text-[10px] sm:text-xs font-mono rounded text-white">
                   {currentImageIndex + 1} / {images.length}
                 </div>
               </>
@@ -354,16 +354,16 @@ const ChapterAwardDetail = () => {
           </div>
 
           {images.length > 1 && (
-            <div className="bg-black/80 backdrop-blur-sm p-3 sm:p-4">
-              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 justify-center scrollbar-hide">
+            <div className="flex-shrink-0 bg-black/90 backdrop-blur-sm px-2 py-1.5 sm:px-3 sm:py-2 border-t border-white/10">
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto justify-start sm:justify-center scrollbar-hide">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentImageIndex(idx)}
-                    className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded overflow-hidden border-2 transition-all ${
+                    className={`flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded overflow-hidden border-2 transition-all ${
                       idx === currentImageIndex
-                        ? "border-white scale-105"
-                        : "border-white/30 opacity-60 hover:opacity-100 hover:scale-105"
+                        ? "border-white ring-1 ring-white/50"
+                        : "border-white/30 opacity-60 hover:opacity-100"
                     }`}
                   >
                     <img
