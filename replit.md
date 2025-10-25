@@ -18,6 +18,7 @@ Preferred communication style: Simple, everyday language.
 - Updated `MultipleFileUpload` component to use Supabase Storage instead of inline base64
 - Files now stored with unique identifiers (timestamp + random string) to prevent collisions
 - Attachments include `storagePath` field for proper cleanup when deleted
+- Maximum file size increased to 10 MB per attachment
 - Backward compatible with legacy base64 attachments
 - See `STORAGE_SETUP.md` for bucket configuration instructions
 
@@ -51,7 +52,7 @@ Preferred communication style: Simple, everyday language.
 
 All tables support `hidden` and `display_order` fields for visibility control and custom ordering.
 
-**File Storage**: Supabase Storage handles image uploads and file attachments. Images are stored in the `images` bucket, and notice attachments are stored in the `notice-attachments` bucket. Files are uploaded with unique identifiers (timestamp + random string) to prevent collisions and are publicly accessible. The storage utilities in `src/lib/storage.ts` provide upload, delete, and URL management functions. Each attachment includes a `storagePath` field for tracking and cleanup.
+**File Storage**: Supabase Storage handles image uploads and file attachments. Images are stored in the `images` bucket, and notice attachments are stored in the `notice-attachments` bucket. Files are uploaded with unique identifiers (timestamp + random string) to prevent collisions and are publicly accessible. The storage utilities in `src/lib/storage.ts` provide upload, delete, and URL management functions. Each attachment includes a `storagePath` field for tracking and cleanup. Maximum file size is 10 MB per attachment.
 
 ### Content Management
 

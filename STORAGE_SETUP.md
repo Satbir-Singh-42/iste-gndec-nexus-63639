@@ -70,8 +70,8 @@ The `MultipleFileUpload` component automatically handles:
   accept=".pdf,.doc,.docx,.xls,.xlsx"
   value={formData.attachments}
   onChange={(attachments) => setFormData({ ...formData, attachments })}
-  description="Upload relevant documents (Max 5MB each)"
-  maxSizeMB={5}
+  description="Upload relevant documents (Max 10MB each)"
+  maxSizeMB={10}
   maxFiles={5}
   storageFolder="notices"
 />

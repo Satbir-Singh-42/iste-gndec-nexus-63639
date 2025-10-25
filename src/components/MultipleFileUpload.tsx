@@ -29,7 +29,7 @@ export function MultipleFileUpload({
   value,
   onChange,
   description,
-  maxSizeMB = 5,
+  maxSizeMB = 10,
   maxFiles = 5,
   storageFolder = 'notices'
 }: MultipleFileUploadProps) {
