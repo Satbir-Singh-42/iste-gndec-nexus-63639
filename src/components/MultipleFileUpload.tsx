@@ -3,11 +3,13 @@ import { Upload, X, FileIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { uploadFile, deleteFile, getPathFromUrl } from '@/lib/storage';
 
 interface Attachment {
   name: string;
   url: string;
   type: string;
+  storagePath?: string; // Path in Supabase Storage for deletion
 }
 
 interface MultipleFileUploadProps {
@@ -18,6 +20,7 @@ interface MultipleFileUploadProps {
   description?: string;
   maxSizeMB?: number;
   maxFiles?: number;
+  storageFolder?: string; // Optional folder in storage bucket
 }
 
 export function MultipleFileUpload({
@@ -27,7 +30,8 @@ export function MultipleFileUpload({
   onChange,
   description,
   maxSizeMB = 5,
-  maxFiles = 5
+  maxFiles = 5,
+  storageFolder = 'notices'
 }: MultipleFileUploadProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,6 +49,7 @@ export function MultipleFileUpload({
 
     try {
       const newAttachments: Attachment[] = [];
+      let successCount = 0;
 
       for (const file of files) {
         const fileSizeMB = file.size / (1024 * 1024);
@@ -53,22 +58,28 @@ export function MultipleFileUpload({
           continue;
         }
 
-        const reader = new FileReader();
-        const base64String = await new Promise<string>((resolve, reject) => {
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-
-        newAttachments.push({
-          name: file.name,
-          url: base64String,
-          type: file.type
-        });
+        try {
+          // Upload to Supabase Storage
+          const uploadResult = await uploadFile(file, storageFolder);
+          
+          newAttachments.push({
+            name: uploadResult.name,
+            url: uploadResult.url,
+            type: uploadResult.type,
+            storagePath: uploadResult.path
+          });
+          
+          successCount++;
+        } catch (uploadError: any) {
+          console.error(`Failed to upload ${file.name}:`, uploadError);
+          toast.error(`Failed to upload ${file.name}: ${uploadError.message}`);
+        }
       }
 
-      onChange([...value, ...newAttachments]);
-      toast.success(`${newAttachments.length} file(s) uploaded`);
+      if (newAttachments.length > 0) {
+        onChange([...value, ...newAttachments]);
+        toast.success(`${successCount} file(s) uploaded successfully`);
+      }
       
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -81,7 +92,29 @@ export function MultipleFileUpload({
     }
   };
 
-  const handleRemove = (index: number) => {
+  const handleRemove = async (index: number) => {
+    const attachment = value[index];
+    
+    // Try to delete from storage if it has a storage path
+    if (attachment.storagePath) {
+      try {
+        await deleteFile(attachment.storagePath);
+      } catch (error) {
+        console.error('Failed to delete file from storage:', error);
+        // Continue with removal from list even if storage deletion fails
+      }
+    } else if (attachment.url && !attachment.url.startsWith('data:')) {
+      // Try to extract path from URL for legacy files
+      const path = getPathFromUrl(attachment.url);
+      if (path) {
+        try {
+          await deleteFile(path);
+        } catch (error) {
+          console.error('Failed to delete file from storage:', error);
+        }
+      }
+    }
+    
     const newAttachments = value.filter((_, i) => i !== index);
     onChange(newAttachments);
   };
@@ -108,7 +141,14 @@ export function MultipleFileUpload({
               className="flex items-center gap-2 p-3 rounded-lg border border-border bg-muted/50"
             >
               <span className="text-lg">{getFileIcon(attachment.type)}</span>
-              <span className="text-sm flex-1 truncate">{attachment.name}</span>
+              <a 
+                href={attachment.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm flex-1 truncate hover:underline"
+              >
+                {attachment.name}
+              </a>
               <Button
                 type="button"
                 variant="ghost"
