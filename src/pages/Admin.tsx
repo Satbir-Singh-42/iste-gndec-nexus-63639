@@ -2926,40 +2926,23 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {selectedDate ? (
-                        format(selectedDate, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-0"
-                    align="start"
-                    side="bottom"
-                    sideOffset={8}>
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={handleDateSelect}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Label htmlFor="date">Date</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="time">Time</Label>
-                <TimePicker
+                <Input
+                  id="time"
+                  type="time"
                   value={timeInput}
-                  onChange={handleTimeChange}
-                  placeholder="Pick a time"
+                  onChange={(e) => handleTimeChange(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -3134,40 +3117,26 @@ function EditNoticeDialog({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {selectedDate ? (
-                        format(selectedDate, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-0"
-                    align="start"
-                    side="bottom"
-                    sideOffset={8}>
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={handleDateSelect}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Label htmlFor="edit-date">Date</Label>
+                <Input
+                  id="edit-date"
+                  type="date"
+                  value={selectedDate ? format(selectedDate, "yyyy-MM-dd") : formData.date}
+                  onChange={(e) => {
+                    setFormData({ ...formData, date: e.target.value });
+                    setSelectedDate(e.target.value ? new Date(e.target.value) : undefined);
+                  }}
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="edit-time">Time</Label>
-                <TimePicker
+                <Input
+                  id="edit-time"
+                  type="time"
                   value={timeInput}
-                  onChange={handleTimeChange}
-                  placeholder="Pick a time"
+                  onChange={(e) => handleTimeChange(e.target.value)}
+                  required
                 />
               </div>
             </div>
@@ -3342,40 +3311,23 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {selectedDate ? (
-                        format(selectedDate, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-0"
-                    align="start"
-                    side="bottom"
-                    sideOffset={8}>
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={handleDateSelect}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Label htmlFor="event-date">Date</Label>
+                <Input
+                  id="event-date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="event-time">Time</Label>
-                <TimePicker
+                <Input
+                  id="event-time"
+                  type="time"
                   value={formData.time}
-                  onChange={(time) => setFormData({ ...formData, time })}
-                  placeholder="Pick a time"
+                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  required
                 />
               </div>
             </div>
@@ -3560,40 +3512,26 @@ function EditEventDialog({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {selectedDate ? (
-                        format(selectedDate, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-0"
-                    align="start"
-                    side="bottom"
-                    sideOffset={8}>
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={handleDateSelect}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <Label htmlFor="edit-event-date">Date</Label>
+                <Input
+                  id="edit-event-date"
+                  type="date"
+                  value={selectedDate ? format(selectedDate, "yyyy-MM-dd") : formData.date}
+                  onChange={(e) => {
+                    setFormData({ ...formData, date: e.target.value });
+                    setSelectedDate(e.target.value ? new Date(e.target.value) : undefined);
+                  }}
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="edit-event-time">Time</Label>
-                <TimePicker
+                <Input
+                  id="edit-event-time"
+                  type="time"
                   value={formData.time}
-                  onChange={(time) => setFormData({ ...formData, time })}
-                  placeholder="Pick a time"
+                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  required
                 />
               </div>
             </div>
