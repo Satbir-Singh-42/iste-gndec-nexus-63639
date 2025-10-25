@@ -6584,14 +6584,14 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
             <div>
               <Label htmlFor="tenure-month">Tenure Month (Optional)</Label>
               <Select
-                value={formData.tenure_month?.toString() || ""}
-                onValueChange={(value) => setFormData({ ...formData, tenure_month: value ? parseInt(value) : null })}
+                value={formData.tenure_month?.toString() || "0"}
+                onValueChange={(value) => setFormData({ ...formData, tenure_month: value === "0" ? null : parseInt(value) })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select month" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No month</SelectItem>
+                  <SelectItem value="0">No month</SelectItem>
                   <SelectItem value="1">January</SelectItem>
                   <SelectItem value="2">February</SelectItem>
                   <SelectItem value="3">March</SelectItem>
@@ -6772,14 +6772,14 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
             <div>
               <Label htmlFor="edit-tenure-month">Tenure Month (Optional)</Label>
               <Select
-                value={formData.tenure_month?.toString() || ""}
-                onValueChange={(value) => setFormData({ ...formData, tenure_month: value ? parseInt(value) : null })}
+                value={formData.tenure_month?.toString() || "0"}
+                onValueChange={(value) => setFormData({ ...formData, tenure_month: value === "0" ? null : parseInt(value) })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select month" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No month</SelectItem>
+                  <SelectItem value="0">No month</SelectItem>
                   <SelectItem value="1">January</SelectItem>
                   <SelectItem value="2">February</SelectItem>
                   <SelectItem value="3">March</SelectItem>
