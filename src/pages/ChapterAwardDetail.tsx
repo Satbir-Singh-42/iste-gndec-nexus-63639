@@ -38,8 +38,16 @@ const ChapterAwardDetail = () => {
   }, [id]);
 
   useEffect(() => {
+    if (isFullscreen && fullscreenRef.current) {
+      fullscreenRef.current.requestFullscreen().catch((err) => {
+        console.log("Fullscreen request failed:", err);
+      });
+    }
+  }, [isFullscreen]);
+
+  useEffect(() => {
     const handleFullscreenChange = () => {
-      if (!document.fullscreenElement) {
+      if (!document.fullscreenElement && isFullscreen) {
         setIsFullscreen(false);
       }
     };
@@ -90,16 +98,8 @@ const ChapterAwardDetail = () => {
     }
   };
 
-  const enterFullscreen = async () => {
-    if (fullscreenRef.current) {
-      try {
-        await fullscreenRef.current.requestFullscreen();
-        setIsFullscreen(true);
-      } catch (error) {
-        console.error("Error entering fullscreen:", error);
-        setIsFullscreen(true);
-      }
-    }
+  const enterFullscreen = () => {
+    setIsFullscreen(true);
   };
 
   const exitFullscreen = async () => {
