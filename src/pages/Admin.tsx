@@ -221,7 +221,8 @@ interface PastConvenor {
   image: string;
   tenure_start: string;
   tenure_end: string;
-  tenure_month?: number | null;
+  start_month?: number | null;
+  end_month?: number | null;
   description?: string;
   email?: string;
   linkedin?: string;
@@ -6520,7 +6521,8 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
     image: "",
     tenure_start: "",
     tenure_end: "",
-    tenure_month: null as number | null,
+    start_month: null as number | null,
+    end_month: null as number | null,
     description: "",
     email: "",
     linkedin: "",
@@ -6553,7 +6555,7 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
       if (error) throw error;
       toast.success("Convenor added successfully");
       setOpen(false);
-      setFormData({ name: "", image: "", tenure_start: "", tenure_end: "", tenure_month: null, description: "", email: "", linkedin: "", github: "", instagram: "" });
+      setFormData({ name: "", image: "", tenure_start: "", tenure_end: "", start_month: null, end_month: null, description: "", email: "", linkedin: "", github: "", instagram: "" });
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add convenor: ${error.message}`);
@@ -6581,47 +6583,47 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                 required
               />
             </div>
-            <div>
-              <Label htmlFor="tenure-month">Tenure Month (Optional)</Label>
-              <Select
-                value={formData.tenure_month?.toString() || "0"}
-                onValueChange={(value) => setFormData({ ...formData, tenure_month: value === "0" ? null : parseInt(value) })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select month" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">No month</SelectItem>
-                  <SelectItem value="1">January</SelectItem>
-                  <SelectItem value="2">February</SelectItem>
-                  <SelectItem value="3">March</SelectItem>
-                  <SelectItem value="4">April</SelectItem>
-                  <SelectItem value="5">May</SelectItem>
-                  <SelectItem value="6">June</SelectItem>
-                  <SelectItem value="7">July</SelectItem>
-                  <SelectItem value="8">August</SelectItem>
-                  <SelectItem value="9">September</SelectItem>
-                  <SelectItem value="10">October</SelectItem>
-                  <SelectItem value="11">November</SelectItem>
-                  <SelectItem value="12">December</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground mt-1">
-                Month applies to both start and end years
-              </p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="tenure-start">Start Year *</Label>
+                <Input
+                  id="tenure-start"
+                  value={formData.tenure_start}
+                  onChange={(e) => setFormData({ ...formData, tenure_start: e.target.value })}
+                  placeholder="2020"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="start-month">Start Month (Optional)</Label>
+                <Select
+                  value={formData.start_month?.toString() || "0"}
+                  onValueChange={(value) => setFormData({ ...formData, start_month: value === "0" ? null : parseInt(value) })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">No month</SelectItem>
+                    <SelectItem value="1">January</SelectItem>
+                    <SelectItem value="2">February</SelectItem>
+                    <SelectItem value="3">March</SelectItem>
+                    <SelectItem value="4">April</SelectItem>
+                    <SelectItem value="5">May</SelectItem>
+                    <SelectItem value="6">June</SelectItem>
+                    <SelectItem value="7">July</SelectItem>
+                    <SelectItem value="8">August</SelectItem>
+                    <SelectItem value="9">September</SelectItem>
+                    <SelectItem value="10">October</SelectItem>
+                    <SelectItem value="11">November</SelectItem>
+                    <SelectItem value="12">December</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="tenure-start">Tenure Start Year *</Label>
-              <Input
-                id="tenure-start"
-                value={formData.tenure_start}
-                onChange={(e) => setFormData({ ...formData, tenure_start: e.target.value })}
-                placeholder="2020"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="tenure-end">Tenure End Year *</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="tenure-end">End Year *</Label>
               <Input
                 id="tenure-end"
                 value={formData.tenure_end}
@@ -6629,6 +6631,33 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                 placeholder="2022"
                 required
               />
+              </div>
+              <div>
+                <Label htmlFor="end-month">End Month (Optional)</Label>
+                <Select
+                  value={formData.end_month?.toString() || "0"}
+                  onValueChange={(value) => setFormData({ ...formData, end_month: value === "0" ? null : parseInt(value) })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">No month</SelectItem>
+                    <SelectItem value="1">January</SelectItem>
+                    <SelectItem value="2">February</SelectItem>
+                    <SelectItem value="3">March</SelectItem>
+                    <SelectItem value="4">April</SelectItem>
+                    <SelectItem value="5">May</SelectItem>
+                    <SelectItem value="6">June</SelectItem>
+                    <SelectItem value="7">July</SelectItem>
+                    <SelectItem value="8">August</SelectItem>
+                    <SelectItem value="9">September</SelectItem>
+                    <SelectItem value="10">October</SelectItem>
+                    <SelectItem value="11">November</SelectItem>
+                    <SelectItem value="12">December</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div>
               <Label htmlFor="convenor-desc">Description</Label>
@@ -6707,7 +6736,8 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
     image: convenor.image,
     tenure_start: convenor.tenure_start,
     tenure_end: convenor.tenure_end,
-    tenure_month: convenor.tenure_month || null,
+    start_month: convenor.start_month || null,
+    end_month: convenor.end_month || null,
     description: convenor.description || "",
     email: convenor.email || "",
     linkedin: convenor.linkedin || "",
@@ -6769,52 +6799,81 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                 required
               />
             </div>
-            <div>
-              <Label htmlFor="edit-tenure-month">Tenure Month (Optional)</Label>
-              <Select
-                value={formData.tenure_month?.toString() || "0"}
-                onValueChange={(value) => setFormData({ ...formData, tenure_month: value === "0" ? null : parseInt(value) })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select month" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">No month</SelectItem>
-                  <SelectItem value="1">January</SelectItem>
-                  <SelectItem value="2">February</SelectItem>
-                  <SelectItem value="3">March</SelectItem>
-                  <SelectItem value="4">April</SelectItem>
-                  <SelectItem value="5">May</SelectItem>
-                  <SelectItem value="6">June</SelectItem>
-                  <SelectItem value="7">July</SelectItem>
-                  <SelectItem value="8">August</SelectItem>
-                  <SelectItem value="9">September</SelectItem>
-                  <SelectItem value="10">October</SelectItem>
-                  <SelectItem value="11">November</SelectItem>
-                  <SelectItem value="12">December</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground mt-1">
-                Month applies to both start and end years
-              </p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="edit-tenure-start">Start Year *</Label>
+                <Input
+                  id="edit-tenure-start"
+                  value={formData.tenure_start}
+                  onChange={(e) => setFormData({ ...formData, tenure_start: e.target.value })}
+                  placeholder="2020"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-start-month">Start Month (Optional)</Label>
+                <Select
+                  value={formData.start_month?.toString() || "0"}
+                  onValueChange={(value) => setFormData({ ...formData, start_month: value === "0" ? null : parseInt(value) })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">No month</SelectItem>
+                    <SelectItem value="1">January</SelectItem>
+                    <SelectItem value="2">February</SelectItem>
+                    <SelectItem value="3">March</SelectItem>
+                    <SelectItem value="4">April</SelectItem>
+                    <SelectItem value="5">May</SelectItem>
+                    <SelectItem value="6">June</SelectItem>
+                    <SelectItem value="7">July</SelectItem>
+                    <SelectItem value="8">August</SelectItem>
+                    <SelectItem value="9">September</SelectItem>
+                    <SelectItem value="10">October</SelectItem>
+                    <SelectItem value="11">November</SelectItem>
+                    <SelectItem value="12">December</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="edit-tenure-start">Tenure Start Year *</Label>
-              <Input
-                id="edit-tenure-start"
-                value={formData.tenure_start}
-                onChange={(e) => setFormData({ ...formData, tenure_start: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-tenure-end">Tenure End Year *</Label>
-              <Input
-                id="edit-tenure-end"
-                value={formData.tenure_end}
-                onChange={(e) => setFormData({ ...formData, tenure_end: e.target.value })}
-                required
-              />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="edit-tenure-end">End Year *</Label>
+                <Input
+                  id="edit-tenure-end"
+                  value={formData.tenure_end}
+                  onChange={(e) => setFormData({ ...formData, tenure_end: e.target.value })}
+                  placeholder="2022"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-end-month">End Month (Optional)</Label>
+                <Select
+                  value={formData.end_month?.toString() || "0"}
+                  onValueChange={(value) => setFormData({ ...formData, end_month: value === "0" ? null : parseInt(value) })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select month" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">No month</SelectItem>
+                    <SelectItem value="1">January</SelectItem>
+                    <SelectItem value="2">February</SelectItem>
+                    <SelectItem value="3">March</SelectItem>
+                    <SelectItem value="4">April</SelectItem>
+                    <SelectItem value="5">May</SelectItem>
+                    <SelectItem value="6">June</SelectItem>
+                    <SelectItem value="7">July</SelectItem>
+                    <SelectItem value="8">August</SelectItem>
+                    <SelectItem value="9">September</SelectItem>
+                    <SelectItem value="10">October</SelectItem>
+                    <SelectItem value="11">November</SelectItem>
+                    <SelectItem value="12">December</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <div>
               <Label htmlFor="edit-convenor-desc">Description</Label>

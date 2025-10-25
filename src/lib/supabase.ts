@@ -266,7 +266,8 @@ export type Database = {
           image: string;
           tenure_start: string;
           tenure_end: string;
-          tenure_month?: number;
+          start_month?: number;
+          end_month?: number;
           description?: string;
           email?: string;
           linkedin?: string;

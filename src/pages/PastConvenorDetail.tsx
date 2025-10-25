@@ -12,7 +12,8 @@ interface PastConvenor {
   image: string;
   tenure_start: string;
   tenure_end: string;
-  tenure_month?: number | null;
+  start_month?: number | null;
+  end_month?: number | null;
   description?: string;
   email?: string;
   linkedin?: string;
@@ -86,9 +87,17 @@ const PastConvenorDetail = () => {
     return months[month - 1] || "";
   };
 
-  const tenureDisplay = convenor.tenure_month
-    ? `${getMonthName(convenor.tenure_month)} ${convenor.tenure_start} - ${getMonthName(convenor.tenure_month)} ${convenor.tenure_end}`
-    : `${convenor.tenure_start} - ${convenor.tenure_end}`;
+  const tenureDisplay = (() => {
+    const startPart = convenor.start_month 
+      ? `${getMonthName(convenor.start_month)} ${convenor.tenure_start}`
+      : convenor.tenure_start;
+    
+    const endPart = convenor.end_month
+      ? `${getMonthName(convenor.end_month)} ${convenor.tenure_end}`
+      : convenor.tenure_end;
+    
+    return `${startPart} - ${endPart}`;
+  })();
 
   return (
     <div className="min-h-screen w-full relative z-10">
