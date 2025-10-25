@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Trophy, Calendar, ArrowLeft } from "lucide-react";
+import { Trophy, Calendar, ArrowLeft, Maximize2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TechFooter from "@/components/TechFooter";
 
@@ -22,6 +22,11 @@ const ChapterAwardDetail = () => {
   const navigate = useNavigate();
   const [award, setAward] = useState<ChapterAward | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const fullscreenRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!supabase) {
@@ -31,6 +36,31 @@ const ChapterAwardDetail = () => {
     }
     fetchAward();
   }, [id]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) {
+        setIsFullscreen(false);
+      }
+    };
+
+    const handleKeyNavigation = (e: KeyboardEvent) => {
+      if (!award || images.length <= 1) return;
+      
+      if (e.key === "ArrowLeft") {
+        setCurrentImageIndex((prev) => prev === 0 ? images.length - 1 : prev - 1);
+      } else if (e.key === "ArrowRight") {
+        setCurrentImageIndex((prev) => prev === images.length - 1 ? 0 : prev + 1);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("keydown", handleKeyNavigation);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("keydown", handleKeyNavigation);
+    };
+  }, [isFullscreen, award]);
 
   const fetchAward = async () => {
     if (!supabase || !id) return;
@@ -58,6 +88,59 @@ const ChapterAwardDetail = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const enterFullscreen = async () => {
+    if (fullscreenRef.current) {
+      try {
+        await fullscreenRef.current.requestFullscreen();
+        setIsFullscreen(true);
+      } catch (error) {
+        console.error("Error entering fullscreen:", error);
+        setIsFullscreen(true);
+      }
+    }
+  };
+
+  const exitFullscreen = async () => {
+    if (document.fullscreenElement) {
+      try {
+        await document.exitFullscreen();
+      } catch (error) {
+        console.error("Error exiting fullscreen:", error);
+      }
+    }
+    setIsFullscreen(false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (imagesLength: number) => {
+    if (imagesLength <= 1) return;
+
+    const swipeThreshold = 50;
+    const diff = touchStartX.current - touchEndX.current;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        setCurrentImageIndex((prev) =>
+          prev === imagesLength - 1 ? 0 : prev + 1
+        );
+      } else {
+        setCurrentImageIndex((prev) =>
+          prev === 0 ? imagesLength - 1 : prev - 1
+        );
+      }
+    }
+
+    touchStartX.current = 0;
+    touchEndX.current = 0;
   };
 
   if (loading) {
@@ -118,19 +201,185 @@ const ChapterAwardDetail = () => {
             </div>
           </div>
 
-          <div className="md:col-span-2 space-y-2">
-            {images.map((image, index) => (
-              <div key={index} className="overflow-hidden rounded-lg border border-primary/20 bg-card">
-                <img
-                  src={image}
-                  alt={`${award.award_title} - Certificate ${index + 1}`}
-                  className="w-full object-contain object-top"
-                />
+          <div className="md:col-span-2">
+            <div className="rounded-lg border border-primary/20 bg-card/30 p-4 space-y-4">
+              <div
+                className="relative touch-pan-y"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={() => handleTouchEnd(images.length)}
+              >
+                <div className="w-full aspect-[16/9] bg-muted rounded overflow-hidden flex items-center justify-center">
+                  <img
+                    src={images[currentImageIndex]}
+                    alt={`${award.award_title} ${currentImageIndex + 1}`}
+                    className="max-h-full max-w-full w-auto h-auto object-contain select-none"
+                    loading="lazy"
+                    draggable={false}
+                  />
+                </div>
+
+                <button
+                  onClick={enterFullscreen}
+                  className="absolute top-2 right-2 bg-background/90 hover:bg-background p-2 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
+                  aria-label="View fullscreen"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={() =>
+                        setCurrentImageIndex((prev) =>
+                          prev === 0 ? images.length - 1 : prev - 1
+                        )
+                      }
+                      className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background p-2 sm:p-3 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
+                      aria-label="Previous image"
+                    >
+                      <span className="text-lg sm:text-xl">←</span>
+                    </button>
+                    <button
+                      onClick={() =>
+                        setCurrentImageIndex((prev) =>
+                          prev === images.length - 1 ? 0 : prev + 1
+                        )
+                      }
+                      className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background p-2 sm:p-3 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
+                      aria-label="Next image"
+                    >
+                      <span className="text-lg sm:text-xl">→</span>
+                    </button>
+                    <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 bg-background/90 text-xs sm:text-sm font-mono border border-border rounded backdrop-blur-sm">
+                      {currentImageIndex + 1} / {images.length}
+                    </div>
+                  </>
+                )}
               </div>
-            ))}
+
+              {images.length > 1 && (
+                <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                  {images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded overflow-hidden border-2 transition-all ${
+                        idx === currentImageIndex
+                          ? "border-primary scale-105"
+                          : "border-border opacity-60 hover:opacity-100 hover:scale-105"
+                      }`}
+                    >
+                      <img
+                        src={img}
+                        alt={`Thumbnail ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>
+
+      {isFullscreen && (
+        <div 
+          ref={fullscreenRef}
+          className="fixed inset-0 z-50 bg-black flex flex-col"
+        >
+          <div className="flex items-center justify-between p-3 sm:p-4 bg-black/80 backdrop-blur-sm">
+            <div className="flex-1 min-w-0 mr-4">
+              <h2 className="text-sm sm:text-base md:text-lg font-bold line-clamp-1 text-white">
+                {award.award_title}
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-300">{award.year}</p>
+            </div>
+            <button
+              onClick={exitFullscreen}
+              className="flex-shrink-0 p-2 rounded-full hover:bg-white/10 transition-colors"
+              aria-label="Close fullscreen"
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+          </div>
+
+          <div className="flex-1 relative flex items-center justify-center p-2 sm:p-4">
+            <div
+              className="w-full h-full flex items-center justify-center touch-pan-y"
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={() => handleTouchEnd(images.length)}
+            >
+              <img
+                src={images[currentImageIndex]}
+                alt={`${award.award_title} ${currentImageIndex + 1}`}
+                className="max-h-full max-w-full w-auto h-auto object-contain select-none"
+                loading="lazy"
+                draggable={false}
+              />
+            </div>
+
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={() =>
+                    setCurrentImageIndex((prev) =>
+                      prev === 0 ? images.length - 1 : prev - 1
+                    )
+                  }
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 sm:p-3 md:p-4 rounded-full transition-all hover:scale-110"
+                  aria-label="Previous image"
+                >
+                  <span className="text-xl sm:text-2xl text-white">←</span>
+                </button>
+                <button
+                  onClick={() =>
+                    setCurrentImageIndex((prev) =>
+                      prev === images.length - 1 ? 0 : prev + 1
+                    )
+                  }
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-2 sm:p-3 md:p-4 rounded-full transition-all hover:scale-110"
+                  aria-label="Next image"
+                >
+                  <span className="text-xl sm:text-2xl text-white">→</span>
+                </button>
+                <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm text-xs sm:text-sm md:text-base font-mono rounded text-white">
+                  {currentImageIndex + 1} / {images.length}
+                </div>
+              </>
+            )}
+          </div>
+
+          {images.length > 1 && (
+            <div className="bg-black/80 backdrop-blur-sm p-3 sm:p-4">
+              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 justify-center scrollbar-hide">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentImageIndex(idx)}
+                    className={`flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded overflow-hidden border-2 transition-all ${
+                      idx === currentImageIndex
+                        ? "border-white scale-105"
+                        : "border-white/30 opacity-60 hover:opacity-100 hover:scale-105"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <TechFooter />
     </div>
   );
