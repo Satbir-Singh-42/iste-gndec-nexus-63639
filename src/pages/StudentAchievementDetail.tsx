@@ -200,59 +200,55 @@ const StudentAchievementDetail = () => {
             
             {images.length === 1 && (
               <div className="rounded-lg border border-primary/20 bg-muted/30 p-4">
-                <div className="w-full max-w-md mx-auto aspect-[4/3] flex items-center justify-center bg-background/50 rounded overflow-hidden">
+                <div className="w-full max-w-md mx-auto aspect-[4/3] bg-background/50 rounded overflow-hidden">
                   <img
                     src={images[0]}
                     alt={achievement.event_name}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
               </div>
             )}
             
             {images.length === 2 && (
-              <div className="grid grid-cols-2 gap-3">
-                {images.map((image, index) => (
-                  <div key={index} className="rounded-lg border border-primary/20 bg-muted/30 p-3">
-                    <div className="w-full aspect-[3/4] flex items-center justify-center bg-background/50 rounded overflow-hidden">
+              <div className="rounded-lg border border-primary/20 bg-muted/30 p-3">
+                <div className="grid grid-cols-2 gap-3">
+                  {images.map((image, index) => (
+                    <div key={index} className="w-full aspect-[3/4] bg-background/50 rounded overflow-hidden">
                       <img
                         src={image}
                         alt={`${achievement.event_name} - ${index + 1}`}
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-cover object-top"
                       />
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
             
             {images.length >= 3 && (
-              <div className="space-y-3">
-                <div className="rounded-lg border border-primary/20 bg-muted/30 p-4">
-                  <div className="w-full aspect-[16/9] flex items-center justify-center bg-background/50 rounded overflow-hidden">
-                    <img
-                      src={images[0]}
-                      alt={`${achievement.event_name} - 1`}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
+              <div className="rounded-lg border border-primary/20 bg-muted/30 p-3 space-y-3">
+                <div className="w-full aspect-[4/3] bg-background/50 rounded overflow-hidden">
+                  <img
+                    src={images[0]}
+                    alt={`${achievement.event_name} - 1`}
+                    className="w-full h-full object-cover object-top"
+                  />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-3">
                   {images.slice(1).map((image, index) => (
                     <div 
                       key={index + 1} 
-                      className={`rounded-lg border border-primary/20 bg-muted/30 p-3 ${
-                        index === images.slice(1).length - 1 && images.slice(1).length % 2 === 1 ? 'col-span-2' : ''
-                      }`}
+                      className={index === images.slice(1).length - 1 && images.slice(1).length % 2 === 1 ? 'col-span-2' : ''}
                     >
-                      <div className={`w-full aspect-[4/3] flex items-center justify-center bg-background/50 rounded overflow-hidden ${
+                      <div className={`w-full aspect-[4/3] bg-background/50 rounded overflow-hidden ${
                         index === images.slice(1).length - 1 && images.slice(1).length % 2 === 1 ? 'max-w-md mx-auto' : ''
                       }`}>
                         <img
                           src={image}
                           alt={`${achievement.event_name} - ${index + 2}`}
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-cover object-top"
                         />
                       </div>
                     </div>

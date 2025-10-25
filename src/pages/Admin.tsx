@@ -7194,6 +7194,20 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
     toast.success("Image removed");
   };
 
+  const moveImageUp = (index: number) => {
+    if (index === 0) return;
+    const newImages = [...formData.achievement_images];
+    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    setFormData({ ...formData, achievement_images: newImages });
+  };
+
+  const moveImageDown = (index: number) => {
+    if (index === formData.achievement_images.length - 1) return;
+    const newImages = [...formData.achievement_images];
+    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    setFormData({ ...formData, achievement_images: newImages });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
@@ -7318,19 +7332,42 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
                 disabled={uploading}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Select multiple images to upload
+                Select multiple images. Use arrows to reorder.
               </p>
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {formData.achievement_images.map((url, index) => (
                   <div key={index} className="relative group">
                     <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(url)}
-                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
+                    <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImageUp(index)}
+                          className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
+                          title="Move left"
+                        >
+                          <ChevronUp className="h-3 w-3" />
+                        </button>
+                      )}
+                      {index < formData.achievement_images.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImageDown(index)}
+                          className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
+                          title="Move right"
+                        >
+                          <ChevronDown className="h-3 w-3" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(url)}
+                        className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                        title="Remove"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -7417,6 +7454,20 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
     await deleteImageFromSupabase(url);
     setFormData({ ...formData, achievement_images: formData.achievement_images.filter(img => img !== url) });
     toast.success("Image removed");
+  };
+
+  const moveImageUp = (index: number) => {
+    if (index === 0) return;
+    const newImages = [...formData.achievement_images];
+    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    setFormData({ ...formData, achievement_images: newImages });
+  };
+
+  const moveImageDown = (index: number) => {
+    if (index === formData.achievement_images.length - 1) return;
+    const newImages = [...formData.achievement_images];
+    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    setFormData({ ...formData, achievement_images: newImages });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -7530,19 +7581,42 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
                 disabled={uploading}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Select multiple images to upload
+                Select multiple images. Use arrows to reorder.
               </p>
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {formData.achievement_images.map((url, index) => (
                   <div key={index} className="relative group">
                     <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveImage(url)}
-                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
+                    <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImageUp(index)}
+                          className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
+                          title="Move left"
+                        >
+                          <ChevronUp className="h-3 w-3" />
+                        </button>
+                      )}
+                      {index < formData.achievement_images.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImageDown(index)}
+                          className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
+                          title="Move right"
+                        >
+                          <ChevronDown className="h-3 w-3" />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(url)}
+                        className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                        title="Remove"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
