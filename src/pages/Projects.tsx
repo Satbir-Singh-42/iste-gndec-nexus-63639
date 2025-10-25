@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Helmet } from "react-helmet-async";
 
 interface Project {
   id: number;
@@ -97,37 +96,7 @@ const Projects = () => {
   }
 
   return (
-    <>
-      <Helmet>
-        <title>Student Projects & Innovations | ISTE GNDEC</title>
-        <meta
-          name="description"
-          content="Explore innovative projects developed by ISTE GNDEC members. Browse web applications, mobile apps, machine learning projects, and technical innovations from our talented students."
-        />
-        <meta
-          property="og:title"
-          content="Student Projects & Innovations | ISTE GNDEC"
-        />
-        <meta
-          property="og:description"
-          content="Explore innovative projects developed by ISTE GNDEC members. Browse web applications, mobile apps, machine learning projects, and technical innovations."
-        />
-        <meta
-          property="og:url"
-          content="https://iste-gndec.vercel.app/projects"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Student Projects & Innovations | ISTE GNDEC"
-        />
-        <meta
-          name="twitter:description"
-          content="Explore innovative projects developed by ISTE GNDEC members."
-        />
-        <link rel="canonical" href="https://iste-gndec.vercel.app/projects" />
-      </Helmet>
-      <div className="min-h-screen relative z-10">
+    <div className="min-h-screen relative z-10">
         <div className="container mx-auto px-4 py-20">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
@@ -255,7 +224,6 @@ const Projects = () => {
 
         <TechFooter />
       </div>
-    </>
   );
 };
 

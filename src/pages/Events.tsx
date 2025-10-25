@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Helmet } from "react-helmet-async";
 
 interface Event {
   id: number;
@@ -145,37 +144,7 @@ const Events = () => {
   }
 
   return (
-    <>
-      <Helmet>
-        <title>Events & Workshops | ISTE GNDEC Student Chapter</title>
-        <meta
-          name="description"
-          content="Explore upcoming and past technical events, workshops, hackathons, seminars, and competitions organized by ISTE GNDEC. Register for exciting tech events in Ludhiana, Punjab."
-        />
-        <meta
-          property="og:title"
-          content="Events & Workshops | ISTE GNDEC Student Chapter"
-        />
-        <meta
-          property="og:description"
-          content="Explore upcoming and past technical events, workshops, hackathons, seminars, and competitions organized by ISTE GNDEC."
-        />
-        <meta
-          property="og:url"
-          content="https://iste-gndec.vercel.app/events"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Events & Workshops | ISTE GNDEC Student Chapter"
-        />
-        <meta
-          name="twitter:description"
-          content="Explore upcoming and past technical events, workshops, hackathons, seminars, and competitions organized by ISTE GNDEC."
-        />
-        <link rel="canonical" href="https://iste-gndec.vercel.app/events" />
-      </Helmet>
-      <div className="min-h-screen w-full relative z-10">
+    <div className="min-h-screen w-full relative z-10">
         <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
           {/* Hero Section */}
           <div className="mb-16 text-center">
@@ -449,7 +418,6 @@ const Events = () => {
 
         <TechFooter />
       </div>
-    </>
   );
 };
 

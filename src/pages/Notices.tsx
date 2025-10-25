@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TechFooter from "@/components/TechFooter";
 import { supabase } from "@/lib/supabase";
-import { Helmet } from "react-helmet-async";
 
 interface Notice {
   id: number;
@@ -111,37 +110,7 @@ const Notices = () => {
   };
 
   return (
-    <>
-      <Helmet>
-        <title>Notices & Announcements | ISTE GNDEC Student Chapter</title>
-        <meta
-          name="description"
-          content="Stay updated with the latest announcements, event notifications, and important updates from ISTE GNDEC. Check registration deadlines, upcoming events, and club activities."
-        />
-        <meta
-          property="og:title"
-          content="Notices & Announcements | ISTE GNDEC Student Chapter"
-        />
-        <meta
-          property="og:description"
-          content="Stay updated with the latest announcements, event notifications, and important updates from ISTE GNDEC."
-        />
-        <meta
-          property="og:url"
-          content="https://iste-gndec.vercel.app/notices"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Notices & Announcements | ISTE GNDEC Student Chapter"
-        />
-        <meta
-          name="twitter:description"
-          content="Stay updated with the latest announcements, event notifications, and important updates from ISTE GNDEC."
-        />
-        <link rel="canonical" href="https://iste-gndec.vercel.app/notices" />
-      </Helmet>
-      <div className="min-h-screen w-full relative z-10">
+    <div className="min-h-screen w-full relative z-10">
         <main className="relative pt-24 pb-20 px-4 md:px-8 lg:px-16">
           <div className="max-w-7xl mx-auto">
             {/* Page Header */}
@@ -356,7 +325,6 @@ const Notices = () => {
 
         <TechFooter />
       </div>
-    </>
   );
 };
 

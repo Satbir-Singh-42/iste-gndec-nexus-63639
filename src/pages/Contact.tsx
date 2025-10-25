@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { Helmet } from "react-helmet-async";
 import { supabase } from "@/lib/supabase";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -228,37 +227,7 @@ const Contact = () => {
   }, []);
 
   return (
-    <>
-      <Helmet>
-        <title>Contact Us | ISTE GNDEC Student Chapter</title>
-        <meta
-          name="description"
-          content="Get in touch with ISTE GNDEC. Contact us for event inquiries, collaborations, membership questions, or any other information. Located at Guru Nanak Dev Engineering College, Ludhiana."
-        />
-        <meta
-          property="og:title"
-          content="Contact Us | ISTE GNDEC Student Chapter"
-        />
-        <meta
-          property="og:description"
-          content="Get in touch with ISTE GNDEC. Contact us for event inquiries, collaborations, membership questions, or any other information."
-        />
-        <meta
-          property="og:url"
-          content="https://iste-gndec.vercel.app/contact"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Contact Us | ISTE GNDEC Student Chapter"
-        />
-        <meta
-          name="twitter:description"
-          content="Get in touch with ISTE GNDEC. Contact us for event inquiries, collaborations, and membership questions."
-        />
-        <link rel="canonical" href="https://iste-gndec.vercel.app/contact" />
-      </Helmet>
-      <div className="min-h-screen w-full relative z-10">
+    <div className="min-h-screen w-full relative z-10">
         <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
           {/* Hero Section */}
           <div ref={heroRef} className="mb-16 text-center">
@@ -462,7 +431,6 @@ const Contact = () => {
 
         <TechFooter />
       </div>
-    </>
   );
 };
 

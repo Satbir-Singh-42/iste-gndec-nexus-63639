@@ -4,7 +4,6 @@ import { Mail, Linkedin, Github, Instagram } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { normalizeUrl } from "@/lib/utils";
-import { Helmet } from "react-helmet-async";
 
 interface Member {
   id: number;
@@ -148,37 +147,7 @@ const Members = () => {
   }
 
   return (
-    <>
-      <Helmet>
-        <title>Team Members & Faculty | ISTE GNDEC Student Chapter</title>
-        <meta
-          name="description"
-          content="Meet the dedicated team behind ISTE GNDEC - our faculty advisors, core team, post holders, and executive members driving technical excellence at Guru Nanak Dev Engineering College."
-        />
-        <meta
-          property="og:title"
-          content="Team Members & Faculty | ISTE GNDEC Student Chapter"
-        />
-        <meta
-          property="og:description"
-          content="Meet the dedicated team behind ISTE GNDEC - our faculty advisors, core team, post holders, and executive members."
-        />
-        <meta
-          property="og:url"
-          content="https://iste-gndec.vercel.app/members"
-        />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="Team Members & Faculty | ISTE GNDEC Student Chapter"
-        />
-        <meta
-          name="twitter:description"
-          content="Meet the dedicated team behind ISTE GNDEC - our faculty advisors, core team, post holders, and executive members."
-        />
-        <link rel="canonical" href="https://iste-gndec.vercel.app/members" />
-      </Helmet>
-      <div className="min-h-screen w-full relative z-10">
+    <div className="min-h-screen w-full relative z-10">
         <main className="pt-24 pb-16 px-4">
           {/* Faculty Advisor Section */}
           {faculty.length > 0 && (
@@ -511,7 +480,6 @@ const Members = () => {
 
         <TechFooter />
       </div>
-    </>
   );
 };
 
