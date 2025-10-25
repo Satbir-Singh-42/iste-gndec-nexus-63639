@@ -48,11 +48,15 @@ const Gallery = () => {
 
     const handleKeyNavigation = (e: KeyboardEvent) => {
       if (!selectedImage || selectedImage.images.length <= 1) return;
-      
+
       if (e.key === "ArrowLeft") {
-        setCurrentImageIndex((prev) => prev === 0 ? selectedImage.images.length - 1 : prev - 1);
+        setCurrentImageIndex((prev) =>
+          prev === 0 ? selectedImage.images.length - 1 : prev - 1
+        );
       } else if (e.key === "ArrowRight") {
-        setCurrentImageIndex((prev) => prev === selectedImage.images.length - 1 ? 0 : prev + 1);
+        setCurrentImageIndex((prev) =>
+          prev === selectedImage.images.length - 1 ? 0 : prev + 1
+        );
       }
     };
 
@@ -224,14 +228,15 @@ const Gallery = () => {
                     {selectedImage.category}
                   </span>
                   <span className="hidden sm:block w-1 h-4 bg-primary" />
-                  <h2 className="text-sm sm:text-lg font-bold line-clamp-1">{selectedImage.title}</h2>
+                  <h2 className="text-sm sm:text-lg font-bold line-clamp-1">
+                    {selectedImage.title}
+                  </h2>
                 </div>
               </div>
               <button
                 onClick={closeViewer}
                 className="flex-shrink-0 p-2 rounded-full hover:bg-muted transition-colors"
-                aria-label="Close"
-              >
+                aria-label="Close">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -241,8 +246,7 @@ const Gallery = () => {
                 className="relative touch-pan-y"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              >
+                onTouchEnd={handleTouchEnd}>
                 <div className="w-full aspect-[16/9] bg-muted rounded overflow-hidden flex items-center justify-center">
                   <img
                     src={selectedImage.images[currentImageIndex]}
@@ -256,8 +260,7 @@ const Gallery = () => {
                 <button
                   onClick={enterFullscreen}
                   className="absolute top-2 right-2 bg-background/90 hover:bg-background p-2 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
-                  aria-label="View fullscreen"
-                >
+                  aria-label="View fullscreen">
                   <Maximize2 className="w-4 h-4" />
                 </button>
 
@@ -266,23 +269,25 @@ const Gallery = () => {
                     <button
                       onClick={() =>
                         setCurrentImageIndex((prev) =>
-                          prev === 0 ? selectedImage.images.length - 1 : prev - 1
+                          prev === 0
+                            ? selectedImage.images.length - 1
+                            : prev - 1
                         )
                       }
                       className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background p-2 sm:p-3 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
-                      aria-label="Previous image"
-                    >
+                      aria-label="Previous image">
                       <span className="text-lg sm:text-xl">←</span>
                     </button>
                     <button
                       onClick={() =>
                         setCurrentImageIndex((prev) =>
-                          prev === selectedImage.images.length - 1 ? 0 : prev + 1
+                          prev === selectedImage.images.length - 1
+                            ? 0
+                            : prev + 1
                         )
                       }
                       className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background p-2 sm:p-3 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
-                      aria-label="Next image"
-                    >
+                      aria-label="Next image">
                       <span className="text-lg sm:text-xl">→</span>
                     </button>
                     <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 bg-background/90 text-xs sm:text-sm font-mono border border-border rounded backdrop-blur-sm">
@@ -302,8 +307,7 @@ const Gallery = () => {
                         idx === currentImageIndex
                           ? "border-primary scale-105"
                           : "border-border opacity-60 hover:opacity-100 hover:scale-105"
-                      }`}
-                    >
+                      }`}>
                       <img
                         src={img}
                         alt={`Thumbnail ${idx + 1}`}
@@ -326,22 +330,22 @@ const Gallery = () => {
       )}
 
       {isFullscreen && selectedImage && (
-        <div 
+        <div
           ref={fullscreenRef}
-          className="fixed inset-0 z-50 bg-black flex flex-col w-screen h-screen overflow-hidden"
-        >
+          className="fixed inset-0 z-50 bg-black flex flex-col w-screen h-screen overflow-hidden">
           <div className="flex-shrink-0 flex items-center justify-between px-2 py-1.5 sm:px-3 sm:py-2 bg-black/90 backdrop-blur-sm border-b border-white/10">
             <div className="flex-1 min-w-0 mr-2 sm:mr-3">
               <h2 className="text-xs sm:text-sm font-bold line-clamp-1 text-white">
                 {selectedImage.title}
               </h2>
-              <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-1">{selectedImage.category}</p>
+              <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-1">
+                {selectedImage.category}
+              </p>
             </div>
             <button
               onClick={exitFullscreen}
               className="flex-shrink-0 p-1.5 sm:p-2 rounded-full hover:bg-white/10 transition-colors"
-              aria-label="Close fullscreen"
-            >
+              aria-label="Close fullscreen">
               <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </button>
           </div>
@@ -351,8 +355,7 @@ const Gallery = () => {
               className="w-full h-full flex items-center justify-center touch-pan-y"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
+              onTouchEnd={handleTouchEnd}>
               <img
                 src={selectedImage.images[currentImageIndex]}
                 alt={`${selectedImage.title} ${currentImageIndex + 1}`}
@@ -371,8 +374,7 @@ const Gallery = () => {
                     )
                   }
                   className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-1.5 sm:p-2 md:p-3 rounded-full transition-all hover:scale-110 active:scale-95"
-                  aria-label="Previous image"
-                >
+                  aria-label="Previous image">
                   <span className="text-base sm:text-xl text-white">←</span>
                 </button>
                 <button
@@ -382,8 +384,7 @@ const Gallery = () => {
                     )
                   }
                   className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-1.5 sm:p-2 md:p-3 rounded-full transition-all hover:scale-110 active:scale-95"
-                  aria-label="Next image"
-                >
+                  aria-label="Next image">
                   <span className="text-base sm:text-xl text-white">→</span>
                 </button>
                 <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 px-2 sm:px-3 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm text-[10px] sm:text-xs font-mono rounded text-white">
@@ -404,8 +405,7 @@ const Gallery = () => {
                       idx === currentImageIndex
                         ? "border-white ring-1 ring-white/50"
                         : "border-white/30 opacity-60 hover:opacity-100"
-                    }`}
-                  >
+                    }`}>
                     <img
                       src={img}
                       alt={`Thumbnail ${idx + 1}`}

@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Award, Calendar, ArrowLeft, Mail, Linkedin, Github, Instagram } from "lucide-react";
+import {
+  Award,
+  Calendar,
+  ArrowLeft,
+  Mail,
+  Linkedin,
+  Github,
+  Instagram,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TechFooter from "@/components/TechFooter";
 
@@ -49,7 +57,7 @@ const PastConvenorDetail = () => {
         .single();
 
       if (error) throw error;
-      
+
       if (!data) {
         toast.error("Convenor not found");
         navigate("/achievements");
@@ -83,19 +91,32 @@ const PastConvenorDetail = () => {
 
   const getMonthName = (month?: number | null) => {
     if (!month) return "";
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     return months[month - 1] || "";
   };
 
   const tenureDisplay = (() => {
-    const startPart = convenor.start_month 
+    const startPart = convenor.start_month
       ? `${getMonthName(convenor.start_month)} ${convenor.tenure_start}`
       : convenor.tenure_start;
-    
+
     const endPart = convenor.end_month
       ? `${getMonthName(convenor.end_month)} ${convenor.tenure_end}`
       : convenor.tenure_end;
-    
+
     return `${startPart} - ${endPart}`;
   })();
 
@@ -106,8 +127,7 @@ const PastConvenorDetail = () => {
           variant="ghost"
           size="sm"
           onClick={() => navigate("/achievements")}
-          className="mb-3"
-        >
+          className="mb-3">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
@@ -139,48 +159,59 @@ const PastConvenorDetail = () => {
               </div>
             )}
 
-            {(convenor.email || convenor.linkedin || convenor.github || convenor.instagram) && (
+            {(convenor.email ||
+              convenor.linkedin ||
+              convenor.github ||
+              convenor.instagram) && (
               <div className="bg-card border border-primary/20 rounded-lg p-3">
                 <h2 className="text-base font-bold mb-2">Connect</h2>
                 <div className="flex flex-wrap gap-2">
                   {convenor.email && (
                     <a
                       href={`mailto:${convenor.email}`}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
-                    >
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm">
                       <Mail className="w-3.5 h-3.5 text-primary" />
                       <span>Email</span>
                     </a>
                   )}
                   {convenor.linkedin && (
                     <a
-                      href={convenor.linkedin.startsWith('http') ? convenor.linkedin : `https://linkedin.com/in/${convenor.linkedin}`}
+                      href={
+                        convenor.linkedin.startsWith("http")
+                          ? convenor.linkedin
+                          : `https://linkedin.com/in/${convenor.linkedin}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
-                    >
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm">
                       <Linkedin className="w-3.5 h-3.5 text-primary" />
                       <span>LinkedIn</span>
                     </a>
                   )}
                   {convenor.github && (
                     <a
-                      href={convenor.github.startsWith('http') ? convenor.github : `https://github.com/${convenor.github}`}
+                      href={
+                        convenor.github.startsWith("http")
+                          ? convenor.github
+                          : `https://github.com/${convenor.github}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
-                    >
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm">
                       <Github className="w-3.5 h-3.5 text-primary" />
                       <span>GitHub</span>
                     </a>
                   )}
                   {convenor.instagram && (
                     <a
-                      href={convenor.instagram.startsWith('http') ? convenor.instagram : `https://instagram.com/${convenor.instagram}`}
+                      href={
+                        convenor.instagram.startsWith("http")
+                          ? convenor.instagram
+                          : `https://instagram.com/${convenor.instagram}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
-                    >
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm">
                       <Instagram className="w-3.5 h-3.5 text-primary" />
                       <span>Instagram</span>
                     </a>

@@ -54,7 +54,9 @@ const Achievements = () => {
   const navigate = useNavigate();
   const [chapterAwards, setChapterAwards] = useState<ChapterAward[]>([]);
   const [pastConvenors, setPastConvenors] = useState<PastConvenor[]>([]);
-  const [studentAchievements, setStudentAchievements] = useState<StudentAchievement[]>([]);
+  const [studentAchievements, setStudentAchievements] = useState<
+    StudentAchievement[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [hideChapterAwards, setHideChapterAwards] = useState(false);
   const [hidePastConvenors, setHidePastConvenors] = useState(false);
@@ -76,7 +78,11 @@ const Achievements = () => {
       const { data } = await supabase
         .from("site_settings")
         .select("setting_key, setting_value")
-        .in("setting_key", ["hide_chapter_awards", "hide_past_convenors", "hide_student_achievements"]);
+        .in("setting_key", [
+          "hide_chapter_awards",
+          "hide_past_convenors",
+          "hide_student_achievements",
+        ]);
 
       if (data) {
         data.forEach((setting) => {
@@ -179,7 +185,6 @@ const Achievements = () => {
     );
   }
 
-
   return (
     <div className="min-h-screen w-full relative z-10">
       <main className="pt-20 sm:pt-24 pb-12 sm:pb-16 px-4 sm:px-6 max-w-7xl mx-auto">
@@ -194,7 +199,8 @@ const Achievements = () => {
             Our Achievements
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
-            Celebrating excellence and recognizing the achievements of ISTE GNDEC
+            Celebrating excellence and recognizing the achievements of ISTE
+            GNDEC
           </p>
         </div>
 
@@ -210,12 +216,13 @@ const Achievements = () => {
                 <div
                   key={award.id}
                   onClick={() => navigate(`/achievements/awards/${award.id}`)}
-                  className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 p-3 sm:p-4 flex flex-col items-center text-center"
-                >
+                  className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 p-3 sm:p-4 flex flex-col items-center text-center">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 mb-2 sm:mb-3 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
                     <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                   </div>
-                  <h3 className="text-xs sm:text-sm font-bold mb-1 line-clamp-2">{award.award_title}</h3>
+                  <h3 className="text-xs sm:text-sm font-bold mb-1 line-clamp-2">
+                    {award.award_title}
+                  </h3>
                   <p className="text-xs text-primary font-mono">{award.year}</p>
                 </div>
               ))}
@@ -234,20 +241,39 @@ const Achievements = () => {
               {pastConvenors.map((convenor) => {
                 const getMonthName = (month?: number) => {
                   if (!month) return "";
-                  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                  const months = [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec",
+                  ];
                   return months[month - 1] || "";
                 };
 
-                const tenureDisplay = convenor.start_month && convenor.end_month
-                  ? `${getMonthName(convenor.start_month)} ${convenor.tenure_start} - ${getMonthName(convenor.end_month)} ${convenor.tenure_end}`
-                  : `${convenor.tenure_start} - ${convenor.tenure_end}`;
+                const tenureDisplay =
+                  convenor.start_month && convenor.end_month
+                    ? `${getMonthName(convenor.start_month)} ${
+                        convenor.tenure_start
+                      } - ${getMonthName(convenor.end_month)} ${
+                        convenor.tenure_end
+                      }`
+                    : `${convenor.tenure_start} - ${convenor.tenure_end}`;
 
                 return (
                   <div
                     key={convenor.id}
-                    onClick={() => navigate(`/achievements/convenors/${convenor.id}`)}
-                    className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden"
-                  >
+                    onClick={() =>
+                      navigate(`/achievements/convenors/${convenor.id}`)
+                    }
+                    className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden">
                     <div className="aspect-square overflow-hidden bg-muted">
                       <img
                         src={convenor.image}
@@ -256,7 +282,9 @@ const Achievements = () => {
                       />
                     </div>
                     <div className="p-2.5 sm:p-3">
-                      <h3 className="text-xs sm:text-sm font-bold mb-1 line-clamp-1">{convenor.name}</h3>
+                      <h3 className="text-xs sm:text-sm font-bold mb-1 line-clamp-1">
+                        {convenor.name}
+                      </h3>
                       <p className="text-[10px] sm:text-xs text-primary font-mono line-clamp-2">
                         {tenureDisplay}
                       </p>
@@ -277,16 +305,19 @@ const Achievements = () => {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
               {studentAchievements.map((achievement) => {
-                const firstImage = achievement.achievement_images && achievement.achievement_images.length > 0
-                  ? achievement.achievement_images[0]
-                  : achievement.achievement_image;
-                
+                const firstImage =
+                  achievement.achievement_images &&
+                  achievement.achievement_images.length > 0
+                    ? achievement.achievement_images[0]
+                    : achievement.achievement_image;
+
                 return (
                   <div
                     key={achievement.id}
-                    onClick={() => navigate(`/achievements/students/${achievement.id}`)}
-                    className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden"
-                  >
+                    onClick={() =>
+                      navigate(`/achievements/students/${achievement.id}`)
+                    }
+                    className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden">
                     <div className="aspect-square overflow-hidden bg-muted">
                       {firstImage && (
                         <img
@@ -297,9 +328,15 @@ const Achievements = () => {
                       )}
                     </div>
                     <div className="p-2.5 sm:p-3">
-                      <h3 className="text-xs sm:text-sm font-bold mb-1 line-clamp-1">{achievement.student_name}</h3>
-                      <p className="text-[10px] sm:text-xs text-primary font-mono mb-1">{achievement.position}</p>
-                      <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1">{achievement.event_name}</p>
+                      <h3 className="text-xs sm:text-sm font-bold mb-1 line-clamp-1">
+                        {achievement.student_name}
+                      </h3>
+                      <p className="text-[10px] sm:text-xs text-primary font-mono mb-1">
+                        {achievement.position}
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1">
+                        {achievement.event_name}
+                      </p>
                     </div>
                   </div>
                 );
@@ -309,19 +346,23 @@ const Achievements = () => {
         )}
 
         {(() => {
-          const noVisibleSections = 
-            (hideChapterAwards || chapterAwards.length === 0) && 
-            (hidePastConvenors || pastConvenors.length === 0) && 
+          const noVisibleSections =
+            (hideChapterAwards || chapterAwards.length === 0) &&
+            (hidePastConvenors || pastConvenors.length === 0) &&
             (hideStudentAchievements || studentAchievements.length === 0);
-          
-          return noVisibleSections && (
-            <div className="text-center py-12 sm:py-16 px-4">
-              <Trophy className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4 opacity-50" />
-              <h3 className="text-lg sm:text-xl font-semibold mb-2">No Achievements Present</h3>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                Check back soon for updates on our achievements!
-              </p>
-            </div>
+
+          return (
+            noVisibleSections && (
+              <div className="text-center py-12 sm:py-16 px-4">
+                <Trophy className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4 opacity-50" />
+                <h3 className="text-lg sm:text-xl font-semibold mb-2">
+                  No Achievements Present
+                </h3>
+                <p className="text-sm sm:text-base text-muted-foreground">
+                  Check back soon for updates on our achievements!
+                </p>
+              </div>
+            )
           );
         })()}
       </main>

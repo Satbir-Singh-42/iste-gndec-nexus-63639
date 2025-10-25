@@ -2,7 +2,19 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Star, User, Trophy, Calendar, Building2, ArrowLeft, Linkedin, Github, Instagram, Maximize2, X } from "lucide-react";
+import {
+  Star,
+  User,
+  Trophy,
+  Calendar,
+  Building2,
+  ArrowLeft,
+  Linkedin,
+  Github,
+  Instagram,
+  Maximize2,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TechFooter from "@/components/TechFooter";
 
@@ -26,7 +38,9 @@ interface StudentAchievement {
 const StudentAchievementDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [achievement, setAchievement] = useState<StudentAchievement | null>(null);
+  const [achievement, setAchievement] = useState<StudentAchievement | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -60,11 +74,15 @@ const StudentAchievementDetail = () => {
 
     const handleKeyNavigation = (e: KeyboardEvent) => {
       if (!achievement || images.length <= 1) return;
-      
+
       if (e.key === "ArrowLeft") {
-        setCurrentImageIndex((prev) => prev === 0 ? images.length - 1 : prev - 1);
+        setCurrentImageIndex((prev) =>
+          prev === 0 ? images.length - 1 : prev - 1
+        );
       } else if (e.key === "ArrowRight") {
-        setCurrentImageIndex((prev) => prev === images.length - 1 ? 0 : prev + 1);
+        setCurrentImageIndex((prev) =>
+          prev === images.length - 1 ? 0 : prev + 1
+        );
       }
     };
 
@@ -87,7 +105,7 @@ const StudentAchievementDetail = () => {
         .single();
 
       if (error) throw error;
-      
+
       if (!data) {
         toast.error("Achievement not found");
         navigate("/achievements");
@@ -154,7 +172,9 @@ const StudentAchievementDetail = () => {
       <div className="min-h-screen w-full flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-muted-foreground">Loading achievement details...</p>
+          <p className="text-muted-foreground">
+            Loading achievement details...
+          </p>
         </div>
       </div>
     );
@@ -164,13 +184,15 @@ const StudentAchievementDetail = () => {
     return null;
   }
 
-  const images = achievement.achievement_images && achievement.achievement_images.length > 0
-    ? achievement.achievement_images
-    : achievement.achievement_image
-    ? [achievement.achievement_image]
-    : [];
+  const images =
+    achievement.achievement_images && achievement.achievement_images.length > 0
+      ? achievement.achievement_images
+      : achievement.achievement_image
+      ? [achievement.achievement_image]
+      : [];
 
-  const hasLinks = achievement.linkedin || achievement.github || achievement.instagram;
+  const hasLinks =
+    achievement.linkedin || achievement.github || achievement.instagram;
 
   return (
     <div className="min-h-screen w-full relative z-10">
@@ -179,8 +201,7 @@ const StudentAchievementDetail = () => {
           variant="ghost"
           size="sm"
           onClick={() => navigate("/achievements")}
-          className="mb-3"
-        >
+          className="mb-3">
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
@@ -200,7 +221,9 @@ const StudentAchievementDetail = () => {
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2 text-sm">
                   <User className="w-3.5 h-3.5 text-primary" />
-                  <span className="font-semibold">{achievement.student_name}</span>
+                  <span className="font-semibold">
+                    {achievement.student_name}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-primary font-mono">
                   <Trophy className="w-3.5 h-3.5" />
@@ -238,33 +261,42 @@ const StudentAchievementDetail = () => {
                 <div className="flex flex-wrap gap-2">
                   {achievement.linkedin && (
                     <a
-                      href={achievement.linkedin.startsWith('http') ? achievement.linkedin : `https://linkedin.com/in/${achievement.linkedin}`}
+                      href={
+                        achievement.linkedin.startsWith("http")
+                          ? achievement.linkedin
+                          : `https://linkedin.com/in/${achievement.linkedin}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
-                    >
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm">
                       <Linkedin className="w-3.5 h-3.5 text-primary" />
                       <span>LinkedIn</span>
                     </a>
                   )}
                   {achievement.github && (
                     <a
-                      href={achievement.github.startsWith('http') ? achievement.github : `https://github.com/${achievement.github}`}
+                      href={
+                        achievement.github.startsWith("http")
+                          ? achievement.github
+                          : `https://github.com/${achievement.github}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
-                    >
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm">
                       <Github className="w-3.5 h-3.5 text-primary" />
                       <span>GitHub</span>
                     </a>
                   )}
                   {achievement.instagram && (
                     <a
-                      href={achievement.instagram.startsWith('http') ? achievement.instagram : `https://instagram.com/${achievement.instagram}`}
+                      href={
+                        achievement.instagram.startsWith("http")
+                          ? achievement.instagram
+                          : `https://instagram.com/${achievement.instagram}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
-                    >
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm">
                       <Instagram className="w-3.5 h-3.5 text-primary" />
                       <span>Instagram</span>
                     </a>
@@ -280,15 +312,14 @@ const StudentAchievementDetail = () => {
                 <p className="text-muted-foreground">No images available</p>
               </div>
             )}
-            
+
             {images.length > 0 && (
               <div className="rounded-lg border border-primary/20 bg-card/30 p-4 space-y-4">
                 <div
                   className="relative touch-pan-y"
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
-                  onTouchEnd={() => handleTouchEnd(images.length)}
-                >
+                  onTouchEnd={() => handleTouchEnd(images.length)}>
                   <div className="w-full aspect-[16/9] bg-muted rounded overflow-hidden flex items-center justify-center">
                     <img
                       src={images[currentImageIndex]}
@@ -302,8 +333,7 @@ const StudentAchievementDetail = () => {
                   <button
                     onClick={enterFullscreen}
                     className="absolute top-2 right-2 bg-background/90 hover:bg-background p-2 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
-                    aria-label="View fullscreen"
-                  >
+                    aria-label="View fullscreen">
                     <Maximize2 className="w-4 h-4" />
                   </button>
 
@@ -316,8 +346,7 @@ const StudentAchievementDetail = () => {
                           )
                         }
                         className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background p-2 sm:p-3 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
-                        aria-label="Previous image"
-                      >
+                        aria-label="Previous image">
                         <span className="text-lg sm:text-xl">←</span>
                       </button>
                       <button
@@ -327,8 +356,7 @@ const StudentAchievementDetail = () => {
                           )
                         }
                         className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background p-2 sm:p-3 rounded-full border border-border backdrop-blur-sm transition-all hover:scale-110"
-                        aria-label="Next image"
-                      >
+                        aria-label="Next image">
                         <span className="text-lg sm:text-xl">→</span>
                       </button>
                       <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 px-3 sm:px-4 py-1.5 sm:py-2 bg-background/90 text-xs sm:text-sm font-mono border border-border rounded backdrop-blur-sm">
@@ -348,8 +376,7 @@ const StudentAchievementDetail = () => {
                           idx === currentImageIndex
                             ? "border-primary scale-105"
                             : "border-border opacity-60 hover:opacity-100 hover:scale-105"
-                        }`}
-                      >
+                        }`}>
                         <img
                           src={img}
                           alt={`Thumbnail ${idx + 1}`}
@@ -367,22 +394,22 @@ const StudentAchievementDetail = () => {
       </main>
 
       {isFullscreen && images.length > 0 && (
-        <div 
+        <div
           ref={fullscreenRef}
-          className="fixed inset-0 z-50 bg-black flex flex-col w-screen h-screen overflow-hidden"
-        >
+          className="fixed inset-0 z-50 bg-black flex flex-col w-screen h-screen overflow-hidden">
           <div className="flex-shrink-0 flex items-center justify-between px-2 py-1.5 sm:px-3 sm:py-2 bg-black/90 backdrop-blur-sm border-b border-white/10">
             <div className="flex-1 min-w-0 mr-2 sm:mr-3">
               <h2 className="text-xs sm:text-sm font-bold line-clamp-1 text-white">
                 {achievement.event_name}
               </h2>
-              <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-1">{achievement.student_name}</p>
+              <p className="text-[10px] sm:text-xs text-gray-400 line-clamp-1">
+                {achievement.student_name}
+              </p>
             </div>
             <button
               onClick={exitFullscreen}
               className="flex-shrink-0 p-1.5 sm:p-2 rounded-full hover:bg-white/10 transition-colors"
-              aria-label="Close fullscreen"
-            >
+              aria-label="Close fullscreen">
               <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </button>
           </div>
@@ -392,8 +419,7 @@ const StudentAchievementDetail = () => {
               className="w-full h-full flex items-center justify-center touch-pan-y"
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
-              onTouchEnd={() => handleTouchEnd(images.length)}
-            >
+              onTouchEnd={() => handleTouchEnd(images.length)}>
               <img
                 src={images[currentImageIndex]}
                 alt={`${achievement.event_name} ${currentImageIndex + 1}`}
@@ -412,8 +438,7 @@ const StudentAchievementDetail = () => {
                     )
                   }
                   className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-1.5 sm:p-2 md:p-3 rounded-full transition-all hover:scale-110 active:scale-95"
-                  aria-label="Previous image"
-                >
+                  aria-label="Previous image">
                   <span className="text-base sm:text-xl text-white">←</span>
                 </button>
                 <button
@@ -423,8 +448,7 @@ const StudentAchievementDetail = () => {
                     )
                   }
                   className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm p-1.5 sm:p-2 md:p-3 rounded-full transition-all hover:scale-110 active:scale-95"
-                  aria-label="Next image"
-                >
+                  aria-label="Next image">
                   <span className="text-base sm:text-xl text-white">→</span>
                 </button>
                 <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 px-2 sm:px-3 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm text-[10px] sm:text-xs font-mono rounded text-white">
@@ -445,8 +469,7 @@ const StudentAchievementDetail = () => {
                       idx === currentImageIndex
                         ? "border-white ring-1 ring-white/50"
                         : "border-white/30 opacity-60 hover:opacity-100"
-                    }`}
-                  >
+                    }`}>
                     <img
                       src={img}
                       alt={`Thumbnail ${idx + 1}`}

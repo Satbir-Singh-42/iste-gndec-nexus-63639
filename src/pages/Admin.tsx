@@ -51,11 +51,11 @@ import {
   X,
   CalendarIcon,
 } from "lucide-react";
-import { 
-  uploadImageToSupabase, 
-  uploadMultipleImages, 
-  deleteImageFromSupabase, 
-  deleteMultipleImagesFromSupabase 
+import {
+  uploadImageToSupabase,
+  uploadMultipleImages,
+  deleteImageFromSupabase,
+  deleteMultipleImagesFromSupabase,
 } from "@/lib/imageUpload";
 import {
   Popover,
@@ -268,9 +268,12 @@ const Admin = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [chapterAwards, setChapterAwards] = useState<ChapterAward[]>([]);
   const [pastConvenors, setPastConvenors] = useState<PastConvenor[]>([]);
-  const [studentAchievements, setStudentAchievements] = useState<StudentAchievement[]>([]);
+  const [studentAchievements, setStudentAchievements] = useState<
+    StudentAchievement[]
+  >([]);
   const [showProjectsInNavbar, setShowProjectsInNavbar] = useState(false);
-  const [showAchievementsInNavbar, setShowAchievementsInNavbar] = useState(false);
+  const [showAchievementsInNavbar, setShowAchievementsInNavbar] =
+    useState(false);
   const [hideChapterAwards, setHideChapterAwards] = useState(false);
   const [hidePastConvenors, setHidePastConvenors] = useState(false);
   const [hideStudentAchievements, setHideStudentAchievements] = useState(false);
@@ -290,7 +293,8 @@ const Admin = () => {
   const [projectsSearch, setProjectsSearch] = useState("");
   const [chapterAwardsSearch, setChapterAwardsSearch] = useState("");
   const [pastConvenorsSearch, setPastConvenorsSearch] = useState("");
-  const [studentAchievementsSearch, setStudentAchievementsSearch] = useState("");
+  const [studentAchievementsSearch, setStudentAchievementsSearch] =
+    useState("");
 
   useEffect(() => {
     checkAuthStatus();
@@ -373,12 +377,15 @@ const Admin = () => {
     ];
 
     const isSuspicious = suspiciousPatterns.some(
-      (pattern) => pattern.test(sanitizedEmail) || pattern.test(sanitizedPassword)
+      (pattern) =>
+        pattern.test(sanitizedEmail) || pattern.test(sanitizedPassword)
     );
 
     if (isSuspicious) {
       toast.error("Invalid input detected");
-      console.warn("Suspicious login attempt detected:", { email: sanitizedEmail });
+      console.warn("Suspicious login attempt detected:", {
+        email: sanitizedEmail,
+      });
       return;
     }
 
@@ -482,7 +489,9 @@ const Admin = () => {
       // Delete attachments from storage (if they're stored as URLs, not base64)
       if (notice?.attachments && notice.attachments.length > 0) {
         const attachmentUrls = notice.attachments.map((att: any) => att.url);
-        const { deletedCount } = await deleteMultipleImagesFromSupabase(attachmentUrls);
+        const { deletedCount } = await deleteMultipleImagesFromSupabase(
+          attachmentUrls
+        );
         console.log(`Deleted ${deletedCount} attachment(s) from storage`);
       }
 
@@ -564,7 +573,9 @@ const Admin = () => {
 
       // Delete images from storage
       if (item?.images && item.images.length > 0) {
-        const { deletedCount } = await deleteMultipleImagesFromSupabase(item.images);
+        const { deletedCount } = await deleteMultipleImagesFromSupabase(
+          item.images
+        );
         console.log(`Deleted ${deletedCount} image(s) from storage`);
       }
 
@@ -834,7 +845,9 @@ const Admin = () => {
 
       // Delete highlight images from storage
       if (highlight?.highlights && highlight.highlights.length > 0) {
-        const { deletedCount } = await deleteMultipleImagesFromSupabase(highlight.highlights);
+        const { deletedCount } = await deleteMultipleImagesFromSupabase(
+          highlight.highlights
+        );
         console.log(`Deleted ${deletedCount} highlight image(s) from storage`);
       }
 
@@ -977,7 +990,7 @@ const Admin = () => {
   const fetchProjects = async () => {
     if (!supabase) return;
     try {
-      const { data, error} = await supabase
+      const { data, error } = await supabase
         .from("projects")
         .select("*")
         .order("display_order", { ascending: true, nullsFirst: false })
@@ -1075,7 +1088,10 @@ const Admin = () => {
         .eq("id", id)
         .single();
 
-      const { error } = await supabase.from("chapter_awards").delete().eq("id", id);
+      const { error } = await supabase
+        .from("chapter_awards")
+        .delete()
+        .eq("id", id);
       if (error) throw error;
 
       if (award?.certificate_image) {
@@ -1100,7 +1116,10 @@ const Admin = () => {
         .eq("id", id)
         .single();
 
-      const { error } = await supabase.from("past_convenors").delete().eq("id", id);
+      const { error } = await supabase
+        .from("past_convenors")
+        .delete()
+        .eq("id", id);
       if (error) throw error;
 
       if (convenor?.image) {
@@ -1116,7 +1135,10 @@ const Admin = () => {
   };
 
   const deleteStudentAchievement = async (id: number) => {
-    if (!supabase || !confirm("Are you sure you want to delete this achievement?"))
+    if (
+      !supabase ||
+      !confirm("Are you sure you want to delete this achievement?")
+    )
       return;
     try {
       const { data: achievement } = await supabase
@@ -1125,7 +1147,10 @@ const Admin = () => {
         .eq("id", id)
         .single();
 
-      const { error } = await supabase.from("student_achievements").delete().eq("id", id);
+      const { error } = await supabase
+        .from("student_achievements")
+        .delete()
+        .eq("id", id);
       if (error) throw error;
 
       if (achievement?.achievement_image) {
@@ -1140,7 +1165,10 @@ const Admin = () => {
     }
   };
 
-  const toggleChapterAwardVisibility = async (id: number, currentHidden: boolean) => {
+  const toggleChapterAwardVisibility = async (
+    id: number,
+    currentHidden: boolean
+  ) => {
     if (!supabase) return;
     try {
       const { error } = await supabase
@@ -1148,14 +1176,19 @@ const Admin = () => {
         .update({ hidden: !currentHidden })
         .eq("id", id);
       if (error) throw error;
-      toast.success(`Award ${!currentHidden ? "hidden" : "visible"} successfully`);
+      toast.success(
+        `Award ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update visibility: ${error.message}`);
     }
   };
 
-  const togglePastConvenorVisibility = async (id: number, currentHidden: boolean) => {
+  const togglePastConvenorVisibility = async (
+    id: number,
+    currentHidden: boolean
+  ) => {
     if (!supabase) return;
     try {
       const { error } = await supabase
@@ -1163,14 +1196,19 @@ const Admin = () => {
         .update({ hidden: !currentHidden })
         .eq("id", id);
       if (error) throw error;
-      toast.success(`Convenor ${!currentHidden ? "hidden" : "visible"} successfully`);
+      toast.success(
+        `Convenor ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update visibility: ${error.message}`);
     }
   };
 
-  const toggleStudentAchievementVisibility = async (id: number, currentHidden: boolean) => {
+  const toggleStudentAchievementVisibility = async (
+    id: number,
+    currentHidden: boolean
+  ) => {
     if (!supabase) return;
     try {
       const { error } = await supabase
@@ -1178,7 +1216,9 @@ const Admin = () => {
         .update({ hidden: !currentHidden })
         .eq("id", id);
       if (error) throw error;
-      toast.success(`Achievement ${!currentHidden ? "hidden" : "visible"} successfully`);
+      toast.success(
+        `Achievement ${!currentHidden ? "hidden" : "visible"} successfully`
+      );
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       toast.error(`Failed to update visibility: ${error.message}`);
@@ -1211,7 +1251,8 @@ const Admin = () => {
     const currentItem = items[index];
     const previousItem = items[index - 1];
     const currentOrder = currentItem.display_order ?? items.length - index;
-    const previousOrder = previousItem.display_order ?? items.length - index + 1;
+    const previousOrder =
+      previousItem.display_order ?? items.length - index + 1;
     await updateChapterAwardOrder(currentItem.id, previousOrder, true);
     await updateChapterAwardOrder(previousItem.id, currentOrder, true);
     toast.success("Award order updated");
@@ -1256,7 +1297,8 @@ const Admin = () => {
     const currentItem = items[index];
     const previousItem = items[index - 1];
     const currentOrder = currentItem.display_order ?? items.length - index;
-    const previousOrder = previousItem.display_order ?? items.length - index + 1;
+    const previousOrder =
+      previousItem.display_order ?? items.length - index + 1;
     await updatePastConvenorOrder(currentItem.id, previousOrder, true);
     await updatePastConvenorOrder(previousItem.id, currentOrder, true);
     toast.success("Convenor order updated");
@@ -1296,19 +1338,26 @@ const Admin = () => {
     }
   };
 
-  const moveStudentAchievementUp = async (items: StudentAchievement[], index: number) => {
+  const moveStudentAchievementUp = async (
+    items: StudentAchievement[],
+    index: number
+  ) => {
     if (index === 0) return;
     const currentItem = items[index];
     const previousItem = items[index - 1];
     const currentOrder = currentItem.display_order ?? items.length - index;
-    const previousOrder = previousItem.display_order ?? items.length - index + 1;
+    const previousOrder =
+      previousItem.display_order ?? items.length - index + 1;
     await updateStudentAchievementOrder(currentItem.id, previousOrder, true);
     await updateStudentAchievementOrder(previousItem.id, currentOrder, true);
     toast.success("Achievement order updated");
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const moveStudentAchievementDown = async (items: StudentAchievement[], index: number) => {
+  const moveStudentAchievementDown = async (
+    items: StudentAchievement[],
+    index: number
+  ) => {
     if (index === items.length - 1) return;
     const currentItem = items[index];
     const nextItem = items[index + 1];
@@ -1498,7 +1547,7 @@ const Admin = () => {
       }
 
       setShowProjectsInNavbar(value);
-      localStorage.setItem('show_projects_in_navbar', JSON.stringify(value));
+      localStorage.setItem("show_projects_in_navbar", JSON.stringify(value));
       toast.success(
         `Projects link ${value ? "shown in" : "hidden from"} navbar`
       );
@@ -1526,13 +1575,19 @@ const Admin = () => {
         const { error } = await supabase
           .from("site_settings")
           .insert([
-            { setting_key: "show_achievements_in_navbar", setting_value: value },
+            {
+              setting_key: "show_achievements_in_navbar",
+              setting_value: value,
+            },
           ]);
         if (error) throw error;
       }
 
       setShowAchievementsInNavbar(value);
-      localStorage.setItem('show_achievements_in_navbar', JSON.stringify(value));
+      localStorage.setItem(
+        "show_achievements_in_navbar",
+        JSON.stringify(value)
+      );
       toast.success(
         `Achievements link ${value ? "shown in" : "hidden from"} navbar`
       );
@@ -1634,9 +1689,7 @@ const Admin = () => {
       }
 
       setContactFormEnabled(value);
-      toast.success(
-        `Contact Form ${value ? "enabled" : "disabled"}`
-      );
+      toast.success(`Contact Form ${value ? "enabled" : "disabled"}`);
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
     }
@@ -1734,7 +1787,9 @@ const Admin = () => {
 
       setHideStudentAchievements(value);
       toast.success(
-        `Student Achievements section ${value ? "hidden from" : "shown on"} website`
+        `Student Achievements section ${
+          value ? "hidden from" : "shown on"
+        } website`
       );
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
@@ -2292,10 +2347,16 @@ const Admin = () => {
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle className="text-lg sm:text-xl">Chapter Awards</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">Manage annual best chapter awards</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">
+                        Chapter Awards
+                      </CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Manage annual best chapter awards
+                      </CardDescription>
                     </div>
-                    <AddChapterAwardDialog onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                    <AddChapterAwardDialog
+                      onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                    />
                   </div>
                   <div className="mt-4">
                     <div className="relative">
@@ -2323,19 +2384,32 @@ const Admin = () => {
                       </TableHeader>
                       <TableBody>
                         {(() => {
-                          const filteredArray = chapterAwards.filter((award) =>
-                            award.award_title.toLowerCase().includes(chapterAwardsSearch.toLowerCase()) ||
-                            award.year.includes(chapterAwardsSearch)
+                          const filteredArray = chapterAwards.filter(
+                            (award) =>
+                              award.award_title
+                                .toLowerCase()
+                                .includes(chapterAwardsSearch.toLowerCase()) ||
+                              award.year.includes(chapterAwardsSearch)
                           );
                           return filteredArray.map((award, index) => (
-                            <TableRow key={award.id} className={award.hidden ? "opacity-50" : ""}>
+                            <TableRow
+                              key={award.id}
+                              className={award.hidden ? "opacity-50" : ""}>
                               <TableCell>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => toggleChapterAwardVisibility(award.id, award.hidden || false)}
-                                >
-                                  {award.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                  onClick={() =>
+                                    toggleChapterAwardVisibility(
+                                      award.id,
+                                      award.hidden || false
+                                    )
+                                  }>
+                                  {award.hidden ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
                                 </Button>
                               </TableCell>
                               <TableCell>
@@ -2343,33 +2417,51 @@ const Admin = () => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => moveChapterAwardUp(chapterAwards, chapterAwards.indexOf(award))}
+                                    onClick={() =>
+                                      moveChapterAwardUp(
+                                        chapterAwards,
+                                        chapterAwards.indexOf(award)
+                                      )
+                                    }
                                     disabled={index === 0}
-                                    className="h-6 w-6 p-0"
-                                  >
+                                    className="h-6 w-6 p-0">
                                     <ChevronUp className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => moveChapterAwardDown(chapterAwards, chapterAwards.indexOf(award))}
-                                    disabled={index === filteredArray.length - 1}
-                                    className="h-6 w-6 p-0"
-                                  >
+                                    onClick={() =>
+                                      moveChapterAwardDown(
+                                        chapterAwards,
+                                        chapterAwards.indexOf(award)
+                                      )
+                                    }
+                                    disabled={
+                                      index === filteredArray.length - 1
+                                    }
+                                    className="h-6 w-6 p-0">
                                     <ChevronDown className="h-4 w-4" />
                                   </Button>
                                 </div>
                               </TableCell>
-                              <TableCell className="font-mono text-sm">{award.year}</TableCell>
+                              <TableCell className="font-mono text-sm">
+                                {award.year}
+                              </TableCell>
                               <TableCell>{award.award_title}</TableCell>
                               <TableCell>
                                 <div className="flex gap-2">
-                                  <EditChapterAwardDialog award={award} onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                                  <EditChapterAwardDialog
+                                    award={award}
+                                    onSuccess={() =>
+                                      setRefreshTrigger((prev) => prev + 1)
+                                    }
+                                  />
                                   <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={() => deleteChapterAward(award.id)}
-                                  >
+                                    onClick={() =>
+                                      deleteChapterAward(award.id)
+                                    }>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>
@@ -2379,8 +2471,11 @@ const Admin = () => {
                         })()}
                         {chapterAwards.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                              No awards yet. Click "Add Chapter Award" to create one.
+                            <TableCell
+                              colSpan={5}
+                              className="text-center text-muted-foreground py-8">
+                              No awards yet. Click "Add Chapter Award" to create
+                              one.
                             </TableCell>
                           </TableRow>
                         )}
@@ -2394,10 +2489,16 @@ const Admin = () => {
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle className="text-lg sm:text-xl">Past Convenors</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">Manage past convenor profiles</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">
+                        Past Convenors
+                      </CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Manage past convenor profiles
+                      </CardDescription>
                     </div>
-                    <AddPastConvenorDialog onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                    <AddPastConvenorDialog
+                      onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                    />
                   </div>
                   <div className="mt-4">
                     <div className="relative">
@@ -2425,18 +2526,31 @@ const Admin = () => {
                       </TableHeader>
                       <TableBody>
                         {(() => {
-                          const filteredArray = pastConvenors.filter((convenor) =>
-                            convenor.name.toLowerCase().includes(pastConvenorsSearch.toLowerCase())
+                          const filteredArray = pastConvenors.filter(
+                            (convenor) =>
+                              convenor.name
+                                .toLowerCase()
+                                .includes(pastConvenorsSearch.toLowerCase())
                           );
                           return filteredArray.map((convenor, index) => (
-                            <TableRow key={convenor.id} className={convenor.hidden ? "opacity-50" : ""}>
+                            <TableRow
+                              key={convenor.id}
+                              className={convenor.hidden ? "opacity-50" : ""}>
                               <TableCell>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => togglePastConvenorVisibility(convenor.id, convenor.hidden || false)}
-                                >
-                                  {convenor.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                  onClick={() =>
+                                    togglePastConvenorVisibility(
+                                      convenor.id,
+                                      convenor.hidden || false
+                                    )
+                                  }>
+                                  {convenor.hidden ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
                                 </Button>
                               </TableCell>
                               <TableCell>
@@ -2444,33 +2558,51 @@ const Admin = () => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => movePastConvenorUp(pastConvenors, pastConvenors.indexOf(convenor))}
+                                    onClick={() =>
+                                      movePastConvenorUp(
+                                        pastConvenors,
+                                        pastConvenors.indexOf(convenor)
+                                      )
+                                    }
                                     disabled={index === 0}
-                                    className="h-6 w-6 p-0"
-                                  >
+                                    className="h-6 w-6 p-0">
                                     <ChevronUp className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => movePastConvenorDown(pastConvenors, pastConvenors.indexOf(convenor))}
-                                    disabled={index === filteredArray.length - 1}
-                                    className="h-6 w-6 p-0"
-                                  >
+                                    onClick={() =>
+                                      movePastConvenorDown(
+                                        pastConvenors,
+                                        pastConvenors.indexOf(convenor)
+                                      )
+                                    }
+                                    disabled={
+                                      index === filteredArray.length - 1
+                                    }
+                                    className="h-6 w-6 p-0">
                                     <ChevronDown className="h-4 w-4" />
                                   </Button>
                                 </div>
                               </TableCell>
                               <TableCell>{convenor.name}</TableCell>
-                              <TableCell className="font-mono text-sm">{convenor.tenure_start} - {convenor.tenure_end}</TableCell>
+                              <TableCell className="font-mono text-sm">
+                                {convenor.tenure_start} - {convenor.tenure_end}
+                              </TableCell>
                               <TableCell>
                                 <div className="flex gap-2">
-                                  <EditPastConvenorDialog convenor={convenor} onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                                  <EditPastConvenorDialog
+                                    convenor={convenor}
+                                    onSuccess={() =>
+                                      setRefreshTrigger((prev) => prev + 1)
+                                    }
+                                  />
                                   <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={() => deletePastConvenor(convenor.id)}
-                                  >
+                                    onClick={() =>
+                                      deletePastConvenor(convenor.id)
+                                    }>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>
@@ -2480,8 +2612,11 @@ const Admin = () => {
                         })()}
                         {pastConvenors.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                              No convenors yet. Click "Add Past Convenor" to create one.
+                            <TableCell
+                              colSpan={5}
+                              className="text-center text-muted-foreground py-8">
+                              No convenors yet. Click "Add Past Convenor" to
+                              create one.
                             </TableCell>
                           </TableRow>
                         )}
@@ -2495,10 +2630,16 @@ const Admin = () => {
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                     <div>
-                      <CardTitle className="text-lg sm:text-xl">Student Achievements</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">Manage student achievement records</CardDescription>
+                      <CardTitle className="text-lg sm:text-xl">
+                        Student Achievements
+                      </CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">
+                        Manage student achievement records
+                      </CardDescription>
                     </div>
-                    <AddStudentAchievementDialog onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                    <AddStudentAchievementDialog
+                      onSuccess={() => setRefreshTrigger((prev) => prev + 1)}
+                    />
                   </div>
                   <div className="mt-4">
                     <div className="relative">
@@ -2506,7 +2647,9 @@ const Admin = () => {
                       <Input
                         placeholder="Search by student name or event..."
                         value={studentAchievementsSearch}
-                        onChange={(e) => setStudentAchievementsSearch(e.target.value)}
+                        onChange={(e) =>
+                          setStudentAchievementsSearch(e.target.value)
+                        }
                         className="pl-8 text-sm"
                       />
                     </div>
@@ -2527,19 +2670,40 @@ const Admin = () => {
                       </TableHeader>
                       <TableBody>
                         {(() => {
-                          const filteredArray = studentAchievements.filter((achievement) =>
-                            achievement.student_name.toLowerCase().includes(studentAchievementsSearch.toLowerCase()) ||
-                            achievement.event_name.toLowerCase().includes(studentAchievementsSearch.toLowerCase())
+                          const filteredArray = studentAchievements.filter(
+                            (achievement) =>
+                              achievement.student_name
+                                .toLowerCase()
+                                .includes(
+                                  studentAchievementsSearch.toLowerCase()
+                                ) ||
+                              achievement.event_name
+                                .toLowerCase()
+                                .includes(
+                                  studentAchievementsSearch.toLowerCase()
+                                )
                           );
                           return filteredArray.map((achievement, index) => (
-                            <TableRow key={achievement.id} className={achievement.hidden ? "opacity-50" : ""}>
+                            <TableRow
+                              key={achievement.id}
+                              className={
+                                achievement.hidden ? "opacity-50" : ""
+                              }>
                               <TableCell>
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => toggleStudentAchievementVisibility(achievement.id, achievement.hidden || false)}
-                                >
-                                  {achievement.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                  onClick={() =>
+                                    toggleStudentAchievementVisibility(
+                                      achievement.id,
+                                      achievement.hidden || false
+                                    )
+                                  }>
+                                  {achievement.hidden ? (
+                                    <EyeOff className="h-4 w-4" />
+                                  ) : (
+                                    <Eye className="h-4 w-4" />
+                                  )}
                                 </Button>
                               </TableCell>
                               <TableCell>
@@ -2547,34 +2711,52 @@ const Admin = () => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => moveStudentAchievementUp(studentAchievements, studentAchievements.indexOf(achievement))}
+                                    onClick={() =>
+                                      moveStudentAchievementUp(
+                                        studentAchievements,
+                                        studentAchievements.indexOf(achievement)
+                                      )
+                                    }
                                     disabled={index === 0}
-                                    className="h-6 w-6 p-0"
-                                  >
+                                    className="h-6 w-6 p-0">
                                     <ChevronUp className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => moveStudentAchievementDown(studentAchievements, studentAchievements.indexOf(achievement))}
-                                    disabled={index === filteredArray.length - 1}
-                                    className="h-6 w-6 p-0"
-                                  >
+                                    onClick={() =>
+                                      moveStudentAchievementDown(
+                                        studentAchievements,
+                                        studentAchievements.indexOf(achievement)
+                                      )
+                                    }
+                                    disabled={
+                                      index === filteredArray.length - 1
+                                    }
+                                    className="h-6 w-6 p-0">
                                     <ChevronDown className="h-4 w-4" />
                                   </Button>
                                 </div>
                               </TableCell>
                               <TableCell>{achievement.student_name}</TableCell>
                               <TableCell>{achievement.event_name}</TableCell>
-                              <TableCell className="font-mono text-sm">{achievement.position}</TableCell>
+                              <TableCell className="font-mono text-sm">
+                                {achievement.position}
+                              </TableCell>
                               <TableCell>
                                 <div className="flex gap-2">
-                                  <EditStudentAchievementDialog achievement={achievement} onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                                  <EditStudentAchievementDialog
+                                    achievement={achievement}
+                                    onSuccess={() =>
+                                      setRefreshTrigger((prev) => prev + 1)
+                                    }
+                                  />
                                   <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={() => deleteStudentAchievement(achievement.id)}
-                                  >
+                                    onClick={() =>
+                                      deleteStudentAchievement(achievement.id)
+                                    }>
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>
@@ -2584,8 +2766,11 @@ const Admin = () => {
                         })()}
                         {studentAchievements.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                              No achievements yet. Click "Add Student Achievement" to create one.
+                            <TableCell
+                              colSpan={6}
+                              className="text-center text-muted-foreground py-8">
+                              No achievements yet. Click "Add Student
+                              Achievement" to create one.
                             </TableCell>
                           </TableRow>
                         )}
@@ -3521,7 +3706,9 @@ const Admin = () => {
                   </div>
                   <Button
                     variant={showAchievementsInNavbar ? "default" : "outline"}
-                    onClick={() => updateAchievementsNavbarSetting(!showAchievementsInNavbar)}>
+                    onClick={() =>
+                      updateAchievementsNavbarSetting(!showAchievementsInNavbar)
+                    }>
                     {showAchievementsInNavbar ? "Enabled" : "Disabled"}
                   </Button>
                 </div>
@@ -3564,11 +3751,10 @@ const Admin = () => {
 
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="space-y-1">
-                    <h3 className="font-medium">
-                      Contact Form Enabled
-                    </h3>
+                    <h3 className="font-medium">Contact Form Enabled</h3>
                     <p className="text-sm text-muted-foreground">
-                      Enable or disable the contact form (useful during maintenance)
+                      Enable or disable the contact form (useful during
+                      maintenance)
                     </p>
                   </div>
                   <Button
@@ -3582,9 +3768,12 @@ const Admin = () => {
 
                 <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
                   <div>
-                    <h3 className="font-medium mb-1">Achievements Page Sections</h3>
+                    <h3 className="font-medium mb-1">
+                      Achievements Page Sections
+                    </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Control visibility of individual sections on the Achievements page
+                      Control visibility of individual sections on the
+                      Achievements page
                     </p>
                   </div>
 
@@ -3624,16 +3813,22 @@ const Admin = () => {
 
                   <div className="flex items-center justify-between p-3 border rounded-lg bg-background">
                     <div className="space-y-1">
-                      <h4 className="font-medium text-sm">Student Achievements</h4>
+                      <h4 className="font-medium text-sm">
+                        Student Achievements
+                      </h4>
                       <p className="text-xs text-muted-foreground">
                         Show/hide Student Achievements section
                       </p>
                     </div>
                     <Button
-                      variant={hideStudentAchievements ? "destructive" : "outline"}
+                      variant={
+                        hideStudentAchievements ? "destructive" : "outline"
+                      }
                       size="sm"
                       onClick={() =>
-                        updateHideStudentAchievementsSetting(!hideStudentAchievements)
+                        updateHideStudentAchievementsSetting(
+                          !hideStudentAchievements
+                        )
                       }>
                       {hideStudentAchievements ? "Hidden" : "Visible"}
                     </Button>
@@ -3856,7 +4051,9 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
                   id="date"
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, date: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -4046,10 +4243,16 @@ function EditNoticeDialog({
                 <Input
                   id="edit-date"
                   type="date"
-                  value={selectedDate ? format(selectedDate, "yyyy-MM-dd") : formData.date}
+                  value={
+                    selectedDate
+                      ? format(selectedDate, "yyyy-MM-dd")
+                      : formData.date
+                  }
                   onChange={(e) => {
                     setFormData({ ...formData, date: e.target.value });
-                    setSelectedDate(e.target.value ? new Date(e.target.value) : undefined);
+                    setSelectedDate(
+                      e.target.value ? new Date(e.target.value) : undefined
+                    );
                   }}
                   required
                 />
@@ -4241,7 +4444,9 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
                   id="event-date"
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, date: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -4251,7 +4456,9 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
                   id="event-time"
                   type="time"
                   value={formData.time}
-                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, time: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -4441,10 +4648,16 @@ function EditEventDialog({
                 <Input
                   id="edit-event-date"
                   type="date"
-                  value={selectedDate ? format(selectedDate, "yyyy-MM-dd") : formData.date}
+                  value={
+                    selectedDate
+                      ? format(selectedDate, "yyyy-MM-dd")
+                      : formData.date
+                  }
                   onChange={(e) => {
                     setFormData({ ...formData, date: e.target.value });
-                    setSelectedDate(e.target.value ? new Date(e.target.value) : undefined);
+                    setSelectedDate(
+                      e.target.value ? new Date(e.target.value) : undefined
+                    );
                   }}
                   required
                 />
@@ -4455,7 +4668,9 @@ function EditEventDialog({
                   id="edit-event-time"
                   type="time"
                   value={formData.time}
-                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, time: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -4614,13 +4829,13 @@ function AddGalleryDialog({ onSuccess }: { onSuccess: () => void }) {
 
   const removeImage = async (index: number) => {
     const imageUrl = uploadedImages[index];
-    
+
     // Delete from storage
     if (imageUrl) {
       await deleteImageFromSupabase(imageUrl);
       console.log("Deleted image from storage");
     }
-    
+
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
@@ -4851,13 +5066,13 @@ function EditGalleryDialog({
 
   const removeImage = async (index: number) => {
     const imageUrl = uploadedImages[index];
-    
+
     // Delete from storage
     if (imageUrl) {
       await deleteImageFromSupabase(imageUrl);
       console.log("Deleted image from storage");
     }
-    
+
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
@@ -5238,7 +5453,7 @@ function EditFacultyDialog({
     if (!file) return;
 
     const oldImage = formData.image;
-    
+
     setUploading(true);
     const { url, error } = await uploadImageToSupabase(file, "faculty");
     setUploading(false);
@@ -5251,7 +5466,7 @@ function EditFacultyDialog({
         await deleteImageFromSupabase(oldImage);
         console.log("Deleted old faculty image from storage");
       }
-      
+
       setFormData({ ...formData, image: url });
       toast.success("Image uploaded successfully");
     }
@@ -5617,7 +5832,7 @@ function EditMemberDialog({
     if (!file) return;
 
     const oldImage = formData.image;
-    
+
     setUploading(true);
     const { url, error } = await uploadImageToSupabase(file, "members");
     setUploading(false);
@@ -5630,7 +5845,7 @@ function EditMemberDialog({
         await deleteImageFromSupabase(oldImage);
         console.log("Deleted old member image from storage");
       }
-      
+
       setFormData({ ...formData, image: url });
       toast.success("Image uploaded successfully");
     }
@@ -5955,7 +6170,7 @@ function EditEventHighlightDialog({
     if (!file) return;
 
     const oldPoster = formData.poster;
-    
+
     setUploading(true);
     const { url, error } = await uploadImageToSupabase(
       file,
@@ -5971,7 +6186,7 @@ function EditEventHighlightDialog({
         await deleteImageFromSupabase(oldPoster);
         console.log("Deleted old event poster from storage");
       }
-      
+
       setFormData({ ...formData, poster: url });
       toast.success("Poster uploaded successfully");
     }
@@ -6289,7 +6504,7 @@ function EditProjectDialog({
     if (!file) return;
 
     const oldImage = formData.image_url;
-    
+
     setUploading(true);
     const { url, error } = await uploadImageToSupabase(file, "projects");
     setUploading(false);
@@ -6302,7 +6517,7 @@ function EditProjectDialog({
         await deleteImageFromSupabase(oldImage);
         console.log("Deleted old project image from storage");
       }
-      
+
       setFormData({ ...formData, image_url: url });
       toast.success("Image uploaded successfully");
     }
@@ -6455,37 +6670,44 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
     certificate_images: [] as string[],
   });
 
-  const handleMultipleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMultipleImagesUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    
+
     setUploading(true);
     const fileArray = Array.from(files);
-    const { urls, errors } = await uploadMultipleImages(fileArray, "achievements");
+    const { urls, errors } = await uploadMultipleImages(
+      fileArray,
+      "achievements"
+    );
     setUploading(false);
 
     if (errors && errors.length > 0) {
       toast.error(errors[0]);
     }
-    
+
     if (urls && urls.length > 0) {
       const newImages = [...formData.certificate_images, ...urls];
-      setFormData({ 
-        ...formData, 
+      setFormData({
+        ...formData,
         certificate_image: newImages[0],
-        certificate_images: newImages 
+        certificate_images: newImages,
       });
-      toast.success(`${urls.length} certificate image(s) uploaded successfully`);
+      toast.success(
+        `${urls.length} certificate image(s) uploaded successfully`
+      );
     }
   };
 
   const handleRemoveImage = async (url: string) => {
     await deleteImageFromSupabase(url);
-    const newImages = formData.certificate_images.filter(img => img !== url);
-    setFormData({ 
-      ...formData, 
+    const newImages = formData.certificate_images.filter((img) => img !== url);
+    setFormData({
+      ...formData,
       certificate_images: newImages,
-      certificate_image: newImages[0] || ""
+      certificate_image: newImages[0] || "",
     });
     toast.success("Image removed");
   };
@@ -6495,11 +6717,19 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from("chapter_awards").insert([formData]);
+      const { error } = await supabase
+        .from("chapter_awards")
+        .insert([formData]);
       if (error) throw error;
       toast.success("Award added successfully");
       setOpen(false);
-      setFormData({ award_title: "", year: "", description: "", certificate_image: "", certificate_images: [] });
+      setFormData({
+        award_title: "",
+        year: "",
+        description: "",
+        certificate_image: "",
+        certificate_images: [],
+      });
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add award: ${error.message}`);
@@ -6509,7 +6739,9 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Chapter Award</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Chapter Award
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl max-h-[90vh]">
         <DialogHeader>
@@ -6523,7 +6755,9 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
               <Input
                 id="award-title"
                 value={formData.award_title}
-                onChange={(e) => setFormData({ ...formData, award_title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, award_title: e.target.value })
+                }
                 required
               />
             </div>
@@ -6532,7 +6766,9 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
               <Input
                 id="award-year"
                 value={formData.year}
-                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, year: e.target.value })
+                }
                 placeholder="2024"
                 required
               />
@@ -6542,7 +6778,9 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
               <Textarea
                 id="award-desc"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={4}
                 required
               />
@@ -6557,17 +6795,21 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
                 disabled={uploading}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Select multiple images to upload. First image will be the primary image.
+                Select multiple images to upload. First image will be the
+                primary image.
               </p>
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {formData.certificate_images.map((url, index) => (
                   <div key={index} className="relative group">
-                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                    <img
+                      src={url}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-24 object-cover rounded"
+                    />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(url)}
-                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <X className="h-3 w-3" />
                     </button>
                   </div>
@@ -6575,7 +6817,13 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={uploading || formData.certificate_images.length === 0}>Add Award</Button>
+              <Button
+                type="submit"
+                disabled={
+                  uploading || formData.certificate_images.length === 0
+                }>
+                Add Award
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>
@@ -6584,7 +6832,13 @@ function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onSuccess: () => void }) {
+function EditChapterAwardDialog({
+  award,
+  onSuccess,
+}: {
+  award: ChapterAward;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -6595,37 +6849,44 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
     certificate_images: award.certificate_images || [award.certificate_image],
   });
 
-  const handleMultipleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMultipleImagesUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    
+
     setUploading(true);
     const fileArray = Array.from(files);
-    const { urls, errors } = await uploadMultipleImages(fileArray, "achievements");
+    const { urls, errors } = await uploadMultipleImages(
+      fileArray,
+      "achievements"
+    );
     setUploading(false);
 
     if (errors && errors.length > 0) {
       toast.error(errors[0]);
     }
-    
+
     if (urls && urls.length > 0) {
       const newImages = [...formData.certificate_images, ...urls];
-      setFormData({ 
-        ...formData, 
+      setFormData({
+        ...formData,
         certificate_image: newImages[0],
-        certificate_images: newImages 
+        certificate_images: newImages,
       });
-      toast.success(`${urls.length} certificate image(s) uploaded successfully`);
+      toast.success(
+        `${urls.length} certificate image(s) uploaded successfully`
+      );
     }
   };
 
   const handleRemoveImage = async (url: string) => {
     await deleteImageFromSupabase(url);
-    const newImages = formData.certificate_images.filter(img => img !== url);
-    setFormData({ 
-      ...formData, 
+    const newImages = formData.certificate_images.filter((img) => img !== url);
+    setFormData({
+      ...formData,
       certificate_images: newImages,
-      certificate_image: newImages[0] || ""
+      certificate_image: newImages[0] || "",
     });
     toast.success("Image removed");
   };
@@ -6635,7 +6896,10 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from("chapter_awards").update(formData).eq("id", award.id);
+      const { error } = await supabase
+        .from("chapter_awards")
+        .update(formData)
+        .eq("id", award.id);
       if (error) throw error;
       toast.success("Award updated successfully");
       setOpen(false);
@@ -6648,7 +6912,9 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl max-h-[90vh]">
         <DialogHeader>
@@ -6662,7 +6928,9 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
               <Input
                 id="edit-award-title"
                 value={formData.award_title}
-                onChange={(e) => setFormData({ ...formData, award_title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, award_title: e.target.value })
+                }
                 required
               />
             </div>
@@ -6671,7 +6939,9 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
               <Input
                 id="edit-award-year"
                 value={formData.year}
-                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, year: e.target.value })
+                }
                 required
               />
             </div>
@@ -6680,7 +6950,9 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
               <Textarea
                 id="edit-award-desc"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={4}
                 required
               />
@@ -6695,17 +6967,21 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
                 disabled={uploading}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Select multiple images to upload. First image will be the primary image.
+                Select multiple images to upload. First image will be the
+                primary image.
               </p>
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {formData.certificate_images.map((url, index) => (
                   <div key={index} className="relative group">
-                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                    <img
+                      src={url}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-24 object-cover rounded"
+                    />
                     <button
                       type="button"
                       onClick={() => handleRemoveImage(url)}
-                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <X className="h-3 w-3" />
                     </button>
                   </div>
@@ -6713,7 +6989,13 @@ function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onS
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={uploading || formData.certificate_images.length === 0}>Update Award</Button>
+              <Button
+                type="submit"
+                disabled={
+                  uploading || formData.certificate_images.length === 0
+                }>
+                Update Award
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>
@@ -6760,11 +7042,25 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from("past_convenors").insert([formData]);
+      const { error } = await supabase
+        .from("past_convenors")
+        .insert([formData]);
       if (error) throw error;
       toast.success("Convenor added successfully");
       setOpen(false);
-      setFormData({ name: "", image: "", tenure_start: "", tenure_end: "", start_month: null, end_month: null, description: "", email: "", linkedin: "", github: "", instagram: "" });
+      setFormData({
+        name: "",
+        image: "",
+        tenure_start: "",
+        tenure_end: "",
+        start_month: null,
+        end_month: null,
+        description: "",
+        email: "",
+        linkedin: "",
+        github: "",
+        instagram: "",
+      });
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add convenor: ${error.message}`);
@@ -6774,7 +7070,9 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Past Convenor</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Past Convenor
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl max-h-[90vh]">
         <DialogHeader>
@@ -6788,7 +7086,9 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
               <Input
                 id="convenor-name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
             </div>
@@ -6798,7 +7098,9 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                 <Input
                   id="tenure-start"
                   value={formData.tenure_start}
-                  onChange={(e) => setFormData({ ...formData, tenure_start: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tenure_start: e.target.value })
+                  }
                   placeholder="2020"
                   required
                 />
@@ -6807,8 +7109,12 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                 <Label htmlFor="start-month">Start Month (Optional)</Label>
                 <Select
                   value={formData.start_month?.toString() || "0"}
-                  onValueChange={(value) => setFormData({ ...formData, start_month: value === "0" ? null : parseInt(value) })}
-                >
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      start_month: value === "0" ? null : parseInt(value),
+                    })
+                  }>
                   <SelectTrigger>
                     <SelectValue placeholder="Select month" />
                   </SelectTrigger>
@@ -6833,20 +7139,26 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="tenure-end">End Year *</Label>
-              <Input
-                id="tenure-end"
-                value={formData.tenure_end}
-                onChange={(e) => setFormData({ ...formData, tenure_end: e.target.value })}
-                placeholder="2022"
-                required
-              />
+                <Input
+                  id="tenure-end"
+                  value={formData.tenure_end}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tenure_end: e.target.value })
+                  }
+                  placeholder="2022"
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="end-month">End Month (Optional)</Label>
                 <Select
                   value={formData.end_month?.toString() || "0"}
-                  onValueChange={(value) => setFormData({ ...formData, end_month: value === "0" ? null : parseInt(value) })}
-                >
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      end_month: value === "0" ? null : parseInt(value),
+                    })
+                  }>
                   <SelectTrigger>
                     <SelectValue placeholder="Select month" />
                   </SelectTrigger>
@@ -6873,20 +7185,34 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
               <Textarea
                 id="convenor-desc"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={3}
               />
             </div>
             <div>
               <Label>Photo *</Label>
-              <Input type="file" onChange={handleImageUpload} accept="image/*" />
+              <Input
+                type="file"
+                onChange={handleImageUpload}
+                accept="image/*"
+              />
               {formData.image && (
-                <img src={formData.image} alt="Preview" className="mt-2 max-h-40 rounded" />
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="mt-2 max-h-40 rounded"
+                />
               )}
             </div>
             <div className="border-t pt-4">
-              <Label className="text-base">Contact & Social Links (Optional)</Label>
-              <p className="text-sm text-muted-foreground mb-3">Add convenor's contact and social media profiles</p>
+              <Label className="text-base">
+                Contact & Social Links (Optional)
+              </Label>
+              <p className="text-sm text-muted-foreground mb-3">
+                Add convenor's contact and social media profiles
+              </p>
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="convenor-email">Email</Label>
@@ -6894,7 +7220,9 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                     id="convenor-email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     placeholder="convenor@example.com"
                   />
                 </div>
@@ -6903,7 +7231,9 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                   <Input
                     id="convenor-linkedin"
                     value={formData.linkedin}
-                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, linkedin: e.target.value })
+                    }
                     placeholder="https://linkedin.com/in/username"
                   />
                 </div>
@@ -6912,7 +7242,9 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                   <Input
                     id="convenor-github"
                     value={formData.github}
-                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, github: e.target.value })
+                    }
                     placeholder="https://github.com/username"
                   />
                 </div>
@@ -6921,14 +7253,18 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                   <Input
                     id="convenor-instagram"
                     value={formData.instagram}
-                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, instagram: e.target.value })
+                    }
                     placeholder="https://instagram.com/username"
                   />
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={uploading}>Add Convenor</Button>
+              <Button type="submit" disabled={uploading}>
+                Add Convenor
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>
@@ -6937,7 +7273,13 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConvenor; onSuccess: () => void }) {
+function EditPastConvenorDialog({
+  convenor,
+  onSuccess,
+}: {
+  convenor: PastConvenor;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -6977,7 +7319,10 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
     if (!supabase) return;
 
     try {
-      const { error } = await supabase.from("past_convenors").update(formData).eq("id", convenor.id);
+      const { error } = await supabase
+        .from("past_convenors")
+        .update(formData)
+        .eq("id", convenor.id);
       if (error) throw error;
       toast.success("Convenor updated successfully");
       setOpen(false);
@@ -6990,7 +7335,9 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl max-h-[90vh]">
         <DialogHeader>
@@ -7004,7 +7351,9 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
               <Input
                 id="edit-convenor-name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
             </div>
@@ -7014,7 +7363,9 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                 <Input
                   id="edit-tenure-start"
                   value={formData.tenure_start}
-                  onChange={(e) => setFormData({ ...formData, tenure_start: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tenure_start: e.target.value })
+                  }
                   placeholder="2020"
                   required
                 />
@@ -7023,8 +7374,12 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                 <Label htmlFor="edit-start-month">Start Month (Optional)</Label>
                 <Select
                   value={formData.start_month?.toString() || "0"}
-                  onValueChange={(value) => setFormData({ ...formData, start_month: value === "0" ? null : parseInt(value) })}
-                >
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      start_month: value === "0" ? null : parseInt(value),
+                    })
+                  }>
                   <SelectTrigger>
                     <SelectValue placeholder="Select month" />
                   </SelectTrigger>
@@ -7052,7 +7407,9 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                 <Input
                   id="edit-tenure-end"
                   value={formData.tenure_end}
-                  onChange={(e) => setFormData({ ...formData, tenure_end: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tenure_end: e.target.value })
+                  }
                   placeholder="2022"
                   required
                 />
@@ -7061,8 +7418,12 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                 <Label htmlFor="edit-end-month">End Month (Optional)</Label>
                 <Select
                   value={formData.end_month?.toString() || "0"}
-                  onValueChange={(value) => setFormData({ ...formData, end_month: value === "0" ? null : parseInt(value) })}
-                >
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      end_month: value === "0" ? null : parseInt(value),
+                    })
+                  }>
                   <SelectTrigger>
                     <SelectValue placeholder="Select month" />
                   </SelectTrigger>
@@ -7089,20 +7450,34 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
               <Textarea
                 id="edit-convenor-desc"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={3}
               />
             </div>
             <div>
               <Label>Photo</Label>
-              <Input type="file" onChange={handleImageUpload} accept="image/*" />
+              <Input
+                type="file"
+                onChange={handleImageUpload}
+                accept="image/*"
+              />
               {formData.image && (
-                <img src={formData.image} alt="Preview" className="mt-2 max-h-40 rounded" />
+                <img
+                  src={formData.image}
+                  alt="Preview"
+                  className="mt-2 max-h-40 rounded"
+                />
               )}
             </div>
             <div className="border-t pt-4">
-              <Label className="text-base">Contact & Social Links (Optional)</Label>
-              <p className="text-sm text-muted-foreground mb-3">Add convenor's contact and social media profiles</p>
+              <Label className="text-base">
+                Contact & Social Links (Optional)
+              </Label>
+              <p className="text-sm text-muted-foreground mb-3">
+                Add convenor's contact and social media profiles
+              </p>
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="edit-convenor-email">Email</Label>
@@ -7110,7 +7485,9 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                     id="edit-convenor-email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
                     placeholder="convenor@example.com"
                   />
                 </div>
@@ -7119,7 +7496,9 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                   <Input
                     id="edit-convenor-linkedin"
                     value={formData.linkedin}
-                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, linkedin: e.target.value })
+                    }
                     placeholder="https://linkedin.com/in/username"
                   />
                 </div>
@@ -7128,7 +7507,9 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                   <Input
                     id="edit-convenor-github"
                     value={formData.github}
-                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, github: e.target.value })
+                    }
                     placeholder="https://github.com/username"
                   />
                 </div>
@@ -7137,14 +7518,18 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
                   <Input
                     id="edit-convenor-instagram"
                     value={formData.instagram}
-                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, instagram: e.target.value })
+                    }
                     placeholder="https://instagram.com/username"
                   />
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={uploading}>Update Convenor</Button>
+              <Button type="submit" disabled={uploading}>
+                Update Convenor
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>
@@ -7169,42 +7554,61 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
     instagram: "",
   });
 
-  const handleMultipleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMultipleImagesUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setUploading(true);
     const fileArray = Array.from(files);
-    const { urls, errors } = await uploadMultipleImages(fileArray, "achievements");
+    const { urls, errors } = await uploadMultipleImages(
+      fileArray,
+      "achievements"
+    );
     setUploading(false);
 
     if (errors && errors.length > 0) {
       toast.error(errors[0]);
     }
-    
+
     if (urls && urls.length > 0) {
-      setFormData({ ...formData, achievement_images: [...formData.achievement_images, ...urls] });
+      setFormData({
+        ...formData,
+        achievement_images: [...formData.achievement_images, ...urls],
+      });
       toast.success(`${urls.length} image(s) uploaded successfully`);
     }
   };
 
   const handleRemoveImage = async (url: string) => {
     await deleteImageFromSupabase(url);
-    setFormData({ ...formData, achievement_images: formData.achievement_images.filter(img => img !== url) });
+    setFormData({
+      ...formData,
+      achievement_images: formData.achievement_images.filter(
+        (img) => img !== url
+      ),
+    });
     toast.success("Image removed");
   };
 
   const moveImageUp = (index: number) => {
     if (index === 0) return;
     const newImages = [...formData.achievement_images];
-    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    [newImages[index - 1], newImages[index]] = [
+      newImages[index],
+      newImages[index - 1],
+    ];
     setFormData({ ...formData, achievement_images: newImages });
   };
 
   const moveImageDown = (index: number) => {
     if (index === formData.achievement_images.length - 1) return;
     const newImages = [...formData.achievement_images];
-    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    [newImages[index], newImages[index + 1]] = [
+      newImages[index + 1],
+      newImages[index],
+    ];
     setFormData({ ...formData, achievement_images: newImages });
   };
 
@@ -7231,7 +7635,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
         instagram: formData.instagram || null,
       };
 
-      const { error } = await supabase.from("student_achievements").insert([submitData]);
+      const { error } = await supabase
+        .from("student_achievements")
+        .insert([submitData]);
       if (error) throw error;
       toast.success("Achievement added successfully");
       setOpen(false);
@@ -7256,7 +7662,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 mr-2" /> Add Student Achievement</Button>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" /> Add Student Achievement
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl max-h-[90vh]">
         <DialogHeader>
@@ -7270,7 +7678,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
               <Input
                 id="student-name"
                 value={formData.student_name}
-                onChange={(e) => setFormData({ ...formData, student_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, student_name: e.target.value })
+                }
                 required
               />
             </div>
@@ -7279,7 +7689,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
               <Input
                 id="event-name"
                 value={formData.event_name}
-                onChange={(e) => setFormData({ ...formData, event_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, event_name: e.target.value })
+                }
                 required
               />
             </div>
@@ -7288,7 +7700,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
               <Input
                 id="position"
                 value={formData.position}
-                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, position: e.target.value })
+                }
                 placeholder="1st Place, Winner, etc."
                 required
               />
@@ -7299,7 +7713,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
                 id="achievement-date"
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, date: e.target.value })
+                }
                 required
               />
             </div>
@@ -7308,7 +7724,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
               <Input
                 id="organized-by"
                 value={formData.organized_by}
-                onChange={(e) => setFormData({ ...formData, organized_by: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, organized_by: e.target.value })
+                }
                 required
               />
             </div>
@@ -7317,7 +7735,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
               <Textarea
                 id="achievement-desc"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={3}
                 required
               />
@@ -7337,15 +7757,18 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {formData.achievement_images.map((url, index) => (
                   <div key={index} className="relative group">
-                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                    <img
+                      src={url}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-24 object-cover rounded"
+                    />
                     <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       {index > 0 && (
                         <button
                           type="button"
                           onClick={() => moveImageUp(index)}
                           className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
-                          title="Move left"
-                        >
+                          title="Move left">
                           <ChevronUp className="h-3 w-3" />
                         </button>
                       )}
@@ -7354,8 +7777,7 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
                           type="button"
                           onClick={() => moveImageDown(index)}
                           className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
-                          title="Move right"
-                        >
+                          title="Move right">
                           <ChevronDown className="h-3 w-3" />
                         </button>
                       )}
@@ -7363,8 +7785,7 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
                         type="button"
                         onClick={() => handleRemoveImage(url)}
                         className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
-                        title="Remove"
-                      >
+                        title="Remove">
                         <X className="h-3 w-3" />
                       </button>
                     </div>
@@ -7374,14 +7795,18 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
             </div>
             <div className="border-t pt-4">
               <Label className="text-base">Social Links (Optional)</Label>
-              <p className="text-sm text-muted-foreground mb-3">Add student's social media profiles</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Add student's social media profiles
+              </p>
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="linkedin">LinkedIn URL</Label>
                   <Input
                     id="linkedin"
                     value={formData.linkedin}
-                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, linkedin: e.target.value })
+                    }
                     placeholder="https://linkedin.com/in/username"
                   />
                 </div>
@@ -7390,7 +7815,9 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
                   <Input
                     id="github"
                     value={formData.github}
-                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, github: e.target.value })
+                    }
                     placeholder="https://github.com/username"
                   />
                 </div>
@@ -7399,14 +7826,18 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
                   <Input
                     id="instagram"
                     value={formData.instagram}
-                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, instagram: e.target.value })
+                    }
                     placeholder="https://instagram.com/username"
                   />
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={uploading}>Add Achievement</Button>
+              <Button type="submit" disabled={uploading}>
+                Add Achievement
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>
@@ -7415,7 +7846,13 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement: StudentAchievement; onSuccess: () => void }) {
+function EditStudentAchievementDialog({
+  achievement,
+  onSuccess,
+}: {
+  achievement: StudentAchievement;
+  onSuccess: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -7425,48 +7862,69 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
     date: achievement.date,
     organized_by: achievement.organized_by,
     description: achievement.description,
-    achievement_images: achievement.achievement_images || (achievement.achievement_image ? [achievement.achievement_image] : []),
+    achievement_images:
+      achievement.achievement_images ||
+      (achievement.achievement_image ? [achievement.achievement_image] : []),
     linkedin: achievement.linkedin || "",
     github: achievement.github || "",
     instagram: achievement.instagram || "",
   });
 
-  const handleMultipleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMultipleImagesUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setUploading(true);
     const fileArray = Array.from(files);
-    const { urls, errors } = await uploadMultipleImages(fileArray, "achievements");
+    const { urls, errors } = await uploadMultipleImages(
+      fileArray,
+      "achievements"
+    );
     setUploading(false);
 
     if (errors && errors.length > 0) {
       toast.error(errors[0]);
     }
-    
+
     if (urls && urls.length > 0) {
-      setFormData({ ...formData, achievement_images: [...formData.achievement_images, ...urls] });
+      setFormData({
+        ...formData,
+        achievement_images: [...formData.achievement_images, ...urls],
+      });
       toast.success(`${urls.length} image(s) uploaded successfully`);
     }
   };
 
   const handleRemoveImage = async (url: string) => {
     await deleteImageFromSupabase(url);
-    setFormData({ ...formData, achievement_images: formData.achievement_images.filter(img => img !== url) });
+    setFormData({
+      ...formData,
+      achievement_images: formData.achievement_images.filter(
+        (img) => img !== url
+      ),
+    });
     toast.success("Image removed");
   };
 
   const moveImageUp = (index: number) => {
     if (index === 0) return;
     const newImages = [...formData.achievement_images];
-    [newImages[index - 1], newImages[index]] = [newImages[index], newImages[index - 1]];
+    [newImages[index - 1], newImages[index]] = [
+      newImages[index],
+      newImages[index - 1],
+    ];
     setFormData({ ...formData, achievement_images: newImages });
   };
 
   const moveImageDown = (index: number) => {
     if (index === formData.achievement_images.length - 1) return;
     const newImages = [...formData.achievement_images];
-    [newImages[index], newImages[index + 1]] = [newImages[index + 1], newImages[index]];
+    [newImages[index], newImages[index + 1]] = [
+      newImages[index + 1],
+      newImages[index],
+    ];
     setFormData({ ...formData, achievement_images: newImages });
   };
 
@@ -7493,7 +7951,10 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
         instagram: formData.instagram || null,
       };
 
-      const { error } = await supabase.from("student_achievements").update(updateData).eq("id", achievement.id);
+      const { error } = await supabase
+        .from("student_achievements")
+        .update(updateData)
+        .eq("id", achievement.id);
       if (error) throw error;
       toast.success("Achievement updated successfully");
       setOpen(false);
@@ -7506,7 +7967,9 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+        <Button variant="outline" size="sm">
+          <Edit className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xl max-h-[90vh]">
         <DialogHeader>
@@ -7520,7 +7983,9 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
               <Input
                 id="edit-student-name"
                 value={formData.student_name}
-                onChange={(e) => setFormData({ ...formData, student_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, student_name: e.target.value })
+                }
                 required
               />
             </div>
@@ -7529,7 +7994,9 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
               <Input
                 id="edit-event-name"
                 value={formData.event_name}
-                onChange={(e) => setFormData({ ...formData, event_name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, event_name: e.target.value })
+                }
                 required
               />
             </div>
@@ -7538,7 +8005,9 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
               <Input
                 id="edit-position"
                 value={formData.position}
-                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, position: e.target.value })
+                }
                 required
               />
             </div>
@@ -7548,7 +8017,9 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
                 id="edit-achievement-date"
                 type="date"
                 value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, date: e.target.value })
+                }
                 required
               />
             </div>
@@ -7557,7 +8028,9 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
               <Input
                 id="edit-organized-by"
                 value={formData.organized_by}
-                onChange={(e) => setFormData({ ...formData, organized_by: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, organized_by: e.target.value })
+                }
                 required
               />
             </div>
@@ -7566,7 +8039,9 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
               <Textarea
                 id="edit-achievement-desc"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
                 rows={3}
                 required
               />
@@ -7586,15 +8061,18 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {formData.achievement_images.map((url, index) => (
                   <div key={index} className="relative group">
-                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                    <img
+                      src={url}
+                      alt={`Preview ${index + 1}`}
+                      className="w-full h-24 object-cover rounded"
+                    />
                     <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       {index > 0 && (
                         <button
                           type="button"
                           onClick={() => moveImageUp(index)}
                           className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
-                          title="Move left"
-                        >
+                          title="Move left">
                           <ChevronUp className="h-3 w-3" />
                         </button>
                       )}
@@ -7603,8 +8081,7 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
                           type="button"
                           onClick={() => moveImageDown(index)}
                           className="bg-primary text-primary-foreground rounded-full p-1 hover:bg-primary/90"
-                          title="Move right"
-                        >
+                          title="Move right">
                           <ChevronDown className="h-3 w-3" />
                         </button>
                       )}
@@ -7612,8 +8089,7 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
                         type="button"
                         onClick={() => handleRemoveImage(url)}
                         className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
-                        title="Remove"
-                      >
+                        title="Remove">
                         <X className="h-3 w-3" />
                       </button>
                     </div>
@@ -7623,14 +8099,18 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
             </div>
             <div className="border-t pt-4">
               <Label className="text-base">Social Links (Optional)</Label>
-              <p className="text-sm text-muted-foreground mb-3">Add student's social media profiles</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                Add student's social media profiles
+              </p>
               <div className="space-y-3">
                 <div>
                   <Label htmlFor="edit-linkedin">LinkedIn URL</Label>
                   <Input
                     id="edit-linkedin"
                     value={formData.linkedin}
-                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, linkedin: e.target.value })
+                    }
                     placeholder="https://linkedin.com/in/username"
                   />
                 </div>
@@ -7639,7 +8119,9 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
                   <Input
                     id="edit-github"
                     value={formData.github}
-                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, github: e.target.value })
+                    }
                     placeholder="https://github.com/username"
                   />
                 </div>
@@ -7648,14 +8130,18 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
                   <Input
                     id="edit-instagram"
                     value={formData.instagram}
-                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, instagram: e.target.value })
+                    }
                     placeholder="https://instagram.com/username"
                   />
                 </div>
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit" disabled={uploading}>Update Achievement</Button>
+              <Button type="submit" disabled={uploading}>
+                Update Achievement
+              </Button>
             </DialogFooter>
           </form>
         </ScrollArea>

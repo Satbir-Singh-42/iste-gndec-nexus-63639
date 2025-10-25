@@ -97,133 +97,126 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen relative z-10">
-        <div className="container mx-auto px-4 py-20">
-          <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                Our Projects
-              </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Explore innovative projects developed by our talented members
+      <div className="container mx-auto px-4 py-20">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Our Projects
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Explore innovative projects developed by our talented members
+            </p>
+          </div>
+
+          {/* Category Filter */}
+          <div
+            className="flex flex-wrap gap-2 justify-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700"
+            style={{ animationDelay: "100ms" }}>
+            {categories.map((category, index) => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? "default" : "outline"}
+                onClick={() => setSelectedCategory(category)}
+                className="capitalize animate-in fade-in zoom-in-50 duration-300"
+                style={{ animationDelay: `${200 + index * 50}ms` }}>
+                {category}
+              </Button>
+            ))}
+          </div>
+
+          {/* Projects Grid */}
+          {filteredProjects.length === 0 ? (
+            <div className="text-center py-20 animate-in fade-in zoom-in-95 duration-500">
+              <Code className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50 animate-in spin-in-180 duration-700" />
+              <h3 className="text-xl font-semibold mb-2">No Projects Found</h3>
+              <p className="text-muted-foreground">
+                {!selectedCategory
+                  ? "No projects available at the moment."
+                  : `No projects in the ${selectedCategory} category.`}
               </p>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((project, index) => (
+                <Card
+                  key={project.id}
+                  className="group hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-6 duration-500"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                  onClick={() => navigate(`/projects/${project.id}`)}>
+                  {/* Project Image */}
+                  <div className="relative h-48 overflow-hidden rounded-t-lg">
+                    <img
+                      src={project.image_url}
+                      alt={project.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                  </div>
 
-            {/* Category Filter */}
-            <div
-              className="flex flex-wrap gap-2 justify-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700"
-              style={{ animationDelay: "100ms" }}>
-              {categories.map((category, index) => (
-                <Button
-                  key={category}
-                  variant={
-                    selectedCategory === category ? "default" : "outline"
-                  }
-                  onClick={() => setSelectedCategory(category)}
-                  className="capitalize animate-in fade-in zoom-in-50 duration-300"
-                  style={{ animationDelay: `${200 + index * 50}ms` }}>
-                  {category}
-                </Button>
-              ))}
-            </div>
+                  <CardHeader>
+                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                      {project.title}
+                    </CardTitle>
+                    <CardDescription className="line-clamp-2">
+                      {project.description}
+                    </CardDescription>
+                  </CardHeader>
 
-            {/* Projects Grid */}
-            {filteredProjects.length === 0 ? (
-              <div className="text-center py-20 animate-in fade-in zoom-in-95 duration-500">
-                <Code className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50 animate-in spin-in-180 duration-700" />
-                <h3 className="text-xl font-semibold mb-2">
-                  No Projects Found
-                </h3>
-                <p className="text-muted-foreground">
-                  {!selectedCategory
-                    ? "No projects available at the moment."
-                    : `No projects in the ${selectedCategory} category.`}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProjects.map((project, index) => (
-                  <Card
-                    key={project.id}
-                    className="group hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer border-border/50 bg-card/50 backdrop-blur-sm flex flex-col h-full animate-in fade-in slide-in-from-bottom-6 duration-500"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                    onClick={() => navigate(`/projects/${project.id}`)}>
-                    {/* Project Image */}
-                    <div className="relative h-48 overflow-hidden rounded-t-lg">
-                      <img
-                        src={project.image_url}
-                        alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                        loading="lazy"
-                      />
+                  <CardContent className="flex flex-col flex-1">
+                    {/* Technologies */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.technologies.slice(0, 4).map((tech, idx) => (
+                        <Badge key={idx} variant="outline" className="text-xs">
+                          {tech}
+                        </Badge>
+                      ))}
+                      {project.technologies.length > 4 && (
+                        <Badge variant="outline" className="text-xs">
+                          +{project.technologies.length - 4}
+                        </Badge>
+                      )}
                     </div>
 
-                    <CardHeader>
-                      <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                        {project.title}
-                      </CardTitle>
-                      <CardDescription className="line-clamp-2">
-                        {project.description}
-                      </CardDescription>
-                    </CardHeader>
-
-                    <CardContent className="flex flex-col flex-1">
-                      {/* Technologies */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.technologies.slice(0, 4).map((tech, idx) => (
-                          <Badge
-                            key={idx}
-                            variant="outline"
-                            className="text-xs">
-                            {tech}
-                          </Badge>
-                        ))}
-                        {project.technologies.length > 4 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{project.technologies.length - 4}
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Links */}
-                      <div className="flex gap-2 mt-auto">
-                        {project.github_link && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(project.github_link, "_blank");
-                            }}
-                            className="flex-1">
-                            <Github className="h-4 w-4 mr-2" />
-                            Code
-                          </Button>
-                        )}
-                        {project.demo_link && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(project.demo_link, "_blank");
-                            }}
-                            className="flex-1">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Demo
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
+                    {/* Links */}
+                    <div className="flex gap-2 mt-auto">
+                      {project.github_link && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(project.github_link, "_blank");
+                          }}
+                          className="flex-1">
+                          <Github className="h-4 w-4 mr-2" />
+                          Code
+                        </Button>
+                      )}
+                      {project.demo_link && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(project.demo_link, "_blank");
+                          }}
+                          className="flex-1">
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Demo
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
-
-        <TechFooter />
       </div>
+
+      <TechFooter />
+    </div>
   );
 };
 

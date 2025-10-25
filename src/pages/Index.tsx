@@ -32,11 +32,11 @@ const Index = () => {
 
   return (
     <main className="min-h-screen w-full overflow-hidden relative z-10">
-        <TechHero />
-        <TechAbout />
-        {showNoticeBoard && <TechNoticeBoard />}
-        <TechFooter />
-      </main>
+      <TechHero />
+      <TechAbout />
+      {showNoticeBoard && <TechNoticeBoard />}
+      <TechFooter />
+    </main>
   );
 };
 
