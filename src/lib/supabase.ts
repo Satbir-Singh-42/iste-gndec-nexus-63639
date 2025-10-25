@@ -248,6 +248,7 @@ export type Database = {
           year: string;
           description: string;
           certificate_image: string;
+          certificate_images?: string[];
           created_at: string;
           hidden?: boolean;
           display_order?: number;
@@ -265,6 +266,7 @@ export type Database = {
           image: string;
           tenure_start: string;
           tenure_end: string;
+          tenure_month?: number;
           description?: string;
           created_at: string;
           hidden?: boolean;

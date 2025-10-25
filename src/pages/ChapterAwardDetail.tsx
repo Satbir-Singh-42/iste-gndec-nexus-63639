@@ -12,6 +12,7 @@ interface ChapterAward {
   year: string;
   description: string;
   certificate_image: string;
+  certificate_images?: string[];
   hidden?: boolean;
   display_order?: number;
 }
