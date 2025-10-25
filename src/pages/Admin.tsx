@@ -67,6 +67,7 @@ import { format } from "date-fns";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { FileUploadField } from "@/components/FileUploadField";
 import { MultipleFileUpload } from "@/components/MultipleFileUpload";
+import { TimePicker } from "@/components/ui/time-picker";
 import "@/styles/quill-custom.css";
 import { normalizeUrl } from "@/lib/utils";
 
@@ -2955,19 +2956,11 @@ function AddNoticeDialog({ onSuccess }: { onSuccess: () => void }) {
               </div>
               <div>
                 <Label htmlFor="time">Time</Label>
-                <Input
-                  id="time"
-                  type="text"
+                <TimePicker
                   value={timeInput}
-                  onChange={(e) => handleTimeChange(e.target.value)}
-                  placeholder="11:30 PM"
-                  pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
-                  title="Enter time in 12-hour format (e.g., 11:30 PM)"
-                  required
+                  onChange={handleTimeChange}
+                  placeholder="Pick a time"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Format: 11:30 PM
-                </p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -3141,7 +3134,7 @@ function EditNoticeDialog({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Date (optional - leave blank to keep current)</Label>
+                <Label>Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -3168,24 +3161,14 @@ function EditNoticeDialog({
                     />
                   </PopoverContent>
                 </Popover>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Current: {formData.date}
-                </p>
               </div>
               <div>
-                <Label htmlFor="edit-time">Time (optional)</Label>
-                <Input
-                  id="edit-time"
-                  type="text"
+                <Label htmlFor="edit-time">Time</Label>
+                <TimePicker
                   value={timeInput}
-                  onChange={(e) => handleTimeChange(e.target.value)}
-                  placeholder="11:30 PM"
-                  pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
-                  title="Enter time in 12-hour format (e.g., 11:30 PM)"
+                  onChange={handleTimeChange}
+                  placeholder="Pick a time"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Format: 11:30 PM | Current: {formData.time}
-                </p>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -3389,21 +3372,11 @@ function AddEventDialog({ onSuccess }: { onSuccess: () => void }) {
               </div>
               <div>
                 <Label htmlFor="event-time">Time</Label>
-                <Input
-                  id="event-time"
-                  type="text"
+                <TimePicker
                   value={formData.time}
-                  onChange={(e) =>
-                    setFormData({ ...formData, time: e.target.value })
-                  }
-                  placeholder="11:30 PM"
-                  pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
-                  title="Enter time in 12-hour format (e.g., 11:30 PM)"
-                  required
+                  onChange={(time) => setFormData({ ...formData, time })}
+                  placeholder="Pick a time"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Format: 11:30 PM
-                </p>
               </div>
             </div>
             <div>
@@ -3587,7 +3560,7 @@ function EditEventDialog({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Date (optional - leave blank to keep current)</Label>
+                <Label>Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -3614,27 +3587,14 @@ function EditEventDialog({
                     />
                   </PopoverContent>
                 </Popover>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Current: {formData.date}
-                </p>
               </div>
               <div>
                 <Label htmlFor="edit-event-time">Time</Label>
-                <Input
-                  id="edit-event-time"
-                  type="text"
+                <TimePicker
                   value={formData.time}
-                  onChange={(e) =>
-                    setFormData({ ...formData, time: e.target.value })
-                  }
-                  placeholder="11:30 PM"
-                  pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]\s?(AM|PM|am|pm)$"
-                  title="Enter time in 12-hour format (e.g., 11:30 PM)"
-                  required
+                  onChange={(time) => setFormData({ ...formData, time })}
+                  placeholder="Pick a time"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Format: 11:30 PM
-                </p>
               </div>
             </div>
             <div>
