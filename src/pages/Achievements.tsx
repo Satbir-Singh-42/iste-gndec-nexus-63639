@@ -24,6 +24,10 @@ interface PastConvenor {
   tenure_end: string;
   tenure_month?: number;
   description?: string;
+  email?: string;
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
   hidden?: boolean;
   display_order?: number;
 }

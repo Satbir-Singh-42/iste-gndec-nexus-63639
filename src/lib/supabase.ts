@@ -268,6 +268,10 @@ export type Database = {
           tenure_end: string;
           tenure_month?: number;
           description?: string;
+          email?: string;
+          linkedin?: string;
+          github?: string;
+          instagram?: string;
           created_at: string;
           hidden?: boolean;
           display_order?: number;
@@ -288,6 +292,10 @@ export type Database = {
           organized_by: string;
           description: string;
           achievement_image: string;
+          achievement_images?: string[];
+          linkedin?: string;
+          github?: string;
+          instagram?: string;
           created_at: string;
           hidden?: boolean;
           display_order?: number;

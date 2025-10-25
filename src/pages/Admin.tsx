@@ -223,6 +223,10 @@ interface PastConvenor {
   tenure_end: string;
   tenure_month?: number | null;
   description?: string;
+  email?: string;
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
   hidden?: boolean;
   display_order?: number;
 }
@@ -6518,6 +6522,10 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
     tenure_end: "",
     tenure_month: null as number | null,
     description: "",
+    email: "",
+    linkedin: "",
+    github: "",
+    instagram: "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -6545,7 +6553,7 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
       if (error) throw error;
       toast.success("Convenor added successfully");
       setOpen(false);
-      setFormData({ name: "", image: "", tenure_start: "", tenure_end: "", tenure_month: null, description: "" });
+      setFormData({ name: "", image: "", tenure_start: "", tenure_end: "", tenure_month: null, description: "", email: "", linkedin: "", github: "", instagram: "" });
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add convenor: ${error.message}`);
@@ -6638,6 +6646,49 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
                 <img src={formData.image} alt="Preview" className="mt-2 max-h-40 rounded" />
               )}
             </div>
+            <div className="border-t pt-4">
+              <Label className="text-base">Contact & Social Links (Optional)</Label>
+              <p className="text-sm text-muted-foreground mb-3">Add convenor's contact and social media profiles</p>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="convenor-email">Email</Label>
+                  <Input
+                    id="convenor-email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="convenor@example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="convenor-linkedin">LinkedIn URL</Label>
+                  <Input
+                    id="convenor-linkedin"
+                    value={formData.linkedin}
+                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="convenor-github">GitHub URL</Label>
+                  <Input
+                    id="convenor-github"
+                    value={formData.github}
+                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="convenor-instagram">Instagram URL</Label>
+                  <Input
+                    id="convenor-instagram"
+                    value={formData.instagram}
+                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    placeholder="https://instagram.com/username"
+                  />
+                </div>
+              </div>
+            </div>
             <DialogFooter>
               <Button type="submit" disabled={uploading}>Add Convenor</Button>
             </DialogFooter>
@@ -6658,6 +6709,10 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
     tenure_end: convenor.tenure_end,
     tenure_month: convenor.tenure_month || null,
     description: convenor.description || "",
+    email: convenor.email || "",
+    linkedin: convenor.linkedin || "",
+    github: convenor.github || "",
+    instagram: convenor.instagram || "",
   });
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -6776,6 +6831,49 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
               {formData.image && (
                 <img src={formData.image} alt="Preview" className="mt-2 max-h-40 rounded" />
               )}
+            </div>
+            <div className="border-t pt-4">
+              <Label className="text-base">Contact & Social Links (Optional)</Label>
+              <p className="text-sm text-muted-foreground mb-3">Add convenor's contact and social media profiles</p>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="edit-convenor-email">Email</Label>
+                  <Input
+                    id="edit-convenor-email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="convenor@example.com"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-convenor-linkedin">LinkedIn URL</Label>
+                  <Input
+                    id="edit-convenor-linkedin"
+                    value={formData.linkedin}
+                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-convenor-github">GitHub URL</Label>
+                  <Input
+                    id="edit-convenor-github"
+                    value={formData.github}
+                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-convenor-instagram">Instagram URL</Label>
+                  <Input
+                    id="edit-convenor-instagram"
+                    value={formData.instagram}
+                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    placeholder="https://instagram.com/username"
+                  />
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={uploading}>Update Convenor</Button>
