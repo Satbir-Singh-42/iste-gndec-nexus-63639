@@ -1099,7 +1099,6 @@ const Admin = () => {
       toast.success(
         `Projects link ${value ? "shown in" : "hidden from"} navbar`
       );
-      window.location.reload();
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
     }
@@ -1135,7 +1134,6 @@ const Admin = () => {
           value ? "shown on" : "hidden from"
         } Members page`
       );
-      window.location.reload();
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
     }
@@ -1169,7 +1167,6 @@ const Admin = () => {
       toast.success(
         `Notice Board ${value ? "shown on" : "hidden from"} homepage`
       );
-      window.location.reload();
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
     }
@@ -1203,7 +1200,6 @@ const Admin = () => {
       toast.success(
         `Contact Form ${value ? "enabled" : "disabled"}`
       );
-      window.location.reload();
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
     }
