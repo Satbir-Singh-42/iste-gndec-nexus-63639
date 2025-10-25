@@ -220,6 +220,7 @@ interface PastConvenor {
   image: string;
   tenure_start: string;
   tenure_end: string;
+  tenure_month?: number | null;
   description?: string;
   hidden?: boolean;
   display_order?: number;
@@ -264,7 +265,9 @@ const Admin = () => {
   const [studentAchievements, setStudentAchievements] = useState<StudentAchievement[]>([]);
   const [showProjectsInNavbar, setShowProjectsInNavbar] = useState(false);
   const [showAchievementsInNavbar, setShowAchievementsInNavbar] = useState(false);
-  const [hideAchievementsSection, setHideAchievementsSection] = useState(false);
+  const [hideChapterAwards, setHideChapterAwards] = useState(false);
+  const [hidePastConvenors, setHidePastConvenors] = useState(false);
+  const [hideStudentAchievements, setHideStudentAchievements] = useState(false);
   const [showExecutiveTeam, setShowExecutiveTeam] = useState(true);
   const [showNoticeBoardOnHome, setShowNoticeBoardOnHome] = useState(true);
   const [contactFormEnabled, setContactFormEnabled] = useState(true);
@@ -1295,14 +1298,34 @@ const Admin = () => {
         setContactFormEnabled(contactFormData.setting_value);
       }
 
-      const { data: hideAchievementsData } = await supabase
+      const { data: hideChapterAwardsData } = await supabase
         .from("site_settings")
         .select("*")
-        .eq("setting_key", "hide_achievements_section")
+        .eq("setting_key", "hide_chapter_awards")
         .single();
 
-      if (hideAchievementsData) {
-        setHideAchievementsSection(hideAchievementsData.setting_value);
+      if (hideChapterAwardsData) {
+        setHideChapterAwards(hideChapterAwardsData.setting_value);
+      }
+
+      const { data: hidePastConvenorsData } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "hide_past_convenors")
+        .single();
+
+      if (hidePastConvenorsData) {
+        setHidePastConvenors(hidePastConvenorsData.setting_value);
+      }
+
+      const { data: hideStudentAchievementsData } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "hide_student_achievements")
+        .single();
+
+      if (hideStudentAchievementsData) {
+        setHideStudentAchievements(hideStudentAchievementsData.setting_value);
       }
     } catch (error: any) {
       console.error("Error fetching site settings:", error);
@@ -1476,33 +1499,99 @@ const Admin = () => {
     }
   };
 
-  const updateHideAchievementsSetting = async (value: boolean) => {
+  const updateHideChapterAwardsSetting = async (value: boolean) => {
     if (!supabase) return;
     try {
       const { data: existing } = await supabase
         .from("site_settings")
         .select("id")
-        .eq("setting_key", "hide_achievements_section")
+        .eq("setting_key", "hide_chapter_awards")
         .single();
 
       if (existing) {
         const { error } = await supabase
           .from("site_settings")
           .update({ setting_value: value })
-          .eq("setting_key", "hide_achievements_section");
+          .eq("setting_key", "hide_chapter_awards");
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from("site_settings")
           .insert([
-            { setting_key: "hide_achievements_section", setting_value: value },
+            { setting_key: "hide_chapter_awards", setting_value: value },
           ]);
         if (error) throw error;
       }
 
-      setHideAchievementsSection(value);
+      setHideChapterAwards(value);
       toast.success(
-        `Achievements section ${value ? "hidden from" : "shown on"} website`
+        `Chapter Awards section ${value ? "hidden from" : "shown on"} website`
+      );
+    } catch (error: any) {
+      toast.error(`Failed to update setting: ${error.message}`);
+    }
+  };
+
+  const updateHidePastConvenorsSetting = async (value: boolean) => {
+    if (!supabase) return;
+    try {
+      const { data: existing } = await supabase
+        .from("site_settings")
+        .select("id")
+        .eq("setting_key", "hide_past_convenors")
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from("site_settings")
+          .update({ setting_value: value })
+          .eq("setting_key", "hide_past_convenors");
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("site_settings")
+          .insert([
+            { setting_key: "hide_past_convenors", setting_value: value },
+          ]);
+        if (error) throw error;
+      }
+
+      setHidePastConvenors(value);
+      toast.success(
+        `Past Convenors section ${value ? "hidden from" : "shown on"} website`
+      );
+    } catch (error: any) {
+      toast.error(`Failed to update setting: ${error.message}`);
+    }
+  };
+
+  const updateHideStudentAchievementsSetting = async (value: boolean) => {
+    if (!supabase) return;
+    try {
+      const { data: existing } = await supabase
+        .from("site_settings")
+        .select("id")
+        .eq("setting_key", "hide_student_achievements")
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from("site_settings")
+          .update({ setting_value: value })
+          .eq("setting_key", "hide_student_achievements");
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("site_settings")
+          .insert([
+            { setting_key: "hide_student_achievements", setting_value: value },
+          ]);
+        if (error) throw error;
+      }
+
+      setHideStudentAchievements(value);
+      toast.success(
+        `Student Achievements section ${value ? "hidden from" : "shown on"} website`
       );
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
@@ -3276,22 +3365,64 @@ const Admin = () => {
                   </Button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border rounded-lg bg-destructive/5">
-                  <div className="space-y-1">
-                    <h3 className="font-medium text-destructive">
-                      Hide Entire Achievements Section
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Hide all achievements (Chapter Awards, Past Convenors, Student Achievements) from the website
+                <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                  <div>
+                    <h3 className="font-medium mb-1">Achievements Page Sections</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Control visibility of individual sections on the Achievements page
                     </p>
                   </div>
-                  <Button
-                    variant={hideAchievementsSection ? "destructive" : "outline"}
-                    onClick={() =>
-                      updateHideAchievementsSetting(!hideAchievementsSection)
-                    }>
-                    {hideAchievementsSection ? "Hidden" : "Visible"}
-                  </Button>
+
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-background">
+                    <div className="space-y-1">
+                      <h4 className="font-medium text-sm">Chapter Awards</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Show/hide Chapter Awards section
+                      </p>
+                    </div>
+                    <Button
+                      variant={hideChapterAwards ? "destructive" : "outline"}
+                      size="sm"
+                      onClick={() =>
+                        updateHideChapterAwardsSetting(!hideChapterAwards)
+                      }>
+                      {hideChapterAwards ? "Hidden" : "Visible"}
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-background">
+                    <div className="space-y-1">
+                      <h4 className="font-medium text-sm">Past Convenors</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Show/hide Past Convenors section
+                      </p>
+                    </div>
+                    <Button
+                      variant={hidePastConvenors ? "destructive" : "outline"}
+                      size="sm"
+                      onClick={() =>
+                        updateHidePastConvenorsSetting(!hidePastConvenors)
+                      }>
+                      {hidePastConvenors ? "Hidden" : "Visible"}
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-background">
+                    <div className="space-y-1">
+                      <h4 className="font-medium text-sm">Student Achievements</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Show/hide Student Achievements section
+                      </p>
+                    </div>
+                    <Button
+                      variant={hideStudentAchievements ? "destructive" : "outline"}
+                      size="sm"
+                      onClick={() =>
+                        updateHideStudentAchievementsSetting(!hideStudentAchievements)
+                      }>
+                      {hideStudentAchievements ? "Hidden" : "Visible"}
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -6306,6 +6437,7 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
     image: "",
     tenure_start: "",
     tenure_end: "",
+    tenure_month: null as number | null,
     description: "",
   });
 
@@ -6334,7 +6466,7 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
       if (error) throw error;
       toast.success("Convenor added successfully");
       setOpen(false);
-      setFormData({ name: "", image: "", tenure_start: "", tenure_end: "", description: "" });
+      setFormData({ name: "", image: "", tenure_start: "", tenure_end: "", tenure_month: null, description: "" });
       onSuccess();
     } catch (error: any) {
       toast.error(`Failed to add convenor: ${error.message}`);
@@ -6363,7 +6495,36 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
               />
             </div>
             <div>
-              <Label htmlFor="tenure-start">Tenure Start *</Label>
+              <Label htmlFor="tenure-month">Tenure Month (Optional)</Label>
+              <Select
+                value={formData.tenure_month?.toString() || ""}
+                onValueChange={(value) => setFormData({ ...formData, tenure_month: value ? parseInt(value) : null })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select month" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No month</SelectItem>
+                  <SelectItem value="1">January</SelectItem>
+                  <SelectItem value="2">February</SelectItem>
+                  <SelectItem value="3">March</SelectItem>
+                  <SelectItem value="4">April</SelectItem>
+                  <SelectItem value="5">May</SelectItem>
+                  <SelectItem value="6">June</SelectItem>
+                  <SelectItem value="7">July</SelectItem>
+                  <SelectItem value="8">August</SelectItem>
+                  <SelectItem value="9">September</SelectItem>
+                  <SelectItem value="10">October</SelectItem>
+                  <SelectItem value="11">November</SelectItem>
+                  <SelectItem value="12">December</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                Month applies to both start and end years
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="tenure-start">Tenure Start Year *</Label>
               <Input
                 id="tenure-start"
                 value={formData.tenure_start}
@@ -6373,7 +6534,7 @@ function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
               />
             </div>
             <div>
-              <Label htmlFor="tenure-end">Tenure End *</Label>
+              <Label htmlFor="tenure-end">Tenure End Year *</Label>
               <Input
                 id="tenure-end"
                 value={formData.tenure_end}
@@ -6416,6 +6577,7 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
     image: convenor.image,
     tenure_start: convenor.tenure_start,
     tenure_end: convenor.tenure_end,
+    tenure_month: convenor.tenure_month || null,
     description: convenor.description || "",
   });
 
@@ -6474,7 +6636,36 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
               />
             </div>
             <div>
-              <Label htmlFor="edit-tenure-start">Tenure Start *</Label>
+              <Label htmlFor="edit-tenure-month">Tenure Month (Optional)</Label>
+              <Select
+                value={formData.tenure_month?.toString() || ""}
+                onValueChange={(value) => setFormData({ ...formData, tenure_month: value ? parseInt(value) : null })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select month" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No month</SelectItem>
+                  <SelectItem value="1">January</SelectItem>
+                  <SelectItem value="2">February</SelectItem>
+                  <SelectItem value="3">March</SelectItem>
+                  <SelectItem value="4">April</SelectItem>
+                  <SelectItem value="5">May</SelectItem>
+                  <SelectItem value="6">June</SelectItem>
+                  <SelectItem value="7">July</SelectItem>
+                  <SelectItem value="8">August</SelectItem>
+                  <SelectItem value="9">September</SelectItem>
+                  <SelectItem value="10">October</SelectItem>
+                  <SelectItem value="11">November</SelectItem>
+                  <SelectItem value="12">December</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                Month applies to both start and end years
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="edit-tenure-start">Tenure Start Year *</Label>
               <Input
                 id="edit-tenure-start"
                 value={formData.tenure_start}
@@ -6483,7 +6674,7 @@ function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConveno
               />
             </div>
             <div>
-              <Label htmlFor="edit-tenure-end">Tenure End *</Label>
+              <Label htmlFor="edit-tenure-end">Tenure End Year *</Label>
               <Input
                 id="edit-tenure-end"
                 value={formData.tenure_end}

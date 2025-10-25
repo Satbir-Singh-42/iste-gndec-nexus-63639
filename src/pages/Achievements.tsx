@@ -21,6 +21,7 @@ interface PastConvenor {
   image: string;
   tenure_start: string;
   tenure_end: string;
+  tenure_month?: number;
   description?: string;
   hidden?: boolean;
   display_order?: number;
@@ -49,7 +50,9 @@ const Achievements = () => {
   const [pastConvenors, setPastConvenors] = useState<PastConvenor[]>([]);
   const [studentAchievements, setStudentAchievements] = useState<StudentAchievement[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isHidden, setIsHidden] = useState(false);
+  const [hideChapterAwards, setHideChapterAwards] = useState(false);
+  const [hidePastConvenors, setHidePastConvenors] = useState(false);
+  const [hideStudentAchievements, setHideStudentAchievements] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -57,28 +60,33 @@ const Achievements = () => {
       toast.error("Database connection not configured");
       return;
     }
-    checkVisibility();
+    fetchVisibilitySettings();
   }, []);
 
-  const checkVisibility = async () => {
+  const fetchVisibilitySettings = async () => {
     if (!supabase) return;
 
     try {
       const { data } = await supabase
         .from("site_settings")
-        .select("setting_value")
-        .eq("setting_key", "hide_achievements_section")
-        .single();
+        .select("setting_key, setting_value")
+        .in("setting_key", ["hide_chapter_awards", "hide_past_convenors", "hide_student_achievements"]);
 
-      if (data?.setting_value === true) {
-        setIsHidden(true);
-        setLoading(false);
-        return;
+      if (data) {
+        data.forEach((setting) => {
+          if (setting.setting_key === "hide_chapter_awards") {
+            setHideChapterAwards(setting.setting_value === true);
+          } else if (setting.setting_key === "hide_past_convenors") {
+            setHidePastConvenors(setting.setting_value === true);
+          } else if (setting.setting_key === "hide_student_achievements") {
+            setHideStudentAchievements(setting.setting_value === true);
+          }
+        });
       }
 
       await fetchAllData();
     } catch (error) {
-      console.error("Error checking visibility:", error);
+      console.error("Error fetching visibility settings:", error);
       await fetchAllData();
     }
   };
@@ -165,19 +173,6 @@ const Achievements = () => {
     );
   }
 
-  if (isHidden) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <div className="text-center p-8">
-          <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-          <h2 className="text-2xl font-bold mb-2">Achievements Section Unavailable</h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            This section is currently not available. Please check back later.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen w-full relative z-10">
@@ -197,7 +192,7 @@ const Achievements = () => {
           </p>
         </div>
 
-        {chapterAwards.length > 0 && (
+        {!hideChapterAwards && chapterAwards.length > 0 && (
           <section className="mb-16">
             <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
               <span className="w-1 h-8 bg-secondary" />
@@ -222,7 +217,7 @@ const Achievements = () => {
           </section>
         )}
 
-        {pastConvenors.length > 0 && (
+        {!hidePastConvenors && pastConvenors.length > 0 && (
           <section className="mb-16">
             <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
               <span className="w-1 h-8 bg-secondary" />
@@ -230,32 +225,44 @@ const Achievements = () => {
             </h2>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {pastConvenors.map((convenor) => (
-                <div
-                  key={convenor.id}
-                  onClick={() => navigate(`/achievements/convenors/${convenor.id}`)}
-                  className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden"
-                >
-                  <div className="aspect-square overflow-hidden bg-muted">
-                    <img
-                      src={convenor.image}
-                      alt={convenor.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+              {pastConvenors.map((convenor) => {
+                const getMonthName = (month?: number) => {
+                  if (!month) return "";
+                  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                  return months[month - 1] || "";
+                };
+
+                const tenureDisplay = convenor.tenure_month
+                  ? `${getMonthName(convenor.tenure_month)} ${convenor.tenure_start} - ${getMonthName(convenor.tenure_month)} ${convenor.tenure_end}`
+                  : `${convenor.tenure_start} - ${convenor.tenure_end}`;
+
+                return (
+                  <div
+                    key={convenor.id}
+                    onClick={() => navigate(`/achievements/convenors/${convenor.id}`)}
+                    className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden"
+                  >
+                    <div className="aspect-square overflow-hidden bg-muted">
+                      <img
+                        src={convenor.image}
+                        alt={convenor.name}
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-sm font-bold mb-1 line-clamp-1">{convenor.name}</h3>
+                      <p className="text-xs text-primary font-mono">
+                        {tenureDisplay}
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-3">
-                    <h3 className="text-sm font-bold mb-1 line-clamp-1">{convenor.name}</h3>
-                    <p className="text-xs text-primary font-mono">
-                      {convenor.tenure_start} - {convenor.tenure_end}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
 
-        {studentAchievements.length > 0 && (
+        {!hideStudentAchievements && studentAchievements.length > 0 && (
           <section className="mb-16">
             <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
               <span className="w-1 h-8 bg-secondary" />
@@ -279,7 +286,7 @@ const Achievements = () => {
                         <img
                           src={firstImage}
                           alt={achievement.event_name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                         />
                       )}
                     </div>
