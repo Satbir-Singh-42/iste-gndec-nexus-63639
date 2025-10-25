@@ -1,6 +1,6 @@
-# Supabase Storage Setup for Notice Attachments
+# Supabase Storage Setup for File Uploads
 
-This document explains how to set up Supabase Storage for handling notice attachments.
+This document explains how to set up Supabase Storage for handling file uploads (notice attachments and poster images).
 
 ## Prerequisites
 
@@ -9,13 +9,23 @@ This document explains how to set up Supabase Storage for handling notice attach
 
 ## Setup Steps
 
-### 1. Create Storage Bucket
+### 1. Create Storage Buckets
 
+You need to create two storage buckets:
+
+#### Bucket 1: Notice Attachments
 1. Go to your Supabase project dashboard
 2. Navigate to **Storage** in the left sidebar
 3. Click **New bucket**
 4. Configure the bucket:
    - **Name**: `notice-attachments`
+   - **Public bucket**: ✅ Enabled (so files are publicly accessible)
+   - Click **Create bucket**
+
+#### Bucket 2: Images (Posters)
+1. Click **New bucket** again
+2. Configure the bucket:
+   - **Name**: `images`
    - **Public bucket**: ✅ Enabled (so files are publicly accessible)
    - Click **Create bucket**
 
@@ -50,16 +60,21 @@ USING (bucket_id = 'notice-attachments');
 ### 3. Folder Structure
 
 The application automatically organizes files into folders:
-- `notices/` - All notice attachments
 
-You can customize the folder structure by modifying the `storageFolder` prop in the `MultipleFileUpload` component.
+**notice-attachments bucket:**
+- `notices/` - All notice attachments (PDFs, DOCs, etc.)
+
+**images bucket:**
+- `posters/` - Event and notice posters
+
+You can customize the folder structure by modifying the `storageFolder` prop in the components.
 
 ## Usage in Code
 
-### Uploading Files
+### Multiple File Upload (Attachments)
 
-The `MultipleFileUpload` component automatically handles:
-- File size validation (default: 5MB max)
+The `MultipleFileUpload` component handles multiple file uploads:
+- File size validation (default: 10MB max)
 - File uploads to Supabase Storage
 - Public URL generation
 - Storage path tracking for deletion
@@ -74,6 +89,29 @@ The `MultipleFileUpload` component automatically handles:
   maxSizeMB={10}
   maxFiles={5}
   storageFolder="notices"
+/>
+```
+
+### Single File Upload (Posters/Images)
+
+The `FileUploadField` component handles single file uploads:
+- File size validation (default: 10MB max)
+- Image uploads to Supabase Storage 'images' bucket
+- Preview support for images
+- Storage path tracking for deletion
+
+```tsx
+<FileUploadField
+  label="Event Poster"
+  accept="image/jpeg,image/jpg,image/png,image/webp"
+  value={formData.poster_url}
+  onChange={(url) => setFormData({ ...formData, poster_url: url })}
+  onClear={() => setFormData({ ...formData, poster_url: "" })}
+  description="Upload event poster (Max 10MB)"
+  maxSizeMB={10}
+  preview={true}
+  storageFolder="posters"
+  storageBucket="images"
 />
 ```
 
@@ -106,11 +144,11 @@ Each attachment object contains:
 
 ## Migration from Base64
 
-If you have existing notices with base64-encoded attachments, they will still work. The component handles both:
-- Legacy base64 data URLs (stored in database)
-- New Supabase Storage URLs (stored in bucket)
+If you have existing data with base64-encoded files, they will still work. Both components handle:
+- **Legacy base64 data URLs** (stored directly in database) - read-only, no deletion from storage
+- **New Supabase Storage URLs** (stored in buckets) - full upload/delete support
 
-New uploads will automatically use Supabase Storage.
+All new uploads automatically use Supabase Storage for better performance and scalability.
 
 ## Troubleshooting
 

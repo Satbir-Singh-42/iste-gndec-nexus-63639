@@ -12,15 +12,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-**October 25, 2025** - Migrated notice attachments from base64 encoding to Supabase Storage buckets:
-- Created `notice-attachments` storage bucket for efficient file handling
-- Implemented storage utility functions in `src/lib/storage.ts` for upload/delete operations
-- Updated `MultipleFileUpload` component to use Supabase Storage instead of inline base64
-- Files now stored with unique identifiers (timestamp + random string) to prevent collisions
-- Attachments include `storagePath` field for proper cleanup when deleted
-- Maximum file size increased to 10 MB per attachment
-- Backward compatible with legacy base64 attachments
-- See `STORAGE_SETUP.md` for bucket configuration instructions
+**October 25, 2025** - Migrated all file uploads from base64 encoding to Supabase Storage buckets:
+- Created `notice-attachments` bucket for document attachments (PDFs, DOCs, etc.)
+- Created `images` bucket for poster images and event banners
+- Implemented storage utility functions in `src/lib/storage.ts` with multi-bucket support
+- Updated `MultipleFileUpload` component to use Supabase Storage for attachments
+- Updated `FileUploadField` component to use Supabase Storage for poster images
+- Files stored with unique identifiers (timestamp + random string) to prevent collisions
+- All uploads include `storagePath` field for proper cleanup when deleted
+- Maximum file size: 10 MB per file (both attachments and images)
+- Backward compatible with legacy base64 files
+- See `STORAGE_SETUP.md` for complete bucket configuration instructions
 
 ## System Architecture
 
