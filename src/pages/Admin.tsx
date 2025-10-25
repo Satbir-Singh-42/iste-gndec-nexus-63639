@@ -1498,6 +1498,7 @@ const Admin = () => {
       }
 
       setShowProjectsInNavbar(value);
+      localStorage.setItem('show_projects_in_navbar', JSON.stringify(value));
       toast.success(
         `Projects link ${value ? "shown in" : "hidden from"} navbar`
       );
@@ -1531,6 +1532,7 @@ const Admin = () => {
       }
 
       setShowAchievementsInNavbar(value);
+      localStorage.setItem('show_achievements_in_navbar', JSON.stringify(value));
       toast.success(
         `Achievements link ${value ? "shown in" : "hidden from"} navbar`
       );
