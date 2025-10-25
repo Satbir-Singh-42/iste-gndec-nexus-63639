@@ -233,7 +233,11 @@ interface StudentAchievement {
   date: string;
   organized_by: string;
   description: string;
-  achievement_image: string;
+  achievement_image?: string;
+  achievement_images?: string[];
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
   hidden?: boolean;
   display_order?: number;
 }
@@ -260,6 +264,7 @@ const Admin = () => {
   const [studentAchievements, setStudentAchievements] = useState<StudentAchievement[]>([]);
   const [showProjectsInNavbar, setShowProjectsInNavbar] = useState(false);
   const [showAchievementsInNavbar, setShowAchievementsInNavbar] = useState(false);
+  const [hideAchievementsSection, setHideAchievementsSection] = useState(false);
   const [showExecutiveTeam, setShowExecutiveTeam] = useState(true);
   const [showNoticeBoardOnHome, setShowNoticeBoardOnHome] = useState(true);
   const [contactFormEnabled, setContactFormEnabled] = useState(true);
@@ -1289,6 +1294,16 @@ const Admin = () => {
       if (contactFormData) {
         setContactFormEnabled(contactFormData.setting_value);
       }
+
+      const { data: hideAchievementsData } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "hide_achievements_section")
+        .single();
+
+      if (hideAchievementsData) {
+        setHideAchievementsSection(hideAchievementsData.setting_value);
+      }
     } catch (error: any) {
       console.error("Error fetching site settings:", error);
     }
@@ -1455,6 +1470,39 @@ const Admin = () => {
       setContactFormEnabled(value);
       toast.success(
         `Contact Form ${value ? "enabled" : "disabled"}`
+      );
+    } catch (error: any) {
+      toast.error(`Failed to update setting: ${error.message}`);
+    }
+  };
+
+  const updateHideAchievementsSetting = async (value: boolean) => {
+    if (!supabase) return;
+    try {
+      const { data: existing } = await supabase
+        .from("site_settings")
+        .select("id")
+        .eq("setting_key", "hide_achievements_section")
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from("site_settings")
+          .update({ setting_value: value })
+          .eq("setting_key", "hide_achievements_section");
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("site_settings")
+          .insert([
+            { setting_key: "hide_achievements_section", setting_value: value },
+          ]);
+        if (error) throw error;
+      }
+
+      setHideAchievementsSection(value);
+      toast.success(
+        `Achievements section ${value ? "hidden from" : "shown on"} website`
       );
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
@@ -3225,6 +3273,24 @@ const Admin = () => {
                       updateContactFormSetting(!contactFormEnabled)
                     }>
                     {contactFormEnabled ? "Enabled" : "Disabled"}
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg bg-destructive/5">
+                  <div className="space-y-1">
+                    <h3 className="font-medium text-destructive">
+                      Hide Entire Achievements Section
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Hide all achievements (Chapter Awards, Past Convenors, Student Achievements) from the website
+                    </p>
+                  </div>
+                  <Button
+                    variant={hideAchievementsSection ? "destructive" : "outline"}
+                    onClick={() =>
+                      updateHideAchievementsSetting(!hideAchievementsSection)
+                    }>
+                    {hideAchievementsSection ? "Hidden" : "Visible"}
                   </Button>
                 </div>
               </CardContent>
@@ -6461,31 +6527,61 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
     date: "",
     organized_by: "",
     description: "",
-    achievement_image: "",
+    achievement_images: [] as string[],
+    linkedin: "",
+    github: "",
+    instagram: "",
   });
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleMultipleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, "achievements");
+    const fileArray = Array.from(files);
+    const { urls, errors } = await uploadMultipleImages(fileArray, "achievements");
     setUploading(false);
 
-    if (error) {
-      toast.error(error);
-    } else if (url) {
-      setFormData({ ...formData, achievement_image: url });
-      toast.success("Image uploaded successfully");
+    if (errors && errors.length > 0) {
+      toast.error(errors[0]);
     }
+    
+    if (urls && urls.length > 0) {
+      setFormData({ ...formData, achievement_images: [...formData.achievement_images, ...urls] });
+      toast.success(`${urls.length} image(s) uploaded successfully`);
+    }
+  };
+
+  const handleRemoveImage = async (url: string) => {
+    await deleteImageFromSupabase(url);
+    setFormData({ ...formData, achievement_images: formData.achievement_images.filter(img => img !== url) });
+    toast.success("Image removed");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
 
+    if (formData.achievement_images.length === 0) {
+      toast.error("Please upload at least one achievement image");
+      return;
+    }
+
     try {
-      const { error } = await supabase.from("student_achievements").insert([formData]);
+      const submitData = {
+        student_name: formData.student_name,
+        event_name: formData.event_name,
+        position: formData.position,
+        date: formData.date,
+        organized_by: formData.organized_by,
+        description: formData.description,
+        achievement_images: formData.achievement_images,
+        linkedin: formData.linkedin || null,
+        github: formData.github || null,
+        instagram: formData.instagram || null,
+      };
+
+      const { error } = await supabase.from("student_achievements").insert([submitData]);
       if (error) throw error;
       toast.success("Achievement added successfully");
       setOpen(false);
@@ -6496,7 +6592,10 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
         date: "",
         organized_by: "",
         description: "",
-        achievement_image: "",
+        achievement_images: [],
+        linkedin: "",
+        github: "",
+        instagram: "",
       });
       onSuccess();
     } catch (error: any) {
@@ -6574,11 +6673,64 @@ function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
               />
             </div>
             <div>
-              <Label>Achievement Image *</Label>
-              <Input type="file" onChange={handleImageUpload} accept="image/*" />
-              {formData.achievement_image && (
-                <img src={formData.achievement_image} alt="Preview" className="mt-2 max-h-40 rounded" />
-              )}
+              <Label>Achievement Images * (Multiple allowed)</Label>
+              <Input
+                type="file"
+                onChange={handleMultipleImagesUpload}
+                accept="image/*"
+                multiple
+                disabled={uploading}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Select multiple images to upload
+              </p>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                {formData.achievement_images.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(url)}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="border-t pt-4">
+              <Label className="text-base">Social Links (Optional)</Label>
+              <p className="text-sm text-muted-foreground mb-3">Add student's social media profiles</p>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="linkedin">LinkedIn URL</Label>
+                  <Input
+                    id="linkedin"
+                    value={formData.linkedin}
+                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="github">GitHub URL</Label>
+                  <Input
+                    id="github"
+                    value={formData.github}
+                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="instagram">Instagram URL</Label>
+                  <Input
+                    id="instagram"
+                    value={formData.instagram}
+                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    placeholder="https://instagram.com/username"
+                  />
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={uploading}>Add Achievement</Button>
@@ -6600,33 +6752,61 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
     date: achievement.date,
     organized_by: achievement.organized_by,
     description: achievement.description,
-    achievement_image: achievement.achievement_image,
+    achievement_images: achievement.achievement_images || (achievement.achievement_image ? [achievement.achievement_image] : []),
+    linkedin: achievement.linkedin || "",
+    github: achievement.github || "",
+    instagram: achievement.instagram || "",
   });
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleMultipleImagesUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    const oldImage = formData.achievement_image;
     setUploading(true);
-    const { url, error } = await uploadImageToSupabase(file, "achievements");
+    const fileArray = Array.from(files);
+    const { urls, errors } = await uploadMultipleImages(fileArray, "achievements");
     setUploading(false);
 
-    if (error) {
-      toast.error(error);
-    } else if (url) {
-      if (oldImage) await deleteImageFromSupabase(oldImage);
-      setFormData({ ...formData, achievement_image: url });
-      toast.success("Image uploaded successfully");
+    if (errors && errors.length > 0) {
+      toast.error(errors[0]);
     }
+    
+    if (urls && urls.length > 0) {
+      setFormData({ ...formData, achievement_images: [...formData.achievement_images, ...urls] });
+      toast.success(`${urls.length} image(s) uploaded successfully`);
+    }
+  };
+
+  const handleRemoveImage = async (url: string) => {
+    await deleteImageFromSupabase(url);
+    setFormData({ ...formData, achievement_images: formData.achievement_images.filter(img => img !== url) });
+    toast.success("Image removed");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase) return;
 
+    if (formData.achievement_images.length === 0) {
+      toast.error("Please upload at least one achievement image");
+      return;
+    }
+
     try {
-      const { error } = await supabase.from("student_achievements").update(formData).eq("id", achievement.id);
+      const updateData = {
+        student_name: formData.student_name,
+        event_name: formData.event_name,
+        position: formData.position,
+        date: formData.date,
+        organized_by: formData.organized_by,
+        description: formData.description,
+        achievement_images: formData.achievement_images,
+        linkedin: formData.linkedin || null,
+        github: formData.github || null,
+        instagram: formData.instagram || null,
+      };
+
+      const { error } = await supabase.from("student_achievements").update(updateData).eq("id", achievement.id);
       if (error) throw error;
       toast.success("Achievement updated successfully");
       setOpen(false);
@@ -6705,11 +6885,64 @@ function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement:
               />
             </div>
             <div>
-              <Label>Achievement Image</Label>
-              <Input type="file" onChange={handleImageUpload} accept="image/*" />
-              {formData.achievement_image && (
-                <img src={formData.achievement_image} alt="Preview" className="mt-2 max-h-40 rounded" />
-              )}
+              <Label>Achievement Images * (Multiple allowed)</Label>
+              <Input
+                type="file"
+                onChange={handleMultipleImagesUpload}
+                accept="image/*"
+                multiple
+                disabled={uploading}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Select multiple images to upload
+              </p>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                {formData.achievement_images.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img src={url} alt={`Preview ${index + 1}`} className="w-full h-24 object-cover rounded" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(url)}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="border-t pt-4">
+              <Label className="text-base">Social Links (Optional)</Label>
+              <p className="text-sm text-muted-foreground mb-3">Add student's social media profiles</p>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="edit-linkedin">LinkedIn URL</Label>
+                  <Input
+                    id="edit-linkedin"
+                    value={formData.linkedin}
+                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-github">GitHub URL</Label>
+                  <Input
+                    id="edit-github"
+                    value={formData.github}
+                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-instagram">Instagram URL</Label>
+                  <Input
+                    id="edit-instagram"
+                    value={formData.instagram}
+                    onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                    placeholder="https://instagram.com/username"
+                  />
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={uploading}>Update Achievement</Button>

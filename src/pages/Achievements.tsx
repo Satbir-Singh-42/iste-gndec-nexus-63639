@@ -1,15 +1,9 @@
 import TechFooter from "@/components/TechFooter";
-import { Trophy, Award, Star, Calendar, User } from "lucide-react";
+import { Trophy, Award, Star } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 interface ChapterAward {
   id: number;
@@ -40,20 +34,22 @@ interface StudentAchievement {
   date: string;
   organized_by: string;
   description: string;
-  achievement_image: string;
+  achievement_image?: string;
+  achievement_images?: string[];
+  linkedin?: string;
+  github?: string;
+  instagram?: string;
   hidden?: boolean;
   display_order?: number;
 }
 
 const Achievements = () => {
+  const navigate = useNavigate();
   const [chapterAwards, setChapterAwards] = useState<ChapterAward[]>([]);
   const [pastConvenors, setPastConvenors] = useState<PastConvenor[]>([]);
   const [studentAchievements, setStudentAchievements] = useState<StudentAchievement[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const [selectedAward, setSelectedAward] = useState<ChapterAward | null>(null);
-  const [selectedConvenor, setSelectedConvenor] = useState<PastConvenor | null>(null);
-  const [selectedAchievement, setSelectedAchievement] = useState<StudentAchievement | null>(null);
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -61,8 +57,31 @@ const Achievements = () => {
       toast.error("Database connection not configured");
       return;
     }
-    fetchAllData();
+    checkVisibility();
   }, []);
+
+  const checkVisibility = async () => {
+    if (!supabase) return;
+
+    try {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("setting_value")
+        .eq("setting_key", "hide_achievements_section")
+        .single();
+
+      if (data?.setting_value === true) {
+        setIsHidden(true);
+        setLoading(false);
+        return;
+      }
+
+      await fetchAllData();
+    } catch (error) {
+      console.error("Error checking visibility:", error);
+      await fetchAllData();
+    }
+  };
 
   const fetchAllData = async () => {
     try {
@@ -146,6 +165,20 @@ const Achievements = () => {
     );
   }
 
+  if (isHidden) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-center p-8">
+          <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+          <h2 className="text-2xl font-bold mb-2">Achievements Section Unavailable</h2>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            This section is currently not available. Please check back later.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-full relative z-10">
       <main className="pt-24 pb-16 px-4 max-w-7xl mx-auto">
@@ -175,7 +208,7 @@ const Achievements = () => {
               {chapterAwards.map((award) => (
                 <div
                   key={award.id}
-                  onClick={() => setSelectedAward(award)}
+                  onClick={() => navigate(`/achievements/awards/${award.id}`)}
                   className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 p-4 flex flex-col items-center text-center"
                 >
                   <div className="w-16 h-16 mb-3 flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
@@ -200,7 +233,7 @@ const Achievements = () => {
               {pastConvenors.map((convenor) => (
                 <div
                   key={convenor.id}
-                  onClick={() => setSelectedConvenor(convenor)}
+                  onClick={() => navigate(`/achievements/convenors/${convenor.id}`)}
                   className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden"
                 >
                   <div className="aspect-square overflow-hidden bg-muted">
@@ -230,26 +263,34 @@ const Achievements = () => {
             </h2>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {studentAchievements.map((achievement) => (
-                <div
-                  key={achievement.id}
-                  onClick={() => setSelectedAchievement(achievement)}
-                  className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden"
-                >
-                  <div className="aspect-[4/3] overflow-hidden bg-muted">
-                    <img
-                      src={achievement.achievement_image}
-                      alt={achievement.event_name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+              {studentAchievements.map((achievement) => {
+                const firstImage = achievement.achievement_images && achievement.achievement_images.length > 0
+                  ? achievement.achievement_images[0]
+                  : achievement.achievement_image;
+                
+                return (
+                  <div
+                    key={achievement.id}
+                    onClick={() => navigate(`/achievements/students/${achievement.id}`)}
+                    className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden"
+                  >
+                    <div className="aspect-[4/3] overflow-hidden bg-muted">
+                      {firstImage && (
+                        <img
+                          src={firstImage}
+                          alt={achievement.event_name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-sm font-bold mb-1 line-clamp-1">{achievement.student_name}</h3>
+                      <p className="text-xs text-primary font-mono mb-1">{achievement.position}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-1">{achievement.event_name}</p>
+                    </div>
                   </div>
-                  <div className="p-3">
-                    <h3 className="text-sm font-bold mb-1 line-clamp-1">{achievement.student_name}</h3>
-                    <p className="text-xs text-primary font-mono mb-1">{achievement.position}</p>
-                    <p className="text-xs text-muted-foreground line-clamp-1">{achievement.event_name}</p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         )}
@@ -265,114 +306,6 @@ const Achievements = () => {
         )}
       </main>
       <TechFooter />
-
-      <Dialog open={!!selectedAward} onOpenChange={() => setSelectedAward(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              {selectedAward?.award_title}
-            </DialogTitle>
-            <DialogDescription className="flex items-center gap-2 text-primary font-mono">
-              <Calendar className="w-4 h-4" />
-              {selectedAward?.year}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="overflow-hidden rounded-lg border border-primary/20">
-              <img
-                src={selectedAward?.certificate_image}
-                alt={selectedAward?.award_title}
-                className="w-full object-contain"
-              />
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Description</h4>
-              <p className="text-muted-foreground whitespace-pre-wrap">
-                {selectedAward?.description}
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!selectedConvenor} onOpenChange={() => setSelectedConvenor(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Award className="w-6 h-6 text-primary" />
-              {selectedConvenor?.name}
-            </DialogTitle>
-            <DialogDescription className="flex items-center gap-2 text-primary font-mono">
-              <Calendar className="w-4 h-4" />
-              Tenure: {selectedConvenor?.tenure_start} - {selectedConvenor?.tenure_end}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="overflow-hidden rounded-lg border border-primary/20">
-              <img
-                src={selectedConvenor?.image}
-                alt={selectedConvenor?.name}
-                className="w-full max-h-96 object-cover"
-              />
-            </div>
-            {selectedConvenor?.description && (
-              <div>
-                <h4 className="font-semibold mb-2">About</h4>
-                <p className="text-muted-foreground whitespace-pre-wrap">
-                  {selectedConvenor.description}
-                </p>
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!selectedAchievement} onOpenChange={() => setSelectedAchievement(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Star className="w-6 h-6 text-primary" />
-              {selectedAchievement?.event_name}
-            </DialogTitle>
-            <DialogDescription className="space-y-1">
-              <div className="flex items-center gap-2 text-primary font-mono">
-                <User className="w-4 h-4" />
-                {selectedAchievement?.student_name}
-              </div>
-              <div className="flex items-center gap-2 text-primary font-mono">
-                <Trophy className="w-4 h-4" />
-                {selectedAchievement?.position}
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="overflow-hidden rounded-lg border border-primary/20">
-              <img
-                src={selectedAchievement?.achievement_image}
-                alt={selectedAchievement?.event_name}
-                className="w-full object-contain"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Date</p>
-                <p className="font-mono text-sm">{selectedAchievement?.date}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Organized By</p>
-                <p className="font-mono text-sm">{selectedAchievement?.organized_by}</p>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">Details</h4>
-              <p className="text-muted-foreground whitespace-pre-wrap">
-                {selectedAchievement?.description}
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

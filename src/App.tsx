@@ -17,6 +17,9 @@ import NoticeDetail from "./pages/NoticeDetail";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Achievements from "./pages/Achievements";
+import ChapterAwardDetail from "./pages/ChapterAwardDetail";
+import PastConvenorDetail from "./pages/PastConvenorDetail";
+import StudentAchievementDetail from "./pages/StudentAchievementDetail";
 import NotFound from "./pages/NotFound";
 import ParticleBackground from "./components/ParticleBackground";
 import TechNavbar from "./components/TechNavbar";
@@ -73,6 +76,9 @@ const AppContent = () => {
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
         <Route path="/achievements" element={<Achievements />} />
+        <Route path="/achievements/awards/:id" element={<ChapterAwardDetail />} />
+        <Route path="/achievements/convenors/:id" element={<PastConvenorDetail />} />
+        <Route path="/achievements/students/:id" element={<StudentAchievementDetail />} />
         <Route path="/admin" element={<Admin />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
