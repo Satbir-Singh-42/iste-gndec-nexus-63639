@@ -275,7 +275,7 @@ const Achievements = () => {
               Student Achievements
             </h2>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
               {studentAchievements.map((achievement) => {
                 const firstImage = achievement.achievement_images && achievement.achievement_images.length > 0
                   ? achievement.achievement_images[0]
@@ -287,7 +287,7 @@ const Achievements = () => {
                     onClick={() => navigate(`/achievements/students/${achievement.id}`)}
                     className="group cursor-pointer border border-primary/20 bg-card/50 hover:bg-card hover:border-primary/50 transition-all duration-300 overflow-hidden"
                   >
-                    <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    <div className="aspect-square overflow-hidden bg-muted">
                       {firstImage && (
                         <img
                           src={firstImage}
