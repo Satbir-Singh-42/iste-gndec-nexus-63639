@@ -79,7 +79,7 @@ const Projects = () => {
 
   const categories = Array.from(
     new Set(projects.map((p) => p.category))
-  ).filter((cat) => cat.toLowerCase() !== "web application");
+  ).filter((cat) => cat && cat.toLowerCase() !== "web application");
 
   if (loading) {
     return (
