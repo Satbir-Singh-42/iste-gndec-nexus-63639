@@ -1185,6 +1185,141 @@ const Admin = () => {
     }
   };
 
+  const updateChapterAwardOrder = async (
+    id: number,
+    newOrder: number,
+    skipRefresh: boolean = false
+  ) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase
+        .from("chapter_awards")
+        .update({ display_order: newOrder })
+        .eq("id", id);
+      if (error) throw error;
+      if (!skipRefresh) {
+        toast.success("Award order updated");
+        setRefreshTrigger((prev) => prev + 1);
+      }
+    } catch (error: any) {
+      toast.error(`Failed to update order: ${error.message}`);
+    }
+  };
+
+  const moveChapterAwardUp = async (items: ChapterAward[], index: number) => {
+    if (index === 0) return;
+    const currentItem = items[index];
+    const previousItem = items[index - 1];
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const previousOrder = previousItem.display_order ?? items.length - index + 1;
+    await updateChapterAwardOrder(currentItem.id, previousOrder, true);
+    await updateChapterAwardOrder(previousItem.id, currentOrder, true);
+    toast.success("Award order updated");
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const moveChapterAwardDown = async (items: ChapterAward[], index: number) => {
+    if (index === items.length - 1) return;
+    const currentItem = items[index];
+    const nextItem = items[index + 1];
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const nextOrder = nextItem.display_order ?? items.length - index - 1;
+    await updateChapterAwardOrder(currentItem.id, nextOrder, true);
+    await updateChapterAwardOrder(nextItem.id, currentOrder, true);
+    toast.success("Award order updated");
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const updatePastConvenorOrder = async (
+    id: number,
+    newOrder: number,
+    skipRefresh: boolean = false
+  ) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase
+        .from("past_convenors")
+        .update({ display_order: newOrder })
+        .eq("id", id);
+      if (error) throw error;
+      if (!skipRefresh) {
+        toast.success("Convenor order updated");
+        setRefreshTrigger((prev) => prev + 1);
+      }
+    } catch (error: any) {
+      toast.error(`Failed to update order: ${error.message}`);
+    }
+  };
+
+  const movePastConvenorUp = async (items: PastConvenor[], index: number) => {
+    if (index === 0) return;
+    const currentItem = items[index];
+    const previousItem = items[index - 1];
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const previousOrder = previousItem.display_order ?? items.length - index + 1;
+    await updatePastConvenorOrder(currentItem.id, previousOrder, true);
+    await updatePastConvenorOrder(previousItem.id, currentOrder, true);
+    toast.success("Convenor order updated");
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const movePastConvenorDown = async (items: PastConvenor[], index: number) => {
+    if (index === items.length - 1) return;
+    const currentItem = items[index];
+    const nextItem = items[index + 1];
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const nextOrder = nextItem.display_order ?? items.length - index - 1;
+    await updatePastConvenorOrder(currentItem.id, nextOrder, true);
+    await updatePastConvenorOrder(nextItem.id, currentOrder, true);
+    toast.success("Convenor order updated");
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const updateStudentAchievementOrder = async (
+    id: number,
+    newOrder: number,
+    skipRefresh: boolean = false
+  ) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase
+        .from("student_achievements")
+        .update({ display_order: newOrder })
+        .eq("id", id);
+      if (error) throw error;
+      if (!skipRefresh) {
+        toast.success("Achievement order updated");
+        setRefreshTrigger((prev) => prev + 1);
+      }
+    } catch (error: any) {
+      toast.error(`Failed to update order: ${error.message}`);
+    }
+  };
+
+  const moveStudentAchievementUp = async (items: StudentAchievement[], index: number) => {
+    if (index === 0) return;
+    const currentItem = items[index];
+    const previousItem = items[index - 1];
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const previousOrder = previousItem.display_order ?? items.length - index + 1;
+    await updateStudentAchievementOrder(currentItem.id, previousOrder, true);
+    await updateStudentAchievementOrder(previousItem.id, currentOrder, true);
+    toast.success("Achievement order updated");
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const moveStudentAchievementDown = async (items: StudentAchievement[], index: number) => {
+    if (index === items.length - 1) return;
+    const currentItem = items[index];
+    const nextItem = items[index + 1];
+    const currentOrder = currentItem.display_order ?? items.length - index;
+    const nextOrder = nextItem.display_order ?? items.length - index - 1;
+    await updateStudentAchievementOrder(currentItem.id, nextOrder, true);
+    await updateStudentAchievementOrder(nextItem.id, currentOrder, true);
+    toast.success("Achievement order updated");
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
   const toggleProjectVisibility = async (
     id: number,
     currentHidden: boolean
@@ -2178,18 +2313,19 @@ const Admin = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12">Visible</TableHead>
+                          <TableHead className="w-16">Order</TableHead>
                           <TableHead>Year</TableHead>
                           <TableHead>Title</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {chapterAwards
-                          .filter((award) =>
+                        {(() => {
+                          const filteredArray = chapterAwards.filter((award) =>
                             award.award_title.toLowerCase().includes(chapterAwardsSearch.toLowerCase()) ||
                             award.year.includes(chapterAwardsSearch)
-                          )
-                          .map((award) => (
+                          );
+                          return filteredArray.map((award, index) => (
                             <TableRow key={award.id} className={award.hidden ? "opacity-50" : ""}>
                               <TableCell>
                                 <Button
@@ -2199,6 +2335,28 @@ const Admin = () => {
                                 >
                                   {award.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </Button>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-col gap-0.5">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => moveChapterAwardUp(chapterAwards, chapterAwards.indexOf(award))}
+                                    disabled={index === 0}
+                                    className="h-6 w-6 p-0"
+                                  >
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => moveChapterAwardDown(chapterAwards, chapterAwards.indexOf(award))}
+                                    disabled={index === filteredArray.length - 1}
+                                    className="h-6 w-6 p-0"
+                                  >
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </TableCell>
                               <TableCell className="font-mono text-sm">{award.year}</TableCell>
                               <TableCell>{award.award_title}</TableCell>
@@ -2215,10 +2373,11 @@ const Admin = () => {
                                 </div>
                               </TableCell>
                             </TableRow>
-                          ))}
+                          ));
+                        })()}
                         {chapterAwards.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                               No awards yet. Click "Add Chapter Award" to create one.
                             </TableCell>
                           </TableRow>
@@ -2256,17 +2415,18 @@ const Admin = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12">Visible</TableHead>
+                          <TableHead className="w-16">Order</TableHead>
                           <TableHead>Name</TableHead>
                           <TableHead>Tenure</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {pastConvenors
-                          .filter((convenor) =>
+                        {(() => {
+                          const filteredArray = pastConvenors.filter((convenor) =>
                             convenor.name.toLowerCase().includes(pastConvenorsSearch.toLowerCase())
-                          )
-                          .map((convenor) => (
+                          );
+                          return filteredArray.map((convenor, index) => (
                             <TableRow key={convenor.id} className={convenor.hidden ? "opacity-50" : ""}>
                               <TableCell>
                                 <Button
@@ -2276,6 +2436,28 @@ const Admin = () => {
                                 >
                                   {convenor.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </Button>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-col gap-0.5">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => movePastConvenorUp(pastConvenors, pastConvenors.indexOf(convenor))}
+                                    disabled={index === 0}
+                                    className="h-6 w-6 p-0"
+                                  >
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => movePastConvenorDown(pastConvenors, pastConvenors.indexOf(convenor))}
+                                    disabled={index === filteredArray.length - 1}
+                                    className="h-6 w-6 p-0"
+                                  >
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </TableCell>
                               <TableCell>{convenor.name}</TableCell>
                               <TableCell className="font-mono text-sm">{convenor.tenure_start} - {convenor.tenure_end}</TableCell>
@@ -2292,10 +2474,11 @@ const Admin = () => {
                                 </div>
                               </TableCell>
                             </TableRow>
-                          ))}
+                          ));
+                        })()}
                         {pastConvenors.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                               No convenors yet. Click "Add Past Convenor" to create one.
                             </TableCell>
                           </TableRow>
@@ -2333,6 +2516,7 @@ const Admin = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12">Visible</TableHead>
+                          <TableHead className="w-16">Order</TableHead>
                           <TableHead>Student</TableHead>
                           <TableHead>Event</TableHead>
                           <TableHead>Position</TableHead>
@@ -2340,12 +2524,12 @@ const Admin = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {studentAchievements
-                          .filter((achievement) =>
+                        {(() => {
+                          const filteredArray = studentAchievements.filter((achievement) =>
                             achievement.student_name.toLowerCase().includes(studentAchievementsSearch.toLowerCase()) ||
                             achievement.event_name.toLowerCase().includes(studentAchievementsSearch.toLowerCase())
-                          )
-                          .map((achievement) => (
+                          );
+                          return filteredArray.map((achievement, index) => (
                             <TableRow key={achievement.id} className={achievement.hidden ? "opacity-50" : ""}>
                               <TableCell>
                                 <Button
@@ -2355,6 +2539,28 @@ const Admin = () => {
                                 >
                                   {achievement.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </Button>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-col gap-0.5">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => moveStudentAchievementUp(studentAchievements, studentAchievements.indexOf(achievement))}
+                                    disabled={index === 0}
+                                    className="h-6 w-6 p-0"
+                                  >
+                                    <ChevronUp className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => moveStudentAchievementDown(studentAchievements, studentAchievements.indexOf(achievement))}
+                                    disabled={index === filteredArray.length - 1}
+                                    className="h-6 w-6 p-0"
+                                  >
+                                    <ChevronDown className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </TableCell>
                               <TableCell>{achievement.student_name}</TableCell>
                               <TableCell>{achievement.event_name}</TableCell>
@@ -2372,10 +2578,11 @@ const Admin = () => {
                                 </div>
                               </TableCell>
                             </TableRow>
-                          ))}
+                          ));
+                        })()}
                         {studentAchievements.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                            <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                               No achievements yet. Click "Add Student Achievement" to create one.
                             </TableCell>
                           </TableRow>
