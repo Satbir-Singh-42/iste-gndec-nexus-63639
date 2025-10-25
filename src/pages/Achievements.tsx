@@ -308,15 +308,22 @@ const Achievements = () => {
           </section>
         )}
 
-        {chapterAwards.length === 0 && pastConvenors.length === 0 && studentAchievements.length === 0 && (
-          <div className="text-center py-12 sm:py-16 px-4">
-            <Trophy className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4 opacity-50" />
-            <h3 className="text-lg sm:text-xl font-semibold mb-2">No Achievements Yet</h3>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              Check back soon for updates on our achievements!
-            </p>
-          </div>
-        )}
+        {(() => {
+          const noVisibleSections = 
+            (hideChapterAwards || chapterAwards.length === 0) && 
+            (hidePastConvenors || pastConvenors.length === 0) && 
+            (hideStudentAchievements || studentAchievements.length === 0);
+          
+          return noVisibleSections && (
+            <div className="text-center py-12 sm:py-16 px-4">
+              <Trophy className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4 opacity-50" />
+              <h3 className="text-lg sm:text-xl font-semibold mb-2">No Achievements Present</h3>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Check back soon for updates on our achievements!
+              </p>
+            </div>
+          );
+        })()}
       </main>
       <TechFooter />
     </div>

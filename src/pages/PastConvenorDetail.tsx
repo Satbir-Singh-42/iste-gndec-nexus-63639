@@ -191,12 +191,14 @@ const PastConvenorDetail = () => {
           </div>
 
           <div className="md:col-span-2">
-            <div className="overflow-hidden rounded-lg border border-primary/20 bg-card">
-              <img
-                src={convenor.image}
-                alt={convenor.name}
-                className="w-full max-h-[500px] object-cover object-top"
-              />
+            <div className="rounded-lg border border-primary/20 bg-card p-4 sm:p-6">
+              <div className="w-full max-h-[300px] sm:max-h-[400px] md:max-h-[500px] flex items-center justify-center bg-muted/30 rounded overflow-hidden">
+                <img
+                  src={convenor.image}
+                  alt={convenor.name}
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
           </div>
         </div>
