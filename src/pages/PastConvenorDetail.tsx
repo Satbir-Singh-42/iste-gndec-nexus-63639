@@ -88,45 +88,45 @@ const PastConvenorDetail = () => {
 
   return (
     <div className="min-h-screen w-full relative z-10">
-      <main className="pt-20 pb-12 px-4 max-w-3xl mx-auto">
+      <main className="pt-16 pb-8 px-4 max-w-2xl mx-auto">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate("/achievements")}
-          className="mb-4"
+          className="mb-3"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
 
-        <div className="mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-3 border border-primary/30 bg-primary/5">
-            <Award className="w-3.5 h-3.5 text-primary" />
+        <div className="mb-4">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-2 border border-primary/30 bg-primary/5">
+            <Award className="w-3 h-3 text-primary" />
             <span className="text-xs font-mono text-primary tracking-wider">
               PAST CONVENOR
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gradient">
+          <h1 className="text-xl md:text-2xl font-bold mb-1.5 text-gradient">
             {convenor.name}
           </h1>
           <div className="flex items-center gap-2 text-primary font-mono text-sm">
-            <Calendar className="w-4 h-4" />
+            <Calendar className="w-3.5 h-3.5" />
             {tenureDisplay}
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="overflow-hidden rounded-lg border border-primary/20 bg-card">
             <img
               src={convenor.image}
               alt={convenor.name}
-              className="w-full max-h-[400px] object-cover object-top"
+              className="w-full max-h-[300px] object-cover object-top"
             />
           </div>
 
           {convenor.description && (
-            <div className="bg-card border border-primary/20 rounded-lg p-4">
-              <h2 className="text-lg font-bold mb-2">About</h2>
+            <div className="bg-card border border-primary/20 rounded-lg p-3">
+              <h2 className="text-base font-bold mb-1.5">About</h2>
               <p className="text-muted-foreground whitespace-pre-wrap text-sm leading-relaxed">
                 {convenor.description}
               </p>

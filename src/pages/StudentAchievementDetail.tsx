@@ -91,42 +91,42 @@ const StudentAchievementDetail = () => {
 
   return (
     <div className="min-h-screen w-full relative z-10">
-      <main className="pt-20 pb-12 px-4 max-w-3xl mx-auto">
+      <main className="pt-16 pb-8 px-4 max-w-2xl mx-auto">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate("/achievements")}
-          className="mb-4"
+          className="mb-3"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back
         </Button>
 
-        <div className="mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-3 border border-primary/30 bg-primary/5">
-            <Star className="w-3.5 h-3.5 text-primary" />
+        <div className="mb-4">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 mb-2 border border-primary/30 bg-primary/5">
+            <Star className="w-3 h-3 text-primary" />
             <span className="text-xs font-mono text-primary tracking-wider">
               STUDENT ACHIEVEMENT
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-3 text-gradient">
+          <h1 className="text-xl md:text-2xl font-bold mb-2 text-gradient">
             {achievement.event_name}
           </h1>
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-base">
-              <User className="w-4 h-4 text-primary" />
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-sm">
+              <User className="w-3.5 h-3.5 text-primary" />
               <span className="font-semibold">{achievement.student_name}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-primary font-mono">
-              <Trophy className="w-4 h-4" />
+              <Trophy className="w-3.5 h-3.5" />
               {achievement.position}
             </div>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {images.length > 0 && (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {images.map((image, index) => (
                 <div key={index} className="overflow-hidden rounded-lg border border-primary/20 bg-card">
                   <img
@@ -139,43 +139,43 @@ const StudentAchievementDetail = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="bg-card border border-primary/20 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-muted-foreground mb-1.5">
-                <Calendar className="w-3.5 h-3.5" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="bg-card border border-primary/20 rounded-lg p-3">
+              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                <Calendar className="w-3 h-3" />
                 <span className="text-xs">Date</span>
               </div>
               <p className="font-mono text-sm">{achievement.date}</p>
             </div>
 
-            <div className="bg-card border border-primary/20 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-muted-foreground mb-1.5">
-                <Building2 className="w-3.5 h-3.5" />
+            <div className="bg-card border border-primary/20 rounded-lg p-3">
+              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                <Building2 className="w-3 h-3" />
                 <span className="text-xs">Organized By</span>
               </div>
               <p className="font-mono text-sm">{achievement.organized_by}</p>
             </div>
           </div>
 
-          <div className="bg-card border border-primary/20 rounded-lg p-4">
-            <h2 className="text-lg font-bold mb-2">Details</h2>
+          <div className="bg-card border border-primary/20 rounded-lg p-3">
+            <h2 className="text-base font-bold mb-1.5">Details</h2>
             <p className="text-muted-foreground whitespace-pre-wrap text-sm leading-relaxed">
               {achievement.description}
             </p>
           </div>
 
           {hasLinks && (
-            <div className="bg-card border border-primary/20 rounded-lg p-4">
-              <h2 className="text-lg font-bold mb-3">Connect</h2>
+            <div className="bg-card border border-primary/20 rounded-lg p-3">
+              <h2 className="text-base font-bold mb-2">Connect</h2>
               <div className="flex flex-wrap gap-2">
                 {achievement.linkedin && (
                   <a
                     href={achievement.linkedin.startsWith('http') ? achievement.linkedin : `https://linkedin.com/in/${achievement.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
                   >
-                    <Linkedin className="w-4 h-4 text-primary" />
+                    <Linkedin className="w-3.5 h-3.5 text-primary" />
                     <span>LinkedIn</span>
                   </a>
                 )}
@@ -184,9 +184,9 @@ const StudentAchievementDetail = () => {
                     href={achievement.github.startsWith('http') ? achievement.github : `https://github.com/${achievement.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
                   >
-                    <Github className="w-4 h-4 text-primary" />
+                    <Github className="w-3.5 h-3.5 text-primary" />
                     <span>GitHub</span>
                   </a>
                 )}
@@ -195,9 +195,9 @@ const StudentAchievementDetail = () => {
                     href={achievement.instagram.startsWith('http') ? achievement.instagram : `https://instagram.com/${achievement.instagram}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-lg transition-colors text-sm"
                   >
-                    <Instagram className="w-4 h-4 text-primary" />
+                    <Instagram className="w-3.5 h-3.5 text-primary" />
                     <span>Instagram</span>
                   </a>
                 )}
