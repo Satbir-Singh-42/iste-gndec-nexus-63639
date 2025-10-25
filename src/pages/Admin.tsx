@@ -1863,46 +1863,46 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="notices" className="w-full">
-          <div className="w-full overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="inline-flex w-auto min-w-full sm:w-full sm:grid sm:grid-cols-8 h-auto sm:h-10 gap-1 p-1">
+          <div className="w-full pb-2">
+            <TabsList className="w-full grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto gap-1 p-1">
               <TabsTrigger
                 value="notices"
-                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                className="whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3 lg:px-4 py-2.5 sm:py-2">
                 Notices
               </TabsTrigger>
               <TabsTrigger
                 value="events"
-                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                className="whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3 lg:px-4 py-2.5 sm:py-2">
                 Events
               </TabsTrigger>
               <TabsTrigger
                 value="gallery"
-                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                className="whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3 lg:px-4 py-2.5 sm:py-2">
                 Gallery
               </TabsTrigger>
               <TabsTrigger
                 value="highlights"
-                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                className="whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3 lg:px-4 py-2.5 sm:py-2">
                 Highlights
               </TabsTrigger>
               <TabsTrigger
                 value="projects"
-                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                className="whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3 lg:px-4 py-2.5 sm:py-2">
                 Projects
               </TabsTrigger>
               <TabsTrigger
                 value="achievements"
-                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                className="whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3 lg:px-4 py-2.5 sm:py-2">
                 Achievements
               </TabsTrigger>
               <TabsTrigger
                 value="members"
-                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                className="whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3 lg:px-4 py-2.5 sm:py-2">
                 Members
               </TabsTrigger>
               <TabsTrigger
                 value="settings"
-                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                className="whitespace-nowrap text-xs sm:text-sm px-2 sm:px-3 lg:px-4 py-2.5 sm:py-2">
                 Settings
               </TabsTrigger>
             </TabsList>
