@@ -1,14 +1,16 @@
 import { supabase } from './supabase';
 
 export const STORAGE_BUCKET = 'notice-attachments';
+export const IMAGES_BUCKET = 'images';
 
 /**
  * Upload a file to Supabase Storage
  * @param file - The file to upload
  * @param folder - Optional folder path (e.g., 'notices/2024')
+ * @param bucket - Storage bucket name (default: 'notice-attachments')
  * @returns Object containing the file path and public URL
  */
-export async function uploadFile(file: File, folder?: string) {
+export async function uploadFile(file: File, folder?: string, bucket: string = STORAGE_BUCKET) {
   if (!supabase) {
     throw new Error('Supabase client not initialized');
   }
@@ -23,7 +25,7 @@ export async function uploadFile(file: File, folder?: string) {
 
   // Upload file to storage
   const { data, error } = await supabase.storage
-    .from(STORAGE_BUCKET)
+    .from(bucket)
     .upload(filePath, file, {
       cacheControl: '3600',
       upsert: false
@@ -36,7 +38,7 @@ export async function uploadFile(file: File, folder?: string) {
 
   // Get public URL
   const { data: { publicUrl } } = supabase.storage
-    .from(STORAGE_BUCKET)
+    .from(bucket)
     .getPublicUrl(data.path);
 
   return {
@@ -50,14 +52,15 @@ export async function uploadFile(file: File, folder?: string) {
 /**
  * Delete a file from Supabase Storage
  * @param filePath - The path of the file in storage
+ * @param bucket - Storage bucket name (default: 'notice-attachments')
  */
-export async function deleteFile(filePath: string) {
+export async function deleteFile(filePath: string, bucket: string = STORAGE_BUCKET) {
   if (!supabase) {
     throw new Error('Supabase client not initialized');
   }
 
   const { error } = await supabase.storage
-    .from(STORAGE_BUCKET)
+    .from(bucket)
     .remove([filePath]);
 
   if (error) {
@@ -71,14 +74,15 @@ export async function deleteFile(filePath: string) {
 /**
  * Delete multiple files from Supabase Storage
  * @param filePaths - Array of file paths to delete
+ * @param bucket - Storage bucket name (default: 'notice-attachments')
  */
-export async function deleteFiles(filePaths: string[]) {
+export async function deleteFiles(filePaths: string[], bucket: string = STORAGE_BUCKET) {
   if (!supabase) {
     throw new Error('Supabase client not initialized');
   }
 
   const { error } = await supabase.storage
-    .from(STORAGE_BUCKET)
+    .from(bucket)
     .remove(filePaths);
 
   if (error) {
