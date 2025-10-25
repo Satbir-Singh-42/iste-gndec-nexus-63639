@@ -191,16 +191,63 @@ const StudentAchievementDetail = () => {
             )}
           </div>
 
-          <div className="md:col-span-2 space-y-2">
-            {images.map((image, index) => (
-              <div key={index} className="overflow-hidden rounded-lg border border-primary/20 bg-card">
-                <img
-                  src={image}
-                  alt={`${achievement.event_name} - Image ${index + 1}`}
-                  className="w-full object-contain object-top"
-                />
+          <div className="md:col-span-2">
+            {images.length === 0 && (
+              <div className="text-center py-12 px-4 border border-primary/20 rounded-lg bg-card/50">
+                <p className="text-muted-foreground">No images available</p>
               </div>
-            ))}
+            )}
+            
+            {images.length === 1 && (
+              <div className="rounded-lg border border-primary/20 bg-muted/30 p-4">
+                <div className="w-full max-w-md mx-auto aspect-[4/3] flex items-center justify-center bg-background/50 rounded overflow-hidden">
+                  <img
+                    src={images[0]}
+                    alt={achievement.event_name}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+            )}
+            
+            {images.length === 2 && (
+              <div className="grid grid-cols-2 gap-3">
+                {images.map((image, index) => (
+                  <div key={index} className="rounded-lg border border-primary/20 bg-muted/30 p-3">
+                    <div className="w-full aspect-[3/4] flex items-center justify-center bg-background/50 rounded overflow-hidden">
+                      <img
+                        src={image}
+                        alt={`${achievement.event_name} - ${index + 1}`}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {images.length >= 3 && (
+              <div className="grid grid-cols-2 gap-3 auto-rows-[minmax(150px,auto)]">
+                {images.map((image, index) => (
+                  <div 
+                    key={index} 
+                    className={`rounded-lg border border-primary/20 bg-muted/30 p-3 ${
+                      index === 0 ? 'col-span-2 row-span-2' : ''
+                    }`}
+                  >
+                    <div className={`w-full flex items-center justify-center bg-background/50 rounded overflow-hidden ${
+                      index === 0 ? 'aspect-[16/9]' : 'aspect-square'
+                    }`}>
+                      <img
+                        src={image}
+                        alt={`${achievement.event_name} - ${index + 1}`}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>
