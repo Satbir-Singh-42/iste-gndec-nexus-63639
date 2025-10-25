@@ -76,44 +76,45 @@ const ChapterAwardDetail = () => {
 
   return (
     <div className="min-h-screen w-full relative z-10">
-      <main className="pt-24 pb-16 px-4 max-w-4xl mx-auto">
+      <main className="pt-20 pb-12 px-4 max-w-3xl mx-auto">
         <Button
           variant="ghost"
+          size="sm"
           onClick={() => navigate("/achievements")}
-          className="mb-6"
+          className="mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Achievements
+          Back
         </Button>
 
-        <div className="mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 border border-primary/30 bg-primary/5">
-            <Trophy className="w-4 h-4 text-primary" />
+        <div className="mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-3 border border-primary/30 bg-primary/5">
+            <Trophy className="w-3.5 h-3.5 text-primary" />
             <span className="text-xs font-mono text-primary tracking-wider">
               CHAPTER AWARD
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-4 text-gradient">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gradient">
             {award.award_title}
           </h1>
-          <div className="flex items-center gap-2 text-primary font-mono text-lg">
-            <Calendar className="w-5 h-5" />
+          <div className="flex items-center gap-2 text-primary font-mono text-sm">
+            <Calendar className="w-4 h-4" />
             {award.year}
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="overflow-hidden rounded-lg border border-primary/20 bg-card">
             <img
               src={award.certificate_image}
               alt={award.award_title}
-              className="w-full object-contain"
+              className="w-full object-contain object-top"
             />
           </div>
 
-          <div className="bg-card border border-primary/20 rounded-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">Description</h2>
-            <p className="text-muted-foreground whitespace-pre-wrap leading-relaxed">
+          <div className="bg-card border border-primary/20 rounded-lg p-4">
+            <h2 className="text-lg font-bold mb-2">Description</h2>
+            <p className="text-muted-foreground whitespace-pre-wrap text-sm leading-relaxed">
               {award.description}
             </p>
           </div>
