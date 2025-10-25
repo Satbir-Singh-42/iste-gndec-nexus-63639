@@ -16,6 +16,7 @@ import Notices from "./pages/Notices";
 import NoticeDetail from "./pages/NoticeDetail";
 import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
+import Achievements from "./pages/Achievements";
 import NotFound from "./pages/NotFound";
 import ParticleBackground from "./components/ParticleBackground";
 import TechNavbar from "./components/TechNavbar";
@@ -42,6 +43,7 @@ const AppContent = () => {
     "/contact",
     "/notices",
     "/projects",
+    "/achievements",
     "/admin",
   ].some(
     (path) =>
@@ -70,6 +72,7 @@ const AppContent = () => {
         <Route path="/notices/:id" element={<NoticeDetail />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/projects/:id" element={<ProjectDetail />} />
+        <Route path="/achievements" element={<Achievements />} />
         <Route path="/admin" element={<Admin />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />

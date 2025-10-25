@@ -241,6 +241,61 @@ export type Database = {
           Database["public"]["Tables"]["site_settings"]["Insert"]
         >;
       };
+      chapter_awards: {
+        Row: {
+          id: number;
+          award_title: string;
+          year: string;
+          description: string;
+          certificate_image: string;
+          created_at: string;
+          hidden?: boolean;
+          display_order?: number;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["chapter_awards"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["chapter_awards"]["Insert"]>;
+      };
+      past_convenors: {
+        Row: {
+          id: number;
+          name: string;
+          image: string;
+          tenure_start: string;
+          tenure_end: string;
+          description?: string;
+          created_at: string;
+          hidden?: boolean;
+          display_order?: number;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["past_convenors"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["past_convenors"]["Insert"]>;
+      };
+      student_achievements: {
+        Row: {
+          id: number;
+          student_name: string;
+          event_name: string;
+          position: string;
+          date: string;
+          organized_by: string;
+          description: string;
+          achievement_image: string;
+          created_at: string;
+          hidden?: boolean;
+          display_order?: number;
+        };
+        Insert: Omit<
+          Database["public"]["Tables"]["student_achievements"]["Row"],
+          "id" | "created_at"
+        >;
+        Update: Partial<Database["public"]["Tables"]["student_achievements"]["Insert"]>;
+      };
     };
   };
 };

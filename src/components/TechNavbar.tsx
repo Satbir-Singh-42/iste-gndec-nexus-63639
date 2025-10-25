@@ -18,15 +18,24 @@ const TechNavbar = () => {
   const [isClosing, setIsClosing] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showProjects, setShowProjects] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const navItems = useMemo(() => {
-    return showProjects 
-      ? [...staticNavItems.slice(0, 2), { name: 'Projects', path: '/projects' }, ...staticNavItems.slice(2)]
-      : staticNavItems;
-  }, [showProjects]);
+    let items = [...staticNavItems];
+    
+    if (showProjects) {
+      items = [...items.slice(0, 2), { name: 'Projects', path: '/projects' }, ...items.slice(2)];
+    }
+    
+    if (showAchievements) {
+      items = [...items.slice(0, 2), { name: 'Achievements', path: '/achievements' }, ...items.slice(2)];
+    }
+    
+    return items;
+  }, [showProjects, showAchievements]);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -66,14 +75,24 @@ const TechNavbar = () => {
     if (!supabase) return;
     
     try {
-      const { data, error } = await supabase
+      const { data: projectsData } = await supabase
         .from('site_settings')
         .select('setting_value')
         .eq('setting_key', 'show_projects_in_navbar')
         .single();
       
-      if (!error && data) {
-        setShowProjects(data.setting_value);
+      if (projectsData) {
+        setShowProjects(projectsData.setting_value);
+      }
+
+      const { data: achievementsData } = await supabase
+        .from('site_settings')
+        .select('setting_value')
+        .eq('setting_key', 'show_achievements_in_navbar')
+        .single();
+      
+      if (achievementsData) {
+        setShowAchievements(achievementsData.setting_value);
       }
     } catch (error) {
       console.error('Error fetching navbar settings:', error);

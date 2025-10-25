@@ -198,6 +198,67 @@ create table public.projects (
   constraint projects_pkey primary key (id)
 ) TABLESPACE pg_default;
 
+-- Chapter Awards Table
+-- Stores annual Best Student Chapter awards
+create table public.chapter_awards (
+  id bigserial not null,
+  award_title text not null,
+  year text not null,
+  description text not null,
+  certificate_image text not null,
+  created_at timestamp with time zone null default now(),
+  hidden boolean null default false,
+  display_order integer null,
+  constraint chapter_awards_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_chapter_awards_display_order on public.chapter_awards using btree (display_order) TABLESPACE pg_default;
+
+create index IF not exists idx_chapter_awards_hidden on public.chapter_awards using btree (hidden) TABLESPACE pg_default;
+
+
+-- Past Convenors Table
+-- Stores past convenor information with tenure period
+create table public.past_convenors (
+  id bigserial not null,
+  name text not null,
+  image text not null,
+  tenure_start text not null,
+  tenure_end text not null,
+  description text null,
+  created_at timestamp with time zone null default now(),
+  hidden boolean null default false,
+  display_order integer null,
+  constraint past_convenors_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_past_convenors_display_order on public.past_convenors using btree (display_order) TABLESPACE pg_default;
+
+create index IF not exists idx_past_convenors_hidden on public.past_convenors using btree (hidden) TABLESPACE pg_default;
+
+
+-- Student Achievements Table
+-- Stores individual student achievements
+create table public.student_achievements (
+  id bigserial not null,
+  student_name text not null,
+  event_name text not null,
+  position text not null,
+  date text not null,
+  organized_by text not null,
+  description text not null,
+  achievement_image text not null,
+  created_at timestamp with time zone null default now(),
+  hidden boolean null default false,
+  display_order integer null,
+  constraint student_achievements_pkey primary key (id)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_student_achievements_display_order on public.student_achievements using btree (display_order) TABLESPACE pg_default;
+
+create index IF not exists idx_student_achievements_hidden on public.student_achievements using btree (hidden) TABLESPACE pg_default;
+
+
 -- Site Settings Table
 -- Stores application configuration settings
 create table public.site_settings (
@@ -236,6 +297,15 @@ CREATE INDEX IF NOT EXISTS idx_members_executive_display_order ON public.members
 CREATE INDEX IF NOT EXISTS idx_members_faculty_display_order ON public.members_faculty(display_order);
 CREATE INDEX IF NOT EXISTS idx_members_post_holders_display_order ON public.members_post_holders(display_order);
 
+CREATE INDEX IF NOT EXISTS idx_chapter_awards_display_order ON public.chapter_awards(display_order);
+CREATE INDEX IF NOT EXISTS idx_chapter_awards_hidden ON public.chapter_awards(hidden);
+
+CREATE INDEX IF NOT EXISTS idx_past_convenors_display_order ON public.past_convenors(display_order);
+CREATE INDEX IF NOT EXISTS idx_past_convenors_hidden ON public.past_convenors(hidden);
+
+CREATE INDEX IF NOT EXISTS idx_student_achievements_display_order ON public.student_achievements(display_order);
+CREATE INDEX IF NOT EXISTS idx_student_achievements_hidden ON public.student_achievements(hidden);
+
 -- Comments for documentation
 COMMENT ON TABLE public.events IS 'Stores event information including upcoming, ongoing, and past events';
 COMMENT ON TABLE public.notices IS 'Notice board items with support for rich content, attachments, and external links';
@@ -246,4 +316,7 @@ COMMENT ON TABLE public.members_core_team IS 'Core team member profiles';
 COMMENT ON TABLE public.members_executive IS 'Executive team member profiles';
 COMMENT ON TABLE public.members_faculty IS 'Faculty advisor profiles';
 COMMENT ON TABLE public.members_post_holders IS 'Post holder member profiles';
+COMMENT ON TABLE public.chapter_awards IS 'Annual Best Student Chapter awards';
+COMMENT ON TABLE public.past_convenors IS 'Past convenor profiles with tenure information';
+COMMENT ON TABLE public.student_achievements IS 'Individual student achievements and awards';
 COMMENT ON TABLE public.site_settings IS 'Application-wide configuration settings';

@@ -204,6 +204,40 @@ interface Project {
   display_order?: number;
 }
 
+interface ChapterAward {
+  id: number;
+  award_title: string;
+  year: string;
+  description: string;
+  certificate_image: string;
+  hidden?: boolean;
+  display_order?: number;
+}
+
+interface PastConvenor {
+  id: number;
+  name: string;
+  image: string;
+  tenure_start: string;
+  tenure_end: string;
+  description?: string;
+  hidden?: boolean;
+  display_order?: number;
+}
+
+interface StudentAchievement {
+  id: number;
+  student_name: string;
+  event_name: string;
+  position: string;
+  date: string;
+  organized_by: string;
+  description: string;
+  achievement_image: string;
+  hidden?: boolean;
+  display_order?: number;
+}
+
 const Admin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -221,7 +255,11 @@ const Admin = () => {
   const [executive, setExecutive] = useState<Member[]>([]);
   const [eventHighlights, setEventHighlights] = useState<EventHighlight[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [chapterAwards, setChapterAwards] = useState<ChapterAward[]>([]);
+  const [pastConvenors, setPastConvenors] = useState<PastConvenor[]>([]);
+  const [studentAchievements, setStudentAchievements] = useState<StudentAchievement[]>([]);
   const [showProjectsInNavbar, setShowProjectsInNavbar] = useState(false);
+  const [showAchievementsInNavbar, setShowAchievementsInNavbar] = useState(false);
   const [showExecutiveTeam, setShowExecutiveTeam] = useState(true);
   const [showNoticeBoardOnHome, setShowNoticeBoardOnHome] = useState(true);
   const [contactFormEnabled, setContactFormEnabled] = useState(true);
@@ -236,6 +274,9 @@ const Admin = () => {
   const [executiveSearch, setExecutiveSearch] = useState("");
   const [gallerySearch, setGallerySearch] = useState("");
   const [projectsSearch, setProjectsSearch] = useState("");
+  const [chapterAwardsSearch, setChapterAwardsSearch] = useState("");
+  const [pastConvenorsSearch, setPastConvenorsSearch] = useState("");
+  const [studentAchievementsSearch, setStudentAchievementsSearch] = useState("");
 
   useEffect(() => {
     checkAuthStatus();
@@ -252,6 +293,9 @@ const Admin = () => {
       fetchExecutive();
       fetchEventHighlights();
       fetchProjects();
+      fetchChapterAwards();
+      fetchPastConvenors();
+      fetchStudentAchievements();
       fetchSiteSettings();
     }
   }, [isAuthenticated, refreshTrigger]);
@@ -919,7 +963,7 @@ const Admin = () => {
   const fetchProjects = async () => {
     if (!supabase) return;
     try {
-      const { data, error } = await supabase
+      const { data, error} = await supabase
         .from("projects")
         .select("*")
         .order("display_order", { ascending: true, nullsFirst: false })
@@ -928,6 +972,54 @@ const Admin = () => {
       setProjects(data || []);
     } catch (error: any) {
       toast.error(`Failed to fetch projects: ${error.message}`);
+    }
+  };
+
+  const fetchChapterAwards = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from("chapter_awards")
+        .select("*")
+        .order("year", { ascending: false })
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
+      if (error) throw error;
+      setChapterAwards(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch chapter awards: ${error.message}`);
+    }
+  };
+
+  const fetchPastConvenors = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from("past_convenors")
+        .select("*")
+        .order("tenure_start", { ascending: false })
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
+      if (error) throw error;
+      setPastConvenors(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch past convenors: ${error.message}`);
+    }
+  };
+
+  const fetchStudentAchievements = async () => {
+    if (!supabase) return;
+    try {
+      const { data, error } = await supabase
+        .from("student_achievements")
+        .select("*")
+        .order("date", { ascending: false })
+        .order("display_order", { ascending: true, nullsFirst: false })
+        .order("id", { ascending: true });
+      if (error) throw error;
+      setStudentAchievements(data || []);
+    } catch (error: any) {
+      toast.error(`Failed to fetch student achievements: ${error.message}`);
     }
   };
 
@@ -1038,6 +1130,16 @@ const Admin = () => {
         setShowProjectsInNavbar(projectsData.setting_value);
       }
 
+      const { data: achievementsData } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("setting_key", "show_achievements_in_navbar")
+        .single();
+
+      if (achievementsData) {
+        setShowAchievementsInNavbar(achievementsData.setting_value);
+      }
+
       const { data: executiveData } = await supabase
         .from("site_settings")
         .select("*")
@@ -1099,6 +1201,39 @@ const Admin = () => {
       setShowProjectsInNavbar(value);
       toast.success(
         `Projects link ${value ? "shown in" : "hidden from"} navbar`
+      );
+    } catch (error: any) {
+      toast.error(`Failed to update setting: ${error.message}`);
+    }
+  };
+
+  const updateAchievementsNavbarSetting = async (value: boolean) => {
+    if (!supabase) return;
+    try {
+      const { data: existing } = await supabase
+        .from("site_settings")
+        .select("id")
+        .eq("setting_key", "show_achievements_in_navbar")
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from("site_settings")
+          .update({ setting_value: value })
+          .eq("setting_key", "show_achievements_in_navbar");
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("site_settings")
+          .insert([
+            { setting_key: "show_achievements_in_navbar", setting_value: value },
+          ]);
+        if (error) throw error;
+      }
+
+      setShowAchievementsInNavbar(value);
+      toast.success(
+        `Achievements link ${value ? "shown in" : "hidden from"} navbar`
       );
     } catch (error: any) {
       toast.error(`Failed to update setting: ${error.message}`);
@@ -1331,7 +1466,7 @@ const Admin = () => {
 
         <Tabs defaultValue="notices" className="w-full">
           <div className="w-full overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-            <TabsList className="inline-flex w-auto min-w-full sm:w-full sm:grid sm:grid-cols-7 h-auto sm:h-10 gap-1 p-1">
+            <TabsList className="inline-flex w-auto min-w-full sm:w-full sm:grid sm:grid-cols-8 h-auto sm:h-10 gap-1 p-1">
               <TabsTrigger
                 value="notices"
                 className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
@@ -1356,6 +1491,11 @@ const Admin = () => {
                 value="projects"
                 className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
                 Projects
+              </TabsTrigger>
+              <TabsTrigger
+                value="achievements"
+                className="whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 py-2">
+                Achievements
               </TabsTrigger>
               <TabsTrigger
                 value="members"
@@ -1744,6 +1884,58 @@ const Admin = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="achievements">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Chapter Awards</CardTitle>
+                  <CardDescription>Manage annual best chapter awards</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Total: {chapterAwards.length} awards
+                  </p>
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>Chapter Awards management interface ready.</p>
+                    <p className="text-xs mt-2">Add awards through database or extend this section with CRUD forms.</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Past Convenors</CardTitle>
+                  <CardDescription>Manage past convenor profiles</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Total: {pastConvenors.length} convenors
+                  </p>
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>Past Convenors management interface ready.</p>
+                    <p className="text-xs mt-2">Add convenors through database or extend this section with CRUD forms.</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Student Achievements</CardTitle>
+                  <CardDescription>Manage student achievement records</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Total: {studentAchievements.length} achievements
+                  </p>
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>Student Achievements management interface ready.</p>
+                    <p className="text-xs mt-2">Add achievements through database or extend this section with CRUD forms.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="members">
@@ -2658,6 +2850,20 @@ const Admin = () => {
                     variant={showProjectsInNavbar ? "default" : "outline"}
                     onClick={() => updateNavbarSetting(!showProjectsInNavbar)}>
                     {showProjectsInNavbar ? "Enabled" : "Disabled"}
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-1">
+                    <h3 className="font-medium">Show Achievements in Navbar</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Display the Achievements link in the main navigation bar
+                    </p>
+                  </div>
+                  <Button
+                    variant={showAchievementsInNavbar ? "default" : "outline"}
+                    onClick={() => updateAchievementsNavbarSetting(!showAchievementsInNavbar)}>
+                    {showAchievementsInNavbar ? "Enabled" : "Disabled"}
                   </Button>
                 </div>
 
