@@ -21,6 +21,39 @@
   font-size: 0.875rem !important;
 }
 
+/* Match the global scrollbar style */
+.ql-editor::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.ql-editor::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+  border-left: 1px solid hsl(var(--border));
+}
+
+.ql-editor::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--primary)),
+    hsl(var(--primary) / 0.7)
+  );
+  border-radius: 2px;
+  border: 2px solid hsl(var(--background));
+}
+
+.ql-editor::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--primary) / 0.9),
+    hsl(var(--primary))
+  );
+}
+
+.ql-editor::-webkit-scrollbar-thumb:active {
+  background: hsl(var(--secondary));
+}
+
 .ql-editor.ql-blank::before {
   color: hsl(var(--muted-foreground)) !important;
   font-style: normal !important;
