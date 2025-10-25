@@ -1051,6 +1051,126 @@ const Admin = () => {
     }
   };
 
+  const deleteChapterAward = async (id: number) => {
+    if (!supabase || !confirm("Are you sure you want to delete this award?"))
+      return;
+    try {
+      const { data: award } = await supabase
+        .from("chapter_awards")
+        .select("certificate_image")
+        .eq("id", id)
+        .single();
+
+      const { error } = await supabase.from("chapter_awards").delete().eq("id", id);
+      if (error) throw error;
+
+      if (award?.certificate_image) {
+        await deleteImageFromSupabase(award.certificate_image);
+        console.log("Deleted award certificate from storage");
+      }
+
+      toast.success("Award deleted successfully");
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete award: ${error.message}`);
+    }
+  };
+
+  const deletePastConvenor = async (id: number) => {
+    if (!supabase || !confirm("Are you sure you want to delete this convenor?"))
+      return;
+    try {
+      const { data: convenor } = await supabase
+        .from("past_convenors")
+        .select("image")
+        .eq("id", id)
+        .single();
+
+      const { error } = await supabase.from("past_convenors").delete().eq("id", id);
+      if (error) throw error;
+
+      if (convenor?.image) {
+        await deleteImageFromSupabase(convenor.image);
+        console.log("Deleted convenor image from storage");
+      }
+
+      toast.success("Convenor deleted successfully");
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete convenor: ${error.message}`);
+    }
+  };
+
+  const deleteStudentAchievement = async (id: number) => {
+    if (!supabase || !confirm("Are you sure you want to delete this achievement?"))
+      return;
+    try {
+      const { data: achievement } = await supabase
+        .from("student_achievements")
+        .select("achievement_image")
+        .eq("id", id)
+        .single();
+
+      const { error } = await supabase.from("student_achievements").delete().eq("id", id);
+      if (error) throw error;
+
+      if (achievement?.achievement_image) {
+        await deleteImageFromSupabase(achievement.achievement_image);
+        console.log("Deleted achievement image from storage");
+      }
+
+      toast.success("Achievement deleted successfully");
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to delete achievement: ${error.message}`);
+    }
+  };
+
+  const toggleChapterAwardVisibility = async (id: number, currentHidden: boolean) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase
+        .from("chapter_awards")
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
+      if (error) throw error;
+      toast.success(`Award ${!currentHidden ? "hidden" : "visible"} successfully`);
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update visibility: ${error.message}`);
+    }
+  };
+
+  const togglePastConvenorVisibility = async (id: number, currentHidden: boolean) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase
+        .from("past_convenors")
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
+      if (error) throw error;
+      toast.success(`Convenor ${!currentHidden ? "hidden" : "visible"} successfully`);
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update visibility: ${error.message}`);
+    }
+  };
+
+  const toggleStudentAchievementVisibility = async (id: number, currentHidden: boolean) => {
+    if (!supabase) return;
+    try {
+      const { error } = await supabase
+        .from("student_achievements")
+        .update({ hidden: !currentHidden })
+        .eq("id", id);
+      if (error) throw error;
+      toast.success(`Achievement ${!currentHidden ? "hidden" : "visible"} successfully`);
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      toast.error(`Failed to update visibility: ${error.message}`);
+    }
+  };
+
   const toggleProjectVisibility = async (
     id: number,
     currentHidden: boolean
@@ -1890,48 +2010,235 @@ const Admin = () => {
             <div className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Chapter Awards</CardTitle>
-                  <CardDescription>Manage annual best chapter awards</CardDescription>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+                    <div>
+                      <CardTitle className="text-lg sm:text-xl">Chapter Awards</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">Manage annual best chapter awards</CardDescription>
+                    </div>
+                    <AddChapterAwardDialog onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                  </div>
+                  <div className="mt-4">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by title or year..."
+                        value={chapterAwardsSearch}
+                        onChange={(e) => setChapterAwardsSearch(e.target.value)}
+                        className="pl-8 text-sm"
+                      />
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Total: {chapterAwards.length} awards
-                  </p>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>Chapter Awards management interface ready.</p>
-                    <p className="text-xs mt-2">Add awards through database or extend this section with CRUD forms.</p>
+                <CardContent className="overflow-x-auto scrollbar-hide">
+                  <div className="max-h-96 overflow-y-auto scrollbar-hide">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-12">Visible</TableHead>
+                          <TableHead>Year</TableHead>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {chapterAwards
+                          .filter((award) =>
+                            award.award_title.toLowerCase().includes(chapterAwardsSearch.toLowerCase()) ||
+                            award.year.includes(chapterAwardsSearch)
+                          )
+                          .map((award) => (
+                            <TableRow key={award.id} className={award.hidden ? "opacity-50" : ""}>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => toggleChapterAwardVisibility(award.id, award.hidden || false)}
+                                >
+                                  {award.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                              </TableCell>
+                              <TableCell className="font-mono text-sm">{award.year}</TableCell>
+                              <TableCell>{award.award_title}</TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <EditChapterAwardDialog award={award} onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => deleteChapterAward(award.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        {chapterAwards.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                              No awards yet. Click "Add Chapter Award" to create one.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Past Convenors</CardTitle>
-                  <CardDescription>Manage past convenor profiles</CardDescription>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+                    <div>
+                      <CardTitle className="text-lg sm:text-xl">Past Convenors</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">Manage past convenor profiles</CardDescription>
+                    </div>
+                    <AddPastConvenorDialog onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                  </div>
+                  <div className="mt-4">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by name..."
+                        value={pastConvenorsSearch}
+                        onChange={(e) => setPastConvenorsSearch(e.target.value)}
+                        className="pl-8 text-sm"
+                      />
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Total: {pastConvenors.length} convenors
-                  </p>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>Past Convenors management interface ready.</p>
-                    <p className="text-xs mt-2">Add convenors through database or extend this section with CRUD forms.</p>
+                <CardContent className="overflow-x-auto scrollbar-hide">
+                  <div className="max-h-96 overflow-y-auto scrollbar-hide">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-12">Visible</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Tenure</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pastConvenors
+                          .filter((convenor) =>
+                            convenor.name.toLowerCase().includes(pastConvenorsSearch.toLowerCase())
+                          )
+                          .map((convenor) => (
+                            <TableRow key={convenor.id} className={convenor.hidden ? "opacity-50" : ""}>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => togglePastConvenorVisibility(convenor.id, convenor.hidden || false)}
+                                >
+                                  {convenor.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                              </TableCell>
+                              <TableCell>{convenor.name}</TableCell>
+                              <TableCell className="font-mono text-sm">{convenor.tenure_start} - {convenor.tenure_end}</TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <EditPastConvenorDialog convenor={convenor} onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => deletePastConvenor(convenor.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        {pastConvenors.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                              No convenors yet. Click "Add Past Convenor" to create one.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Student Achievements</CardTitle>
-                  <CardDescription>Manage student achievement records</CardDescription>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+                    <div>
+                      <CardTitle className="text-lg sm:text-xl">Student Achievements</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">Manage student achievement records</CardDescription>
+                    </div>
+                    <AddStudentAchievementDialog onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                  </div>
+                  <div className="mt-4">
+                    <div className="relative">
+                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by student name or event..."
+                        value={studentAchievementsSearch}
+                        onChange={(e) => setStudentAchievementsSearch(e.target.value)}
+                        className="pl-8 text-sm"
+                      />
+                    </div>
+                  </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Total: {studentAchievements.length} achievements
-                  </p>
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>Student Achievements management interface ready.</p>
-                    <p className="text-xs mt-2">Add achievements through database or extend this section with CRUD forms.</p>
+                <CardContent className="overflow-x-auto scrollbar-hide">
+                  <div className="max-h-96 overflow-y-auto scrollbar-hide">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-12">Visible</TableHead>
+                          <TableHead>Student</TableHead>
+                          <TableHead>Event</TableHead>
+                          <TableHead>Position</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {studentAchievements
+                          .filter((achievement) =>
+                            achievement.student_name.toLowerCase().includes(studentAchievementsSearch.toLowerCase()) ||
+                            achievement.event_name.toLowerCase().includes(studentAchievementsSearch.toLowerCase())
+                          )
+                          .map((achievement) => (
+                            <TableRow key={achievement.id} className={achievement.hidden ? "opacity-50" : ""}>
+                              <TableCell>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => toggleStudentAchievementVisibility(achievement.id, achievement.hidden || false)}
+                                >
+                                  {achievement.hidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                              </TableCell>
+                              <TableCell>{achievement.student_name}</TableCell>
+                              <TableCell>{achievement.event_name}</TableCell>
+                              <TableCell className="font-mono text-sm">{achievement.position}</TableCell>
+                              <TableCell>
+                                <div className="flex gap-2">
+                                  <EditStudentAchievementDialog achievement={achievement} onSuccess={() => setRefreshTrigger((prev) => prev + 1)} />
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => deleteStudentAchievement(achievement.id)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        {studentAchievements.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                              No achievements yet. Click "Add Student Achievement" to create one.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
                   </div>
                 </CardContent>
               </Card>
@@ -5717,6 +6024,695 @@ function EditProjectDialog({
               <Button type="submit" disabled={uploading}>
                 Update Project
               </Button>
+            </DialogFooter>
+          </form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddChapterAwardDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    award_title: "",
+    year: "",
+    description: "",
+    certificate_image: "",
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, "achievements");
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, certificate_image: url });
+      toast.success("Certificate image uploaded successfully");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from("chapter_awards").insert([formData]);
+      if (error) throw error;
+      toast.success("Award added successfully");
+      setOpen(false);
+      setFormData({ award_title: "", year: "", description: "", certificate_image: "" });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add award: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Chapter Award</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Add Chapter Award</DialogTitle>
+          <DialogDescription>Add a new best chapter award</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="award-title">Award Title *</Label>
+              <Input
+                id="award-title"
+                value={formData.award_title}
+                onChange={(e) => setFormData({ ...formData, award_title: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="award-year">Year *</Label>
+              <Input
+                id="award-year"
+                value={formData.year}
+                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                placeholder="2024"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="award-desc">Description *</Label>
+              <Textarea
+                id="award-desc"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={4}
+                required
+              />
+            </div>
+            <div>
+              <Label>Certificate Image *</Label>
+              <Input type="file" onChange={handleImageUpload} accept="image/*" />
+              {formData.certificate_image && (
+                <img src={formData.certificate_image} alt="Preview" className="mt-2 max-h-40 rounded" />
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>Add Award</Button>
+            </DialogFooter>
+          </form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditChapterAwardDialog({ award, onSuccess }: { award: ChapterAward; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    award_title: award.award_title,
+    year: award.year,
+    description: award.description,
+    certificate_image: award.certificate_image,
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const oldImage = formData.certificate_image;
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, "achievements");
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      if (oldImage) await deleteImageFromSupabase(oldImage);
+      setFormData({ ...formData, certificate_image: url });
+      toast.success("Certificate image uploaded successfully");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from("chapter_awards").update(formData).eq("id", award.id);
+      if (error) throw error;
+      toast.success("Award updated successfully");
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update award: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Edit Chapter Award</DialogTitle>
+          <DialogDescription>Update award information</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="edit-award-title">Award Title *</Label>
+              <Input
+                id="edit-award-title"
+                value={formData.award_title}
+                onChange={(e) => setFormData({ ...formData, award_title: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-award-year">Year *</Label>
+              <Input
+                id="edit-award-year"
+                value={formData.year}
+                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-award-desc">Description *</Label>
+              <Textarea
+                id="edit-award-desc"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={4}
+                required
+              />
+            </div>
+            <div>
+              <Label>Certificate Image</Label>
+              <Input type="file" onChange={handleImageUpload} accept="image/*" />
+              {formData.certificate_image && (
+                <img src={formData.certificate_image} alt="Preview" className="mt-2 max-h-40 rounded" />
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>Update Award</Button>
+            </DialogFooter>
+          </form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddPastConvenorDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    image: "",
+    tenure_start: "",
+    tenure_end: "",
+    description: "",
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, "convenors");
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, image: url });
+      toast.success("Image uploaded successfully");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from("past_convenors").insert([formData]);
+      if (error) throw error;
+      toast.success("Convenor added successfully");
+      setOpen(false);
+      setFormData({ name: "", image: "", tenure_start: "", tenure_end: "", description: "" });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add convenor: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Past Convenor</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Add Past Convenor</DialogTitle>
+          <DialogDescription>Add a past convenor profile</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="convenor-name">Name *</Label>
+              <Input
+                id="convenor-name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="tenure-start">Tenure Start *</Label>
+              <Input
+                id="tenure-start"
+                value={formData.tenure_start}
+                onChange={(e) => setFormData({ ...formData, tenure_start: e.target.value })}
+                placeholder="2020"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="tenure-end">Tenure End *</Label>
+              <Input
+                id="tenure-end"
+                value={formData.tenure_end}
+                onChange={(e) => setFormData({ ...formData, tenure_end: e.target.value })}
+                placeholder="2022"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="convenor-desc">Description</Label>
+              <Textarea
+                id="convenor-desc"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label>Photo *</Label>
+              <Input type="file" onChange={handleImageUpload} accept="image/*" />
+              {formData.image && (
+                <img src={formData.image} alt="Preview" className="mt-2 max-h-40 rounded" />
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>Add Convenor</Button>
+            </DialogFooter>
+          </form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditPastConvenorDialog({ convenor, onSuccess }: { convenor: PastConvenor; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: convenor.name,
+    image: convenor.image,
+    tenure_start: convenor.tenure_start,
+    tenure_end: convenor.tenure_end,
+    description: convenor.description || "",
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const oldImage = formData.image;
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, "convenors");
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      if (oldImage) await deleteImageFromSupabase(oldImage);
+      setFormData({ ...formData, image: url });
+      toast.success("Image uploaded successfully");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from("past_convenors").update(formData).eq("id", convenor.id);
+      if (error) throw error;
+      toast.success("Convenor updated successfully");
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update convenor: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Edit Past Convenor</DialogTitle>
+          <DialogDescription>Update convenor information</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="edit-convenor-name">Name *</Label>
+              <Input
+                id="edit-convenor-name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-tenure-start">Tenure Start *</Label>
+              <Input
+                id="edit-tenure-start"
+                value={formData.tenure_start}
+                onChange={(e) => setFormData({ ...formData, tenure_start: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-tenure-end">Tenure End *</Label>
+              <Input
+                id="edit-tenure-end"
+                value={formData.tenure_end}
+                onChange={(e) => setFormData({ ...formData, tenure_end: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-convenor-desc">Description</Label>
+              <Textarea
+                id="edit-convenor-desc"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+            </div>
+            <div>
+              <Label>Photo</Label>
+              <Input type="file" onChange={handleImageUpload} accept="image/*" />
+              {formData.image && (
+                <img src={formData.image} alt="Preview" className="mt-2 max-h-40 rounded" />
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>Update Convenor</Button>
+            </DialogFooter>
+          </form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function AddStudentAchievementDialog({ onSuccess }: { onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    student_name: "",
+    event_name: "",
+    position: "",
+    date: "",
+    organized_by: "",
+    description: "",
+    achievement_image: "",
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, "achievements");
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      setFormData({ ...formData, achievement_image: url });
+      toast.success("Image uploaded successfully");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from("student_achievements").insert([formData]);
+      if (error) throw error;
+      toast.success("Achievement added successfully");
+      setOpen(false);
+      setFormData({
+        student_name: "",
+        event_name: "",
+        position: "",
+        date: "",
+        organized_by: "",
+        description: "",
+        achievement_image: "",
+      });
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to add achievement: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 mr-2" /> Add Student Achievement</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Add Student Achievement</DialogTitle>
+          <DialogDescription>Record a student achievement</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="student-name">Student Name *</Label>
+              <Input
+                id="student-name"
+                value={formData.student_name}
+                onChange={(e) => setFormData({ ...formData, student_name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="event-name">Event Name *</Label>
+              <Input
+                id="event-name"
+                value={formData.event_name}
+                onChange={(e) => setFormData({ ...formData, event_name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="position">Position *</Label>
+              <Input
+                id="position"
+                value={formData.position}
+                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                placeholder="1st Place, Winner, etc."
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="achievement-date">Date *</Label>
+              <Input
+                id="achievement-date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="organized-by">Organized By *</Label>
+              <Input
+                id="organized-by"
+                value={formData.organized_by}
+                onChange={(e) => setFormData({ ...formData, organized_by: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="achievement-desc">Description *</Label>
+              <Textarea
+                id="achievement-desc"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+                required
+              />
+            </div>
+            <div>
+              <Label>Achievement Image *</Label>
+              <Input type="file" onChange={handleImageUpload} accept="image/*" />
+              {formData.achievement_image && (
+                <img src={formData.achievement_image} alt="Preview" className="mt-2 max-h-40 rounded" />
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>Add Achievement</Button>
+            </DialogFooter>
+          </form>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EditStudentAchievementDialog({ achievement, onSuccess }: { achievement: StudentAchievement; onSuccess: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    student_name: achievement.student_name,
+    event_name: achievement.event_name,
+    position: achievement.position,
+    date: achievement.date,
+    organized_by: achievement.organized_by,
+    description: achievement.description,
+    achievement_image: achievement.achievement_image,
+  });
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const oldImage = formData.achievement_image;
+    setUploading(true);
+    const { url, error } = await uploadImageToSupabase(file, "achievements");
+    setUploading(false);
+
+    if (error) {
+      toast.error(error);
+    } else if (url) {
+      if (oldImage) await deleteImageFromSupabase(oldImage);
+      setFormData({ ...formData, achievement_image: url });
+      toast.success("Image uploaded successfully");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase) return;
+
+    try {
+      const { error } = await supabase.from("student_achievements").update(formData).eq("id", achievement.id);
+      if (error) throw error;
+      toast.success("Achievement updated successfully");
+      setOpen(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error(`Failed to update achievement: ${error.message}`);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm"><Edit className="h-4 w-4" /></Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Edit Student Achievement</DialogTitle>
+          <DialogDescription>Update achievement information</DialogDescription>
+        </DialogHeader>
+        <ScrollArea className="max-h-[65vh] pr-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="edit-student-name">Student Name *</Label>
+              <Input
+                id="edit-student-name"
+                value={formData.student_name}
+                onChange={(e) => setFormData({ ...formData, student_name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-event-name">Event Name *</Label>
+              <Input
+                id="edit-event-name"
+                value={formData.event_name}
+                onChange={(e) => setFormData({ ...formData, event_name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-position">Position *</Label>
+              <Input
+                id="edit-position"
+                value={formData.position}
+                onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-achievement-date">Date *</Label>
+              <Input
+                id="edit-achievement-date"
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-organized-by">Organized By *</Label>
+              <Input
+                id="edit-organized-by"
+                value={formData.organized_by}
+                onChange={(e) => setFormData({ ...formData, organized_by: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-achievement-desc">Description *</Label>
+              <Textarea
+                id="edit-achievement-desc"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+                required
+              />
+            </div>
+            <div>
+              <Label>Achievement Image</Label>
+              <Input type="file" onChange={handleImageUpload} accept="image/*" />
+              {formData.achievement_image && (
+                <img src={formData.achievement_image} alt="Preview" className="mt-2 max-h-40 rounded" />
+              )}
+            </div>
+            <DialogFooter>
+              <Button type="submit" disabled={uploading}>Update Achievement</Button>
             </DialogFooter>
           </form>
         </ScrollArea>
